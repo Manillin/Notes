@@ -83,3 +83,5 @@ urlpatterns = [
 ```
 
 nell'esempio `path('', views.home, name='home')` avremo che verrà eseguita la funzione `home` dal file `views.py` e il nome/alias assegnato sarà: 'home'
+
+[fine lezione 1]
