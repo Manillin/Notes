@@ -1,3 +1,3 @@
 # Notes
 
-Uni lecture notes
+Notes relative to Uni courses
