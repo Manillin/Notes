@@ -87,5 +87,3 @@ note su `request`:
 - Ha un dizionario accessibile con il metodo `.GET` che contiene i parametri che riceve
 
 > Esercizi a p.38 svolti sul repo di TechWeb (relativi alle GET, views.py e urls.py)
-
-check
