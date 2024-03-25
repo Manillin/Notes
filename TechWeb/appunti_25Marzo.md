@@ -61,3 +61,8 @@ es:
     {{element.detail}} <br>
 {% endfor %}
 ```
+
+Ci dovrebbe essere una netta separazione tra i 3 moduli : model view e template.
+
+Per questo non si dovrebbe 'esagerare' con la capacità logica del DTL.
+In particolare esagerare con la logica in DTL pone un rischio per la sicurezza.
