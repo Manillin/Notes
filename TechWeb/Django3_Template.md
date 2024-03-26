@@ -60,5 +60,5 @@ Possiamo considerare i template come oggetti in python, e in quanto oggetti disp
 Infatti diremo che un `template` può:
 
 - **Estendere** un template base
-- **Includere** un template base
+- **Includere** un template base  
   note: guardare esempio p.17
