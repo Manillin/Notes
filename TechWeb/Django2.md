@@ -46,7 +46,7 @@ Scopriamo cosi che se si prova ad accedere a una risorsa non specificata il nost
 ## Uso di regex per definire URL
 
 Possiamo usare **Regex** per facilitare il reindirizzamento in URL, ma bisogna stare attenti in quanto le Regex sono estremamente potenti e potrebbero fare match indesiderati se non definite correttamente.
-Risorsa: https://regex101.com
+Risorsa: https://regex101.com .
 Per creare URLS espandibili con regex importiamo `re_path`
 
 ```python
@@ -81,9 +81,19 @@ def elenca_parametri(request):
 
 ```
 
-note su `request`:
+### note su `request`:
 
-- È un oggetto della classe `WSGIRequest`
-- Ha un dizionario accessibile con il metodo `.GET` che contiene i parametri che riceve
+- È un oggetto della classe `<class 'django.core.handlers.wsgi.WSGIRequest'>`
+- Ha un dizionario accessibile con il metodo `.GET` che contiene i parametri che riceve (passati tramite URL)
 
-> Esercizi a p.38 svolti sul repo di TechWeb (relativi alle GET, views.py e urls.py)
+Si possono passare parametri tramite URL path e fare operazione di **type enforcement**:
+
+- `path('url_path/<int:eta>/', view_func, name='alias')` Prende un solo parametro di nome `eta` e di tipo intero.
+- `path('url_path/<str:nome>/<int:eta>, welcome_path, name='alias')` Prende due parametri uno stringa e l'altro intero.
+
+Usando il _type enforcement_ diventa possibile accedere direttamente ai parametri come se fossero argomenti della funzione in views.py:
+
+```python
+def welcome_path(request, nome, eta):
+    [...]
+```

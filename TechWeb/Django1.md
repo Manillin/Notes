@@ -1,8 +1,10 @@
 # Django
 
-## Cos'è:
+Django è un **Web Framework** open source basato su Python che utlizza il pattern architetturale **Model-Template-View**
 
-Django è un **Web Framework** open source basato su Python che utlizza il pattern architetturale **model-template-view**
+- **Model:** Rappresenta la struttura dei dati dell'applicazione, definiti usando Django ORM (Object-Relational Mapping) e corrispondono alle tabelle nei DB.
+- **Template:** Componente responsabile delle persentazione dell'interfaccia utente. Sono file HTML e DTL che consentono la dinamicità delle pagine e l'accesso a varibili di contesto.
+- **View:** Componente che gestisce la **Business Logic** dell'applicazione. Riceve le richieste HTTP, recupera i dati dal Model, li elabora e restituisce una risposta appropriata (che viene passata ai template). Le viste sono implementate come funzioni e classi in Python
 
 ## pipenv:
 
