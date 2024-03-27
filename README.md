@@ -1,7 +1,8 @@
 # Notes
 
-Notes relative to Uni courses
+Notes relative to last semester:
 
 ## Tech Web
-1. Python revision 
-2. Django Framework - First steps
+## Compilers:
+## Software Design:
+
