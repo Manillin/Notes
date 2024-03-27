@@ -48,7 +48,8 @@ c = 1 + 3 --> c = 4
 (100 < 0) --> false
 ```
 
-## Strength Reduction (SR):
+## Strength Reduction (SR):
+
 Sostituisce operazioni costose con operazioni più leggere
 Es: MUL (muticiclo) rimpiazzate da ADD/SHIFT (ciclo singolo)
 
@@ -69,7 +70,8 @@ for(; t<10000; t+=100){
 }
 ```
 
-## Common Subexpression Elimination (CSE):
+## Common Subexpression Elimination (CSE):
+
 Consiste nell'eliminazione di calcoli ridondanti di una stessa espressioni usata in più istruzioni
 
 ```c++

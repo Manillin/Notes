@@ -41,7 +41,7 @@ A[x-2 * y] --> B[t1 = 2 * y <br> t2 =  x - t1]
 
 </div>
 
-Pro:
+#### Pro:
 
 - Espressioni complesse vengono spezzate
 - Forma compatta e simile all'assembly
