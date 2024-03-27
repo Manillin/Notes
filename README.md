@@ -3,6 +3,6 @@
 Notes relative to last semester:
 
 ## Tech Web
-## Compilers:
-## Software Design:
+## Compilers
+## Software Design
 
