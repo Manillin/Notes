@@ -66,3 +66,37 @@ Necessaria per rappresentare le istruzioni di salto (branch).
 Consiste in una IR in grado di rappresentare il flusso di controllo del programma (_control flow_).
 
 ![cfg](../../images/CFG.png)
+
+Un `CFG` modella il flusso di un programma attraverso **Nodi** che contengono blocchi di istruzioni, detti **_Basic Blocks_**; e **Archi** orientati che rappresentano il flusso di controllo.
+
+Un Basic Block $B_i$ è una sequenza di istruzioni in forma 3AC in cui:
+
+- Solo la prima istruzione può essere raggiunta dall'esterno -> Singolo Entry Point
+- Tutte le istruzioni del blocco sono eseguite se si entra in tale blocco -> Singolo Exit Point (solo l'ultima istruzione può essere di salto)
+
+Un arco connette due nodi $B_i \rightarrow B_j$ se e solo se $B_j$ può eseguire dopo $B_i$ seguendo un qualche percorso del flusso di controllo del programma:
+
+- La prima istruzione di $B_j$ è il target dell'ultima di $B_i$
+- $B_j$ è l'unico successore di $B_i$ (se non contiene istruzione di salto) $\rightarrow$ caso di `Fallthrough`
+
+Definiamo come **Normalizzato** un CFG che ha _basic blocks_ massimali
+
+### Algorimto per la costruzione di un CFG:
+
+1. Identificare il Leader di ogni Basic Block:
+
+- La prima istruzione
+- Il target di un istruzione di salto
+- Ogni istruzione che viene successivamente dopo un salto
+
+2. Il Basic Block massimale inizia con un leader e termina con l'istruzione immediatamente precedente a un nuovo leader
+
+- Edge case: Ultima istruzione del programma
+
+3. Connettere i BB tramite gli Archi che possono essere:
+
+- `fallthrough`: esiste un solo percorso che collega i due BB
+- `true`: Il secondo blocco è raggiungibile se un condizionale è True
+- `false`: Il blocco è raggiungibile se un condizionale risulta False
+
+![CFG from source code](../../images/CFG_fromC.png)
