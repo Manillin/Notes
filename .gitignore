@@ -3,4 +3,5 @@ __pycache__
 Pipfile.lock
 .idea
 *.zip
+./Status
 Status/
