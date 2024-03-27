@@ -145,7 +145,7 @@ Per poter operare più liberamente e con maggiore facilità, il compilatore oper
 - Il blocco ME trasofrma la IR attraverso vari passi in una versione più ottimizzata della stessa
 - Il blocco BE prende la IR ottimizzata e la trasforma nel codice target
 
-![pipeline compilatore](../../images/pipeline_compilatore.png)
+![pipeline compilatore](../../images/toolchain_compilatore.png)
 
 ## Importanza della IR:
 
