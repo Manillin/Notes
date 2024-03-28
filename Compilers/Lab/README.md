@@ -1,4 +1,4 @@
-# How to: Download latest LLVM version
+# Download the latest LLVM version
 
 ### 1. Scaricare codice sorgente
 
@@ -39,9 +39,17 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ROO
 -DLLVM_TARGETS_TO_BUILD=host $ROOT/SRC/llvm/
 ```
 
-### 6. Compilare il tutto
+### 6. Compilare e installare il tutto
 
 ```bash
+# Compilare con: (n rappresenta il numero di core)
 make -j n
+# Installare eseguendo:
 make install
+```
+
+Al termine del processo tutti i tools si troveranno instsallat in:
+
+```bash
+$ROOT/INSTALL
 ```
