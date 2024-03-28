@@ -12,7 +12,7 @@ Possono essere **usati per raggruppare** un insieme di nomi: funzioni, classi e 
   si definiscono con la kw `namespace` e vengono racchiusi tra parentesi graffe, essi non devono per forza essere definiti nello stesso file, si possono appendere nuovi nomi tramite l'impiego di diversi file.
 
 Per questo progetto ci interessiamo dei namespace **locali**.  
-Per accedere a tutti i tipi di nomi possibili in un namespace usiamo la notazione `::` seguita dal nome specifico.
+Per accedere a tutti i tipi di nomi possibili in un namespace usiamo la notazione `::` seguita dal nome specifico.  
 Es:
 
 ```c++
@@ -42,7 +42,7 @@ Possono essere utilizzati per:
 2. Funzioni $\rightarrow$ template di funzione
 3. Alias $\rightarrow$ Not important for llvm
 
-**Attenzione:** Quando si usano i template è essenziale che il _parametro_ pasato sia compatibile con le funzioni operate dal template stesso; Se tipi di dato o classi non sono compatibili come parametri si verificheranno errori di compilazione.
+**Attenzione:** Quando si usano i template è essenziale che il _parametro_ pasato sia compatibile con le funzioni operate dal template stesso; Se tipi di dato o classi non sono compatibili come parametri si verificheranno errori di compilazione.  
 Es:
 
 ```c++
