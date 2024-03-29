@@ -114,19 +114,25 @@ FUNCTION_PASS("testpass", TestPass())
 
 Ora il passo risulterà correttamente registrato, non ci resta che compilarlo e usarlo!
 
-## Uso del passo con OPT
+## Test del passo con `opt`
 
 Ora che abbiamo il passo possiamo usare `opt` e del codice IR per poterlo testare.
 
 ```bash
-# Compiliamo il tutto:
-
 cd $ROOT/BUILD
 make opt
 
-# Lo isntalliamo:
+# Lo installiamo:
 make install
 ```
+
+_nota_: Dopo aver eseguito questi comandi, troveremo `opt` in:
+
+```bash
+$ROOT/INSTALL/bin/opt
+```
+
+Si potrebbe creare un alias o una var di ambiente per semplificare l'invocazione, per semplicità, tale comando verrà referenziato semplicemente da `opt`.
 
 proviamo infine il nostro passo:
 

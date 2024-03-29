@@ -16,9 +16,11 @@ Il pass manager si occupa automaticamente di eseguire i passaggi invocati su tut
 
 Per scrivere un nuovo llvm pass bisogna seguire i seguenti passaggi:
 
-1. Creare una classe `NewPass` che implementi il passo
-2. ...
-3. ...
+1. Creare il file Header per la classe che rappresenta il passo
+2. Creare il file Sorgente
+3. Preparare la build
+4. Ricompilare la build
+5. Invocare il passo con opt
 
 </br>
 
