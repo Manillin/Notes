@@ -83,9 +83,47 @@ return PreservedAnalyses::all()
 
 Ora che abbiamo un nuovo passo con i relativi file, dobbiamo registrarlo tra i passi llvm e per fare ciò seguiamo questi step:
 
+1. Inserirlo in `PassRegistry.def`: Questo è il file che contiene tutti i passi disponibili nel framework llvm. Quando si invoca un passo lo si cerca in questo file.
+2. Aggiungere l'inclusione del file header in `PassBuilder.cpp`: File responsabile della creazione e configurazione dei passi, nonostante includa PassRegistry.def serve anche l'inclusione del file header del passo che vogliamo aggiungere in quanto PassBuilder deve conoscere la definizione per poter invocare il passo correttamente.s
+
 ```bash
 # llvm/lib/Passes/PassRegistry.def
-FUNCTION_PASS("TestPass", TestPass())
+FUNCTION_PASS("testpass", TestPass())
 ```
 
-Aggiunge il passo al manager con il nome `TestPass`
+```c++
+// $ llvm/lib/Passes/PassBuilder.cpp
+#include "llvm/Transforms/Utils/TestPass.h"
+```
+
+Ora il passo risulterà correttamente registrato, non ci resta che compilarlo e usarlo!
+
+## Uso del passo con OPT
+
+Ora che abbiamo il passo possiamo usare `opt` e del codice IR per poterlo testare.
+
+```bash
+# Compiliamo il tutto:
+
+cd $ROOT/BUILD
+make opt
+
+# Lo isntalliamo:
+make install
+```
+
+proviamo infine il nostro passo:
+
+```bash
+opt -passes=testpass TEST/Loop.ll -o TEST/LoopTestPass.ll
+# Oppure
+opt -passes=testpass TEST/Loop.ll -disable-output
+
+```
+
+Se fatto tutto correttamente dovremmo ottenere un ouptut di questo tipo:
+
+```bash
+g_incr
+loop
+```
