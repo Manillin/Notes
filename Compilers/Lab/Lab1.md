@@ -10,6 +10,17 @@ Abbiamo due file sorgente scritti in C (serve trasformarli in IR), iniziamo dal 
 clang -O2 -emit-llvm -S -c TEST/Loop.c -o TEST/Loop.ll
 ```
 
+_nota_: Alcuni percorsi potrebbero essere referenziati senza due directory padre, presupporre sempre che ci siano nel percorso.  
+Es:
+
+```bash
+llvm/include/Transforms/Utils
+
+# in realtà è:
+
+$ROOT/SRC/llvm/include/Transforms/Utils
+```
+
 ## Scrittura del passo:
 
 1. Avere il codice IR a disposzione
@@ -34,6 +45,11 @@ Ora che la build è settata per un nuovo passo non ci resta che scrivere il codi
 ## Scrittura del codice per il passo:
 
 Ricordiamo che il passo si compone di un file .cpp (creato nello step precedente) e dal corrispettivo file header .h
+Creiamo il file header nella directory:
+
+```bash
+$ROOT/SRC/llvm/Transforms/Utils/TestPass.h
+```
 
 Il file header dovrà contenere il seguente codice boilerplate:
 
@@ -63,9 +79,9 @@ Ora possiamo scrivere il codice vero e proprio nel file che abbiamo creato in pr
 using namespace llvm;
 
 //definiamo run()
-PreservedAnalyses Testpass::run(Function &F, FunctionAnalysisManager &AM) {
+PreservedAnalyses TestPass::run(Function &F, FunctionAnalysisManager &AM) {
     errs()<< F.getName() << "\n";
-    return PreservedAnalyses::all()
+    return PreservedAnalyses::all();
 }
 ```
 
@@ -123,7 +139,4 @@ opt -passes=testpass TEST/Loop.ll -disable-output
 
 Se fatto tutto correttamente dovremmo ottenere un ouptut di questo tipo:
 
-```bash
-g_incr
-loop
-```
+![testpass output](../../images/TestPass.png)
