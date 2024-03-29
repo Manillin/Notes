@@ -1,5 +1,17 @@
 # Key Points per LLVM
 
+## Classi importanti
+
+### `PreservedAnalyses`
+
+È una classe utilizzata per indicare quali analisi sono state conservate dopo l'esecuzione di un passo. **Fondamentale** per comunicare al sistema di ottimizzazioni di llvm quali istruzioni siano ancora valide dopo che un passo è stato eseguito, per evitare di continuare nel processo di ottimizzazione con informazioni obsolete.  
+Infatti il metodo `run()` restituisce proprio un oggetto `PreservedAnalyses` per comunicare al passmanager quali analisi siano ancora valide.  
+_Reminder_: il metodo run() contiene il codice relativo a un passo!
+
+## Pass Manager LLVM
+
+Il pass manager si occupa automaticamente di eseguire i passaggi invocati su tutte le funzioni all'interno di un modulo singolo o moduli diversi.
+
 ## Scrittura di un nuovo passo:
 
 Per scrivere un nuovo llvm pass bisogna seguire i seguenti passaggi:

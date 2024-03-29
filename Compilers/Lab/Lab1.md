@@ -68,3 +68,24 @@ PreservedAnalyses Testpass::run(Function &F, FunctionAnalysisManager &AM) {
     return PreservedAnalyses::all()
 }
 ```
+
+_nota_: `Function &F` è il Handle al nodo IR di tipo `Function`
+
+Questo conclude la scrittura del codice relativa alla creazione del passo
+
+_note_: Notiamo che il nostro passo non modifica in alcun modo la funzione, semplicemente fa una stampa e lascia invariate le analisi precedenti
+
+```c++
+return PreservedAnalyses::all()
+```
+
+## Registrare il passo:
+
+Ora che abbiamo un nuovo passo con i relativi file, dobbiamo registrarlo tra i passi llvm e per fare ciò seguiamo questi step:
+
+```bash
+# llvm/lib/Passes/PassRegistry.def
+FUNCTION_PASS("TestPass", TestPass())
+```
+
+Aggiunge il passo al manager con il nome `TestPass`
