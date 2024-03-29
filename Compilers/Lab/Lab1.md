@@ -146,3 +146,37 @@ opt -passes=testpass TEST/Loop.ll -disable-output
 Se fatto tutto correttamente dovremmo ottenere un ouptut di questo tipo:
 
 ![testpass output](../../images/TestPass.png)
+
+# Esercizio 2:
+
+Estendere il passo `TestPass` di modo che analizzi la IR e stampi alcune informazioni utili per ciascuna delle funzioni che compaiono nel programma di test, in particolare:
+
+1. Nome:
+
+```c++
+F.getName()
+```
+
+2. Numero di argomenti
+
+```c++
+.isVarArg() //returns true if func in vararg
+```
+
+3. Numero di chiamate a funzione dello stesso modulo
+
+```c++
+
+```
+
+4. Numero di basic blocks (BB)
+
+```c++
+
+```
+
+5. Numero di istruzioni
+
+```c++
+
+```

@@ -1,5 +1,53 @@
 # Key Points per LLVM
 
+## Struttura LLVM
+
+llvm traduce il nostro programma in un modulo operabile dalla sua toolchain, seguendo questa mappatura:
+
+- Files $\rightarrow$ `Module` (Lista di `Function` e variabili globali)
+- Funzioni $\rightarrow$ `Function` (Lista di BasicBlocks e argomenti)
+- Basic Blocks $\rightarrow$ `BasicBlock` (lista di `Instruction`)
+- Istruzioni $\rightarrow$ `Instruction` (singola istruzionea lvl di operazione elementare)
+
+### Iteratori:
+
+Notiamo quindi che le strutture llvm sono organizzate come liste, una lista di oggetti che a sua volta contiene una lista (`doubleLinkedList`).
+Per attraversare facilmente queste strutture dati possiamo sfruttare gli **Iteratori**.  
+Tramite un iteratore possiamo navigare tutte le istruzioni di un modulo
+
+```c++
+Module &M = ...;
+for(auto iter = M.begin(); iter!= M.end(); ++iter){
+    Function &F = *iter;
+    // fare qualcosa con la singola istruzione
+}
+```
+
+### DownCasting:
+
+Il _DownCastign_ è il processo che consente di convertire un **puntatore** generico (un iteratore) **da** una classe _base_ **a** una classe _derivata_, consentendo l'accesso alle funzionalita specifiche di quella classe derivata.  
+L'operazione di downcastin viene effettuata dalla funzione `dyn_cast<classeDerivata>(ptrClasseBase)`.  
+E per poter essere usata risulta necessaria l'inclusione del corretto file di header:
+
+- Instruction $\rightarrow$ CallInst: `include Instruction.h`
+- Module $\rightarrow$ Function: `include Module.h`
+
+_nota_: `#include llvm/IR/classeBase.h`
+
+_Es: downcasting da classe Instruction alla classe derivata CallInst (chiamata a funzione)_
+
+```c++
+#include "llvm/IR/Instructions.h"
+
+Instruction *inst = ... ;
+if (CallInst *call_inst = dyn_cast<CallInst>(inst))
+    outs() << "I am a call instruction" << std::endl;
+
+
+```
+
+**ATTENZIONE:** Il downcasting è possibile solo tra classi che condividono una gerarchia diretta di ereditarietà! Se si tenta un downcasting senza seguire queste indicazioni `dyn_cast` restituirà un puntatore vuoto.
+
 ## Classi importanti
 
 ### `PreservedAnalyses`
