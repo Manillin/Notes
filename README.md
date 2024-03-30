@@ -2,7 +2,14 @@
 
 Notes relative to last semester:
 
-## Tech Web
-## Compilers
-## Software Design
+## Compilers:
+- middleEnd a backEnd
+- llvm
+## Tech Web:
+- advanced python 
+- djanvo framework and backend
+
+## Software Design:
+- sw design principles and methodologies
+- Software engineering
 
