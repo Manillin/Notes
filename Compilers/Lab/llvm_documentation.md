@@ -93,3 +93,7 @@ class NewPass: public PassInfoMixin<NewPass>{
     PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 }
 ```
+
+# Passi di Trasformazione
+
+I passi di trasformazione sono i responsabili dell'ottimizzazione della IR, prendono in ingresso una ir e producono un output ottimizzato secondo i canoni specificati dal passo stesso, modificano quindi il codice per creare una versione migliorata per il processore.
