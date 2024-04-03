@@ -1,6 +1,22 @@
 # Key Points per LLVM
 
-## Struttura LLVM
+<!-- vscode-markdown-toc -->
+
+- 1. [Struttura LLVM](#StrutturaLLVM)
+  - 1.1. [Iteratori:](#Iteratori:)
+  - 1.2. [DownCasting:](#DownCasting:)
+- 2. [Classi importanti](#Classiimportanti)
+  - 2.1. [`PreservedAnalyses`](#PreservedAnalyses)
+- 3. [Pass Manager LLVM](#PassManagerLLVM)
+- 4. [Scrittura di un nuovo passo:](#Scritturadiunnuovopasso:)
+  - 4.1. [1. Creazione della classe](#Creazionedellaclasse)
+    <!-- vscode-markdown-toc-config
+    	numbering=true
+    	autoSave=true
+    	/vscode-markdown-toc-config -->
+    <!-- /vscode-markdown-toc -->
+
+## 1. <a name='StrutturaLLVM'></a>Struttura LLVM
 
 llvm traduce il nostro programma in un modulo operabile dalla sua toolchain, seguendo questa mappatura:
 
@@ -9,7 +25,7 @@ llvm traduce il nostro programma in un modulo operabile dalla sua toolchain, seg
 - Basic Blocks $\rightarrow$ `BasicBlock` (lista di `Instruction`)
 - Istruzioni $\rightarrow$ `Instruction` (singola istruzionea lvl di operazione elementare)
 
-### Iteratori:
+### 1.1. <a name='Iteratori:'></a>Iteratori:
 
 Notiamo quindi che le strutture llvm sono organizzate come liste, una lista di oggetti che a sua volta contiene una lista (`doubleLinkedList`).
 Per attraversare facilmente queste strutture dati possiamo sfruttare gli **Iteratori**.  
@@ -23,7 +39,7 @@ for(auto iter = M.begin(); iter!= M.end(); ++iter){
 }
 ```
 
-### DownCasting:
+### 1.2. <a name='DownCasting:'></a>DownCasting:
 
 Il _DownCastign_ è il processo che consente di convertire un **puntatore** generico (un iteratore) **da** una classe _base_ **a** una classe _derivata_, consentendo l'accesso alle funzionalita specifiche di quella classe derivata.  
 L'operazione di downcastin viene effettuata dalla funzione `dyn_cast<classeDerivata>(ptrClasseBase)`.  
@@ -48,19 +64,19 @@ if (CallInst *call_inst = dyn_cast<CallInst>(inst))
 
 **ATTENZIONE:** Il downcasting è possibile solo tra classi che condividono una gerarchia diretta di ereditarietà! Se si tenta un downcasting senza seguire queste indicazioni `dyn_cast` restituirà un puntatore vuoto.
 
-## Classi importanti
+## 2. <a name='Classiimportanti'></a>Classi importanti
 
-### `PreservedAnalyses`
+### 2.1. <a name='PreservedAnalyses'></a>`PreservedAnalyses`
 
 È una classe utilizzata per indicare quali analisi sono state conservate dopo l'esecuzione di un passo. **Fondamentale** per comunicare al sistema di ottimizzazioni di llvm quali istruzioni siano ancora valide dopo che un passo è stato eseguito, per evitare di continuare nel processo di ottimizzazione con informazioni obsolete.  
 Infatti il metodo `run()` restituisce proprio un oggetto `PreservedAnalyses` per comunicare al passmanager quali analisi siano ancora valide.  
 _Reminder_: il metodo run() contiene il codice relativo a un passo!
 
-## Pass Manager LLVM
+## 3. <a name='PassManagerLLVM'></a>Pass Manager LLVM
 
 Il pass manager si occupa automaticamente di eseguire i passaggi invocati su tutte le funzioni all'interno di un modulo singolo o moduli diversi.
 
-## Scrittura di un nuovo passo:
+## 4. <a name='Scritturadiunnuovopasso:'></a>Scrittura di un nuovo passo:
 
 Per scrivere un nuovo llvm pass bisogna seguire i seguenti passaggi:
 
@@ -80,7 +96,7 @@ clang -O2 -emit-llvm -S -c TEST/file.c -o TEST/file.ll
 
 Maggiori dettagli seguono sotto:
 
-### 1. Creazione della classe
+### 4.1. <a name='Creazionedellaclasse'></a>1. Creazione della classe
 
 Ogni passo da aggiungere deve essere strutturato sotto forma di Classe C++ per scelte progettuali e architetturali di LLVM.  
 Ogni classe che rappresenta un llvm pass, **dovrà** ereditare dalla classe `PassInfoMixin <NomePassaggio>` e implementare la funzione `run`.
