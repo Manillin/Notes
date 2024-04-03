@@ -12,14 +12,6 @@
    - [Creazione della classe](#1-creazione-della-classe)
 5. [Passi di Trasformazione](#passi-di-trasformazione)
 
-## Example
-
-## Example2
-
-## Third Example
-
-## [Fourth Example](http://www.fourthexample.com)
-
 ## Struttura LLVM
 
 llvm traduce il nostro programma in un modulo operabile dalla sua toolchain, seguendo questa mappatura:
