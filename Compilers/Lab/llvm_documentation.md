@@ -1,5 +1,25 @@
 # Key Points per LLVM
 
+# Table of Contents
+
+1. [Struttura LLVM](#struttura-llvm)
+   - [Iteratori](#iteratori)
+   - [Downcasting](#downcasting)
+2. [Classi Importanti](#classi-importanti)
+   - [PreservedAnalyses](#preservedanalyses)
+3. [Pass Manager llvm](#pass-manager-llvm)
+4. [Scrittura di un nuovo passo](#scrittura-di-un-nuovo-passo)
+   - [Creazione della classe](#1-creazione-della-classe)
+5. [Passi di Trasformazione](#passi-di-trasformazione)
+
+## Example
+
+## Example2
+
+## Third Example
+
+## [Fourth Example](http://www.fourthexample.com)
+
 ## Struttura LLVM
 
 llvm traduce il nostro programma in un modulo operabile dalla sua toolchain, seguendo questa mappatura:
