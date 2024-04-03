@@ -74,13 +74,40 @@ Il pass manager si occupa automaticamente di eseguire i passaggi invocati su tut
 
 ## Scrittura di un nuovo passo:
 
-Per scrivere un nuovo llvm pass bisogna seguire i seguenti passaggi:
+Per scrivere un nuovo llvm pass bisogna seguire i seguenti passaggi:  
+(guardare appunti su Lab1 per implementazione concreta).
 
-1. Creare il file Header per la classe che rappresenta il passo
-2. Creare il file Sorgente
-3. Preparare la build
-4. Ricompilare la build
-5. Invocare il passo con opt
+1. Creiamo il file sorgente .cpp con il nome del passo
+   - Nella directory:
+   ```bash
+   llvm/lib/Transforms/Utils/NomePasso.cpp
+   ```
+2. Aggiungiamo il nostro passo al file `CmakeLists.txt`
+   - Nella directory:
+   ```bash
+   llvm/lib/Transforms/Utils/CmakeLists.txt
+   ```
+3. Creiamo il file header .h e inseriamo il codice boilerplate necessario
+   - Nella directory:
+   ```bash
+   llvm/Transforms/Utils/NomePasso.h
+   ```
+4. Scriviamo il codice sorgente del nostro passo e importiamo il file header
+5. Inseriamo il passo in `PassRegistry.def`
+   - Nella directory:
+   ```bash
+   llvm/lib/Passes/PassRegistry.def
+   ```
+6. Inseriamo l'inclusione del file header in `PassBuilder.cpp`
+   - Nella directory:
+   ```bash
+   llvm/lib/Passes/PassBuilder.cpp
+   ```
+7. Invochiamo il nostro passo con `OPT`
+   - Il comando opt sarà contenuto in:
+   ```bash
+   $ROOT/INSTALL/bin/opt
+   ```
 
 </br>
 
