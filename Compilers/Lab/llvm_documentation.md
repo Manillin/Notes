@@ -23,9 +23,9 @@ llvm traduce il nostro programma in un modulo operabile dalla sua toolchain, seg
 
 ### Iteratori:
 
-Notiamo quindi che le strutture llvm sono organizzate come liste, una lista di oggetti che a sua volta contiene una lista (`doubleLinkedList`).
+Notiamo quindi che le strutture llvm sono organizzate come liste, una lista di oggetti che a sua volta contiene un'altra lista (`doubleLinkedList`).
 Per attraversare facilmente queste strutture dati possiamo sfruttare gli **Iteratori**.  
-Tramite un iteratore possiamo navigare tutte le istruzioni di un modulo
+Tramite un iteratore possiamo navigare tutte le funzioni di un modulo
 
 ```c++
 Module &M = ...;
@@ -38,7 +38,7 @@ for(auto iter = M.begin(); iter!= M.end(); ++iter){
 ### DownCasting:
 
 Il _DownCastign_ è il processo che consente di convertire un **puntatore** generico (un iteratore) **da** una classe _base_ **a** una classe _derivata_, consentendo l'accesso alle funzionalita specifiche di quella classe derivata.  
-L'operazione di downcastin viene effettuata dalla funzione `dyn_cast<classeDerivata>(ptrClasseBase)`.  
+L'operazione di downcasting viene effettuata dalla funzione `dyn_cast<classeDerivata>(ptrClasseBase)`.  
 E per poter essere usata risulta necessaria l'inclusione del corretto file di header:
 
 - Instruction $\rightarrow$ CallInst: `include Instruction.h`
