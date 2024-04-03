@@ -152,31 +152,52 @@ Se fatto tutto correttamente dovremmo ottenere un ouptut di questo tipo:
 Estendere il passo `TestPass` di modo che analizzi la IR e stampi alcune informazioni utili per ciascuna delle funzioni che compaiono nel programma di test, in particolare:
 
 1. Nome:
-
-```c++
-F.getName()
-```
-
 2. Numero di argomenti
-
-```c++
-.isVarArg() //returns true if func in vararg
-```
-
 3. Numero di chiamate a funzione dello stesso modulo
-
-```c++
-
-```
-
 4. Numero di basic blocks (BB)
-
-```c++
-
-```
-
 5. Numero di istruzioni
 
-```c++
+## Soluzione esercizio 2:
 
+```c++
+#include "llvm/Transforms/Utils/TestPass.h"
+#include "llvm/IR/Instructions.h"
+
+using namespace llvm;
+
+PreservedAnalyses TestPass::run(Function &F, FunctionAnalysisManager &AM) {
+
+  // calcolo numero basic blocks + numero instructions
+  unsigned n_basicblocks = 0;
+  unsigned n_instructions = 0;
+  unsigned n_functioncalls = 0;
+
+  for (auto iter = F.begin(); iter != F.end(); ++iter) {
+    BasicBlock &B = *iter;
+    n_basicblocks ++ ;
+    for (auto iter2 = B.begin(); iter2 != B.end(); ++iter2) {
+      Instruction &I = *iter2;
+      n_instructions++;
+      // conto chiamate a funzione facendo downcasting:
+      if (CallInst *call_inst = dyn_cast<CallInst>(&I))
+        n_functioncalls++;
+    }
+  }
+
+  // stampa finale
+  errs() << "\n";
+  errs() << "Questa funzione si chiama: " << F.getName() << "\n";
+  errs() << "Numero di parametri della funzione: " << F.arg_size();
+  if (F.isVarArg())
+    errs() << " +*\n";
+  else
+    errs() << "\n";
+
+  errs() << "Numero di chiamate a funzone: " << n_functioncalls << "\n";
+  errs() << "Numero di basic blocks:  " << n_basicblocks << "\n";
+  errs() << "Numero di istruzioni: " << n_instructions << "\n";
+
+  return PreservedAnalyses::all();
+
+}
 ```
