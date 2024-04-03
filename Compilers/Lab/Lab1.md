@@ -201,3 +201,6 @@ PreservedAnalyses TestPass::run(Function &F, FunctionAnalysisManager &AM) {
 
 }
 ```
+
+Una volta compilato il tutto come precedentemente mostrato, se si invoca il passo con `opt` si dovrebbe ottenere un output di questo genere:
+[Output esercizio 2](../../images/sol_esercizio2.png)
