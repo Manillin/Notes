@@ -78,4 +78,26 @@ for (auto Iter = Inst.user_begin(); Iter != Inst.user_end(); ++Iter){
 // Output -> Instruction mul %2, 2 (or -> Value %3)
 ```
 
+### _nota:_ Capire Iteratori, Use e *Op = *It
+
+```c++
+  for (auto *Iter = Inst1st.op_begin(); Iter != Inst1st.op_end(); ++Iter){
+    Value *Operand = *Iter;
+  }
+```
+
+come mai fare `Value *Operand = *Iter;` ? Sappiamo che i puntatori possono essere assegnati solo a indirizzi di memoria, come mai allora sto dereferenziando il puntatore Iter ?  
+Iter è l'iteratore, e contiene ciò che restituisce `.op_begin()`, leggendo la documentazione scopriamo che tale metodo restituisce un oggetto **`Use`**.
+
+L'oggetto USE rappresenta l'utilizzo di un istruzione come operando in un'altra istruzione! Tale oggetto continee un puntatore all'istruzione utlizzata come operando, che è di tipo `*Value`.
+
+```llvm
+%a = load i32, i32* %p
+%b = add i32 %a, 1
+```
+
+l'utilizzo di `%a` come operando nella seconda istruzione (add) è rappresentato da un oggetto `Use` che contiene un puntatore \*Value e che punta proprio all'istruzione load (prima istruzione).
+
+Quindi, quando scrivi Value `*Operand = *Iter;`, stai semplicemente assegnando il puntatore a un oggetto `Value` (ottenuto dereferenziando Iter) alla variabile `Operand`, che è anch'essa un puntatore a un oggetto `Value`.
+
 _nota:_ `.user_begin()` è un metodo ereditato dalla classe `Value` che fornisce una lista di `Users` che usano l'istanza da cui si invoca il metodo come `Value` nel codice sorgente analizzato.
