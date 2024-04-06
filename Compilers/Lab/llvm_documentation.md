@@ -42,7 +42,10 @@ for(auto iter = M.begin(); iter!= M.end(); ++iter){
 ### DownCasting:
 
 Il _DownCastign_ è il processo che consente di convertire un **puntatore** generico (un iteratore) **da** una classe _base_ **a** una classe _derivata_, consentendo l'accesso alle funzionalita specifiche di quella classe derivata.  
-L'operazione di downcasting viene effettuata dalla funzione `dyn_cast<classeDerivata>(ptrClasseBase)`.  
+L'operazione di downcasting viene effettuata dalla funzione `dyn_cast<classeDerivata>(ptrClasseBase)`.
+
+Se questa operazione ha successo, il risultato sarà un puntatore di tipo `classeDerivata*` che punta all'oggetto a cui è stato effettuato il cast, se fallisce ritorna un `nullptr`.
+
 E per poter essere usata risulta necessaria l'inclusione del corretto file di header:
 
 - Instruction $\rightarrow$ CallInst: `include Instruction.h`
