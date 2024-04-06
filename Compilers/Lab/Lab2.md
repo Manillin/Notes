@@ -7,43 +7,75 @@ In questo laboratorio ci concentreremo nei passi di **trasformazione**.
 
 La IR llvm segue canonicamente la forma **SSA** (single static assigment) che prevede che una variabile non possa essere definita più di una volta.
 
-# Relazione User - Use - Value in llvm:
+## User - Use - Value
 
-## Value $\rightarrow$ valore
+Le istruzioni `Instruction` llvm ereditano dalla classe `Value` e dalla classe `User`.
+Quindi possiamo dire che `Instruction` giocano entrambi i ruoli, sia da **User** che da **Usee**.
 
-La classe `Value` è fondamentale per la struttura llvm, un oggetto di questo tipo rappresenta un valore o il risultato di un operazione, infatti avremo che **variabili, costanti e istruzioni** sono tutte istanze di Value.
+### Gerarchia delle classi LLVM
 
-## User $\rightarrow$ istruzione
+```mermaid
+graph LR
+a[Value] --> b[User] --> c[Instruction]
+```
 
-La classe `User` è chiave per llvm, essa eredita dalla classe `Value` e rappresenta un **istruzione che utilizza uno o più Value** come _operandi_.
-Serve per rappresentare un entita che dipende da altri valori o istruzioni per funzionare correttamente.
+## Istruzioni come User
 
-> Un oggetto User rappresneta un istruzione che utilizzano altri Value come operandi.
+Ogni Istruzione è istanza di `User` e ogni User ha una lista di valori che sta utilizzando, che corrispondono agli operandi dell'istruzione (oggetti di tipo `Value`)
 
-Questa classe è responsabile di gestire gli effetti collaterali che un cambiamento nel codice potrebbe causare $\rightarrow$ se un istruzione viene modificata o cancellata, l'istruzione `User` che ne dipendeva verrà gestita per mantenere la corenza nel codice.
+Consideriamo:
 
-## Use $\rightarrow$ instr:value
+```llvm
+%2 = add %1, 0
+```
 
-La classe `Use` rappresenta l'associazione tra un'istruzione `User` e un valore `Value` suo operando.  
-Un oggetto Use è usato quindi per tracciare e gestire le dipendenze tra un'istruzione e i valori che essa utilizza.  
-Ogni istanza di Use rappresenat un collgamento tra un'istruzione User e uno dei sue operandi Value.
+Usando un passo:
 
-## Interazione tra le classi:
+```c++
+User &Inst = ...
+for(Auto Iter = Inst.op_begin(); Iter != Inst.op_end(); ++iter){
+    Value *Operand = *Iter;
+}
 
-La relazione User-Use-Value in llvm mappa le dipendenze tra le istruzioni ed è **fondamentale** per gestire correttamente le **trasformazioni** di codice a seguito di ottimizzazioni al fine di assicurarsi che il progrmam risultante rimanga coerente e corretto.
+// Restituisce i seguenti operandi:
+// %1 ; 0 -> i Value che l'istruzione usa !
+```
 
-### Dipendenza tra istruzioni:
+## Instruction come Usee
 
-Le istruzioni llvm sono costruite a partire della forma SSA ed in modo che ogni istruzione dipenda da altre per funzionare correttamente, questo tipo di dipendenza è rappresentato dalla classe `User`.
+Ogni oggetto instruction è anche un Usee (un 'utilizzato'), infatti avendo:
+
+```llvm
+%2 = add %1,0
+```
+
+Dobbiamo interpretare `%2` come la rappresentazione `Value` dell'istruzione **NON** come il risultato numerico assegnato dall'istruzione.
 
 Es:
 
-```
-x = y + t
+```llvm
+%2 = add %1,0           ;identità algebrica
+%3 = mul %2, 2
 ```
 
-In questo esempio:
+Sia `Inst` una referenza alla prima istruzione:
 
-- `y`, `t` ed `x` sono istanze di `Value` in quanto rappresentano valori
-- `x` è anche istanza di `User` in quanto rappresenta un istruzione che usa altri Value
-- in `x` avremo due istanze `Use`, una x:y e una x:t
+```c++
+//Usato Inst come User:
+for (auto Iter = Inst.op_begin(); Iter != Inst.op_end(); ++Iter) {
+    Value *Operand = *Iter;
+}
+
+// Output -> Operand %1, 0
+
+//-----------------------------------------------
+
+//Usato Inst come Usee (Value):
+for (auto Iter = Inst.user_begin(); Iter != Inst.user_end(); ++Iter){
+    User *InstUser = *Iter;
+}
+
+// Output -> Instruction mul %2, 2 (or -> Value %3)
+```
+
+_nota:_ `.user_begin()` è un metodo ereditato dalla classe `Value` che fornisce una lista di `Users` che usano l'istanza da cui si invoca il metodo come `Value` nel codice sorgente analizzato.

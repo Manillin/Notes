@@ -6,7 +6,11 @@
    - [Iteratori](#iteratori)
    - [Downcasting](#downcasting)
 2. [Classi Importanti](#classi-importanti)
+
    - [PreservedAnalyses](#preservedanalyses)
+   - [Value-User-Use](#relazione-user---use---value-in-llvm)
+   - [Instruction](#instruction)
+
 3. [Pass Manager llvm](#pass-manager-llvm)
 4. [Scrittura di un nuovo passo](#scrittura-di-un-nuovo-passo)
    - [Creazione della classe](#1-creazione-della-classe)
@@ -62,11 +66,70 @@ if (CallInst *call_inst = dyn_cast<CallInst>(inst))
 
 ## Classi importanti
 
-### `PreservedAnalyses`
+## `PreservedAnalyses`
 
 È una classe utilizzata per indicare quali analisi sono state conservate dopo l'esecuzione di un passo. **Fondamentale** per comunicare al sistema di ottimizzazioni di llvm quali istruzioni siano ancora valide dopo che un passo è stato eseguito, per evitare di continuare nel processo di ottimizzazione con informazioni obsolete.  
 Infatti il metodo `run()` restituisce proprio un oggetto `PreservedAnalyses` per comunicare al passmanager quali analisi siano ancora valide.  
 _Reminder_: il metodo run() contiene il codice relativo a un passo!
+
+## Relazione User - Use - Value in llvm:
+
+### Value $\rightarrow$ valore
+
+La classe `Value` è fondamentale per la struttura llvm, un oggetto di questo tipo rappresenta un valore o il risultato di un operazione, infatti avremo che **variabili, costanti e istruzioni** sono tutte istanze di Value.
+Un nodo value ha un tipo (es: Integer, Float, ...) -> `getType()`.  
+Un value può o no avere un nome -> `hasName()`, `getName()`.  
+Un nodo value deve **avere** una lista di Users che lo utilizzano.
+
+### User $\rightarrow$ istruzione
+
+La classe `User` è chiave per llvm, essa eredita dalla classe `Value` e rappresenta un **istruzione che utilizza uno o più Value** come _operandi_.
+Serve per rappresentare un entita che dipende da altri valori o istruzioni per funzionare correttamente.
+
+> Un oggetto User rappresneta un istruzione che utilizzano altri Value come operandi.
+
+Questa classe è responsabile di gestire gli effetti collaterali che un cambiamento nel codice potrebbe causare $\rightarrow$ se un istruzione viene modificata o cancellata, l'istruzione `User` che ne dipendeva verrà gestita per mantenere la corenza nel codice.
+
+### Use $\rightarrow$ instr:value
+
+La classe `Use` rappresenta l'associazione tra un'istruzione `User` e un valore `Value` suo operando.  
+Un oggetto Use è usato quindi per tracciare e gestire le dipendenze tra un'istruzione e i valori che essa utilizza.  
+Ogni istanza di Use rappresenat un collgamento tra un'istruzione User e uno dei sue operandi Value.
+
+## Interazione tra le classi:
+
+La relazione User-Use-Value in llvm mappa le dipendenze tra le istruzioni ed è **fondamentale** per gestire correttamente le **trasformazioni** di codice a seguito di ottimizzazioni al fine di assicurarsi che il progrmam risultante rimanga coerente e corretto.
+
+### Dipendenza tra istruzioni:
+
+Le istruzioni llvm sono costruite a partire della forma SSA ed in modo che ogni istruzione dipenda da altre per funzionare correttamente, questo tipo di dipendenza è rappresentato dalla classe `User`.
+
+Es:
+
+```
+x = y + t
+```
+
+In questo esempio:
+
+- `y`, `t` ed `x` sono istanze di `Value` in quanto rappresentano valori
+- `x` è anche istanza di `User` in quanto rappresenta un istruzione che usa altri Value
+- in `x` avremo due istanze `Use`, una x:y e una x:t
+
+<br>
+
+## `Instruction`
+
+La classe Instruction rappresenta un'istruzione individuale nel codice sorgente llvm, in quanto tale gioca un ruolo fondamentale nella rappresentazione e nella manipolazione del codice IR.
+
+Questa classe eredita da `User` e `Value` ed è istanza di entrambi gli oggetti in quanto è sia un valore (risultato dell'istruzione) che un utlizzatore di valori (usa operandi).
+Es:
+
+```llvm
+%1 = add i32 10, 20
+```
+
+in questo esempio `%1` rappresenta un istruzione di addizione ma anche il valore che ne segue da tale operazione.
 
 ## Pass Manager LLVM
 
