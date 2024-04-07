@@ -32,7 +32,23 @@
 Declaring the first func
 
 ```c++
+bool isAlmostPow2(Value *op, ConstantInt *&CI)
+{
+    if ((CI = dyn_cast<ConstantInt>(op)))
+    {
+        APInt value = CI->getValue();
+        if (value.isPowerOf2())
+            return true;
+        value++;
+        if (value.isPowerOf2())
+            return true;
+        value -= 2;
+        if (value.isPowerOf2())
+            return true;
+    }
 
+    return false;
+}
 ```
 
 ```c++
