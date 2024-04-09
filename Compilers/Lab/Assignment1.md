@@ -27,107 +27,178 @@
    a=b+1, c=a-1 \space \rightarrow \space c = b+1 -1 \space \rightarrow \space c=b
    $$
 
-## Strength Reduction:
-
-Declaring the first func
+## Strength Reduction + helper function:
 
 ```c++
-bool isAlmostPow2(Value *op, ConstantInt *&CI)
+unsigned int getBestShiftValue(uint64_t constVal)
 {
-    if ((CI = dyn_cast<ConstantInt>(op)))
+
+    // verifica se potenza di 2:
+    APInt apInt(32, constVal);
+    if (apInt.isPowerOf2())
     {
-        APInt value = CI->getValue();
-        if (value.isPowerOf2())
-            return true;
-        value++;
-        if (value.isPowerOf2())
-            return true;
-        value -= 2;
-        if (value.isPowerOf2())
-            return true;
+        return apInt.logBase2();
+    }
+    // verifica se potenza di due con offset +1
+    APInt apIntPlusOne(32, constVal + 1);
+    if (apIntPlusOne.isPowerOf2())
+    {
+        return apIntPlusOne.logBase2();
+    }
+    // verifica se potenza di due con differenza di -1
+    APInt apIntMinusOne(32, constVal - 1);
+    if (apIntMinusOne.isPowerOf2())
+    {
+        return apIntMinusOne.logBase2();
     }
 
-    return false;
+    outs() << "Nessuna potenza valida è stata trovata!\n";
+    return 0;
 }
-```
 
-```c++
-bool strengthReduction(BasicBlock &BB)
+bool strengthReduction(Instruction &I)
 {
-    bool loc_changed = false;
-    for (auto &I : BB)
+    if (auto *BinOp = dyn_cast<BinaryOperator>(&I))
     {
-        if (auto *BinOp = dyn_cast<BinaryOperator>(&I))
+        auto OpCode = BinOp->getOpcode();
+        Value *Op1 = I.getOperand(0);
+        Value *Op2 = I.getOperand(1);
+
+        if (ConstantInt *constInt = dyn_cast<ConstantInt>(Op1))
+            std::swap(Op1, Op2);
+
+        if (!isa<ConstantInt>(Op2))
         {
-            auto OpCode = BinOp->getOpcode();
-            if (OpCode != Instruction::Mul && OpCode != Instruction::SDiv)
-                continue;
+            // Op2 non contiene una costante -> errore
+            return false;
+        }
 
-            // Retrieve the operands
-            Value *Op1 = BinOp->getOperand(0);
-            Value *Op2 = BinOp->getOperand(1);
-            ConstantInt *constInt;
+        // DBUG: outs() << "Assegnamento variabili corretto!\n";
+        ConstantInt *constInt = dyn_cast<ConstantInt>(Op2);
+        // calcolo shift value
 
-            // Check which operands holds the Constant intger value
-            // Then check if is power of two (offset w sum or sub accepted)
-            if (!isAlmostPow2(Op1, constInt) && !isAlmostPow2(Op2, constInt))
-                continue;
+        unsigned int shiftValue = getBestShiftValue(constInt->getZExtValue());
+        ConstantInt *shift = ConstantInt::get(constInt->getType(), shiftValue);
 
-            // Ensures to have the (almost) power of two operand in the Op2 variable
-            if (isAlmostPow2(Op1, constInt))
-                std::swap(Op1, Op2);
+        // DBUG: outs() << "shiftValue: " << shiftValue << "\n";
 
-            // Extract the shift value
-            unsigned ShiftVal;
+        Instruction *newInstruction = nullptr;
+        if (OpCode == BinaryOperator::Mul)
+        {
+            if (!Op1)
+            {
+                outs() << "OP1 riferimento nullo\n";
+                return false;
+            }
+            Instruction *shiftLeft =
+                BinaryOperator::Create(Instruction::Shl, Op1, shift);
+
+            // Verifica che shiftLeft sia stato creato correttamente
+            if (!shiftLeft)
+            {
+                outs() << "Errore: impossibile creare shiftLeft\n";
+                return false;
+            }
+            // DBUG: outs() << "shiftLeft:  -> " << *shiftLeft << "\n";
+            shiftLeft->insertAfter(&I);
+
+            // calcolo del resto
+            int64_t operationRest =
+                static_cast<int64_t>(constInt->getZExtValue()) - (1 << shiftValue);
+            outs() << "Triggered Strenght Reduction on " << I << "\n";
+
+            // analisi del resto
+            if (operationRest == 0)
+            {
+                newInstruction = shiftLeft;
+            }
+            else if (operationRest == 1)
+            {
+                newInstruction =
+                    BinaryOperator::Create(BinaryOperator::Add, shiftLeft, Op1);
+                outs() << "newInstruction: " << *newInstruction << "\n";
+                newInstruction->insertAfter(shiftLeft);
+            }
+            else if (operationRest == -1)
+            {
+                newInstruction =
+                    BinaryOperator::Create(BinaryOperator::Sub, shiftLeft, Op1);
+                outs() << "newInstruction: " << *newInstruction << "\n";
+                newInstruction->insertAfter(shiftLeft);
+            }
+            else
+            {
+                // Il resto non è 0, 1 o -1, quindi non eseguire la strength reduction
+                return false;
+            }
+        }
+
+        else if (OpCode == BinaryOperator::UDiv)
+        {
             if (constInt->getValue().isPowerOf2())
             {
-                ShiftVal = constInt->getValue().logBase2();
+                newInstruction = BinaryOperator::Create(Instruction::LShr, Op1, shift);
+                outs() << "newInstruction: " << *newInstruction << "\n";
+                newInstruction->insertAfter(&I);
             }
-            else if (constInt->getValue() + 1 == APInt(constInt->getBitWidth(), 1) << ShiftVal)
-            {
-                ShiftVal = constInt->getValue().logBase2() + 1;
-            }
-            else
-            {
-                ShiftVal = constInt->getValue().logBase2();
-            }
-
-            IRBuilder<> Builder(BinOp);
-            // Create shift and adjustment instructions
-            Value *ShiftInst;
-            if (OpCode == Instruction::Mul)
-            {
-                ShiftInst = Builder.CreateShl(Op1, ShiftVal, "shift");
-            }
-            else
-            {
-                ShiftInst = Builder.CreateLShr(Op1, ShiftVal, "shift");
-            }
-
-            Value *AdjInst = nullptr;
-            if (constInt->getValue() != APInt(constInt->getBitWidth(), 1) << ShiftVal)
-            {
-                if (OpCode == Instruction::Mul)
-                {
-                    AdjInst = Builder.CreateSub(ShiftInst, Op1);
-                }
-                else
-                { // OpCode == Instruction::SDiv
-                    AdjInst = Builder.CreateAdd(ShiftInst, ConstantInt::get(constInt->getType(), 1));
-                }
-            }
-            else
-            {
-                AdjInst = ShiftInst;
-            }
-            BinOp->replaceAllUsesWith(AdjInst);
-            BinOp->eraseFromParent();
-            loc_changed = true;
         }
-    }
-    return loc_changed;
-}
+        if (newInstruction)
+            I.replaceAllUsesWith(newInstruction);
 
+        return newInstruction;
+    }
+    else
+    {
+        return false;
+    }
+}
 ```
 
-spiegazione del codie a seguire (TBD)
+Which gets invoked in this manner:
+
+```c++
+bool runOnBasicBlock(BasicBlock &B)
+{
+    // ottimizzatore punto 2
+    std::vector<Instruction *> toRemove;
+
+    for (auto &I : B)
+    {
+        if (strengthReduction(I))
+        {
+            toRemove.push_back(&I);
+        }
+    }
+
+    // Rimuovi le istruzioni dopo aver completato il ciclo
+    for (auto *I : toRemove)
+    {
+        I->eraseFromParent();
+    }
+    return true;
+}
+
+bool runOnFunction(Function &F)
+{
+    bool Transformed = false;
+
+    for (auto Iter = F.begin(); Iter != F.end(); ++Iter)
+    {
+        if (runOnBasicBlock(*Iter))
+        {
+            Transformed = true;
+        }
+    }
+
+    return Transformed;
+}
+
+PreservedAnalyses LocalOpts::run(Module &M, ModuleAnalysisManager &AM)
+{
+    for (auto Fiter = M.begin(); Fiter != M.end(); ++Fiter)
+        if (runOnFunction(*Fiter))
+            return PreservedAnalyses::none();
+
+    return PreservedAnalyses::all();
+}
+```
