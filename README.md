@@ -3,7 +3,7 @@
 Notes relative to last semester:
 
 ## Compilers:
-- middleEnd a backEnd
+- middleEnd IR code optimization
 - llvm
 ## Tech Web:
 - advanced python 
