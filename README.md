@@ -7,7 +7,7 @@ Notes relative to last semester:
 - llvm
 ## Tech Web:
 - advanced python 
-- djanvo framework and backend
+- django framework and Web backend
 
 ## Software Design:
 - sw design principles and methodologies
