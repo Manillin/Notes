@@ -39,7 +39,7 @@ urlpatterns = [
 ]
 ```
 
-Andando ora in http://127.0.0.1/home/:8000 vedremo il nostro messaggio!
+Andando ora in http://127.0.0.1:8000/home/ vedremo il nostro messaggio!
 Se però torniamo ora su http://127.0.0.1:8000 vedremo un messaggio di errore, scopriremo grazie alla modalità **Debug** che il webserver ritorna status code `404`.
 Scopriamo cosi che se si prova ad accedere a una risorsa non specificata il nostro programma ritorna errore.
 
@@ -97,3 +97,21 @@ Usando il _type enforcement_ diventa possibile accedere direttamente ai parametr
 def welcome_path(request, nome, eta):
     [...]
 ```
+
+Quando si usano i parametri passati tramite URL la chiave del dizionario GET che li contiene è il nome del parametro:
+
+In questo codice si accede al dizionario con kw `num`.
+
+```python
+def pari_dispari(request):
+    if 'num' not in request.GET:
+        return HttpResponse("Non hai inserito un numero")
+    numero = int(request.GET['num'])
+    if numero % 2 == 0:
+        return HttpResponse(f"Il numero {request.GET['num']} è PARI")
+    else:
+        return HttpResponse(f"Il numero {request.GET['num']} è DISPARI")
+```
+
+Un url valido avrà questa forma: `http://127.0.0.1:8000/paridispari?num=5`.
+Un url invalido, dove diamo un nome diverso alla variabile, non chiamerà correttamente la view che gli corrisponde: `http://127.0.0.1:8000/paridispari?parametro=5` $\rightarrow$ il mio valore intero sarà contenuto in request.GET['parametro'], io però dalla view sto accedendo al numero tramite `num`.
