@@ -28,7 +28,7 @@ In breve sono file HTML che possono includere sintassi specifica di Django nel l
 ## DTL: Django Template Library
 
 Il DTL è considerato un vero e proprio linguaggio, che si basa su **blocchi** anziche su tag.
-Un file DTL appare come file sorgente statico ma viene dinamicamente risolto lato server per essere spedito sotto forma di _risultato statico_ all'utente tramite il browser.
+Un file DTL appare come file sorgente statico che viene dinamicamente risolto lato server per essere spedito sotto forma di _risultato statico_ all'utente tramite il browser.
 
 ## Tipo di linguaggio:
 
