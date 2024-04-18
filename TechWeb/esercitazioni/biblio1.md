@@ -152,7 +152,7 @@ Per poter sfruttare le funzionalità da Admin bisogna creare un superutente dell
 python manage.py createsuperuser
 ```
 
-Una volta creato andiamo in `gestione/admin` e scriviamo questo:
+Una volta creato andiamo in `gestione/admin.py` e scriviamo questo:
 
 ```python
 from .models import Libro
@@ -167,3 +167,38 @@ Per ora abbiamo visto come rispondere a richieste `GET` HTTP che si attivano nel
 Abbiamo visto anche come interagire con il DB usando codice Python, è quindi tempo di unire le due cose!
 
 Creaiamo quindi una view e un template in grado di mostrare il contenuto del DB:
+
+**gestione/views.py**
+
+```python
+from django.http import HttpResponse
+from django.shortcuts import render
+from .models import Libro
+
+def listaLibri(request):
+    templ = "gestione/listalibri.html"
+    ctx = {
+        "title": "Lista Libri",
+        "listsalibri": Libro.objects.all() #restituisce una lista
+    }
+    return render(request,template_name=templ, context=ctx)
+```
+
+**gestione/template/gestione/listalibri.html**
+
+```html
+{%extends "base.html"%} {%block head%} {%endblock%} {%block title%} {{title}}
+{%endblock%} {%block content%}
+<center>
+  <h1>{{title}}</h1>
+  {% if listalibri.count > 0 %}
+  <p>Ci sono {{listalibri.count}} libri in questa biblioteca</p>
+  <ul>
+    {% for l in listalibri %}
+    <li>{{ l }}</li>
+    {% endfor %}
+  </ul>
+  ...
+</center>
+{% endblock %}
+```
