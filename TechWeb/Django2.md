@@ -118,7 +118,7 @@ Un url invalido, dove diamo un nome diverso alla variabile, non chiamerà corret
 
 ## Passaggio di parametri: normale vs Type Enforcement
 
-**Attenzione:** Il passaggio di parametri GET cambia se nell'url specificato c'è il `type_enforcement`
+**Attenzione: 1** Il passaggio di parametri GET cambia se nell'url specificato c'è il `type_enforcement`
 Es:
 
 ```python
@@ -141,3 +141,31 @@ def got_param(request, param):
 ```
 
 Mentre nell'altro caso siamo costretti a usare il dizionario GET e controllare che il parametro esista e che sia corretto.
+
+**ATTENZIONE 2:**
+Abbiamo imparato a prendere parametri dalle richieste GET, sappiamo che si possono passare parametri in due modi:
+
+- Senza **_Type Enforcement_** $\righarrow$ https://127.0.0.1/root/?param1=X&param2=Y  
+  In questo modo Django creerà un dizionario accessibile tramite `request.GET` che conterrà i seguenti elementi:
+
+```python
+request.GET = {
+    'param1': 'X',
+    'param2': 'Y'
+}
+```
+
+- Con **_Type Enforcement_** $\righarrow$ https://127.0.0.1/X/Y
+  La condizione per questo caso è che in urls.py sia cosi definito l'url: `root/<str:p1>/<str:p2>`, in questo caso avremo due varaibili `p1` e `p2` con i valori `X` e `Y`.
+  In questo caso il dizionario di request.GET sarà **vuoto!** I parametri diventano direttamente accessibili dalla definizione di funzione con i nomi attribuiti nel url type enforced
+
+  ```python
+
+  request.GET == {} # Il dizionario sarà vuoto!
+
+  # in urls.py -> path('root/<str:p1>/<str:p2>', typeEnforced_urlPath)
+  def typeEnforced_urlPath(request, p1, p2):
+    # in P1 avremo X
+    # in P2 avremo Y
+
+  ```
