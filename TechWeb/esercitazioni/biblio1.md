@@ -242,3 +242,39 @@ Con questo in mente andiamo in: http://127.0.0.1:8000/gestione/listalibri e vedr
 <br><br>
 ![correct url](../../images/path_con_gestione.png)
 <br><br>
+
+## Ulteriori Views:
+
+1. Isoliamo i libri "lunghi", ossia quelli con pagine superiori a 300.
+
+Vogliamo fare una view che filtri dal DB i libri che rispettano tale condizione e mostrare solo tali libri.
+
+view filtrante:
+
+```python
+MATTONE_THRESHOLD = 300
+
+def mattoni(request):
+    templ = "gestione/listalibri.html"
+    lista_filtrata = Libro.objects.filter(pagine__gte=MATTONE_THRESHOLD)
+    # alternativa ugualmente valida:
+    lista_filtrata = Libro.objects.exclude(pagine__lt=ATTONE_THRESHOLD)
+
+    ctx = {
+        'title': 'Lista Libri',
+        'listalibri': lista_filtrata
+    }
+    return render(request, template_name=templ, context=ctx)
+```
+
+Porgiamo particolare attenzione alle due istruzioni che producono la nostra lista filtrata e notiamo pagine\_\_gte | pagine\_\_lt.  
+Queste due istruzioni sono frutto di filtri `QuerySet.filter(...)`
+
+## Django QuerySets:
+
+Le DjangoQuery set sostituiscono le normali Query SQL, per maggiori dettagli: https://docs.djangoproject.com/en/4.0/ref/models/querysets/
+
+**QuerySet.filter()** $\rightarrow$ permettono di filtrare contenuti dal db in base a filtri userdefined, più genericamente:  
+`<nome_attributo>__[gt,lt,gte,lte] = value, ...`
+
+_nota:_ Se per una qualche ragione le QuerySet non dovrebbero bastare si possono comunque usare le raw query SQL, bisogna solo stare attenti in quanto tale istruzione restituisce un elemento `RawQuerySet` che si comporta e interagisce in modo diverso rispetto ai `QuerySet`.
