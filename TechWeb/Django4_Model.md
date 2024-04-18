@@ -40,13 +40,13 @@ Le migrazioni sono il modo in cui Django estende le modifiche fatte sui model di
 
 Tramite Django riusciamo ad esprimere comunque le relazioni tra tabelle, in particolare abbiamo i campi:
 
-- ForeignKey:
-  Rappresenta una relazione $ n \rightarrow 1$ e richiede due argomenti posizionali :
+- **ForeignKey**:
+  Rappresenta una relazione $n \rightarrow 1$ e richiede due argomenti posizionali:
   - la classe Model al quale si riferisce
   - Il parametro `on_delete` per dettare il comportamento della cancellazione.
   - Il parametro `related_name` permette di definire un nome per l'attributo inverso della relazione.
-- ManyToManyField:
+- **ManyToManyField**:
   Rappresenta una relazione many to many $n \rightarrow n$ e richiede un argument posizionale: La classe con la quale si relaziona -> Django crea una tabella intermedia per rappresentare la relazione, effettua una _reificazione_.
 
-- OneToOne:
+- **OneToOne**:
   Rappresenta una relazione one to one $1 \rightarrow 1$, simile al concetto di FK con il parametro `Unique=True`. Viene principalmente usato come PK di un model che estende un altro model.
