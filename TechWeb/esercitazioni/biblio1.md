@@ -202,3 +202,40 @@ def listaLibri(request):
 </center>
 {% endblock %}
 ```
+
+Per rendere effettiva questa view andiamo in `gestione/urls.py`:
+
+```python
+from ...
+from .views import *
+app_name = "gestione"
+
+urlpatterns = [
+    path("listalibri/", listalibri, name="listalibri")
+]
+```
+
+**ATTENZIONE:** Notiamo che la view e il template che abbiamo creato gestisce e interagisce con i `model`, nel nostro caso con il model `Libro`, che è stato ovviamente definito nell'app `gestione/`.
+Come possiamo notare l'url per la view è anch'esso definito in `gestione/`, di conseguenza quando avviamo la nostra webapp se abbiamo fatto le cose bene, il path `/listalibri` definito in gestione/urls.py non sarà visibile dall'esterno, in quanto non è definito negli urls della root della webapp ossia in `biblio/`.
+Per questo motivo precedentemente abbiamo incluso gli urls di `gestione/` dentro gli urls di `biblio/`, specificamente con l'istruzione:
+
+```python
+# biblio/urls.py
+:
+from django.urls import path, include
+urlpatterns = [
+    path(),
+    path('gestione/',include('gestione.urls'))
+    # rende visibili gli urls definiti in gestione/urls.py
+]
+```
+
+In questo modo sarà possibile accedere agli urls della nostra app che gestisce i models e il DB, ma a **_una codizione_**, ossia che prima di cercare urls appartenenti a gestione/urls.py ci vada il prefisso `gestione`.
+
+Es:
+Una volta avviata la webapp notiamo:
+[wrong url](../../images/404_wrong_url_gestione.png)
+I path che cercati sono quelli definit ovviamente in `biblio/urls.py`
+Se inseriamo nella root il path `gestione` rendiamo accessibili anche gli urls definiti nell'app ossia `gestione/urls.py`.
+Con questo in mente andiamo in: http://127.0.0.1:8000/gestione/listalibri e vedremo la nostra view definita precedentemente con il template correttament renderizzato
+[correct url](../../images/path_con_gestione.png)
