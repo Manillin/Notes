@@ -115,3 +115,27 @@ def pari_dispari(request):
 
 Un url valido avrà questa forma: `http://127.0.0.1:8000/paridispari?num=5`.
 Un url invalido, dove diamo un nome diverso alla variabile, non chiamerà correttamente la view che gli corrisponde: `http://127.0.0.1:8000/paridispari?parametro=5` $\rightarrow$ il mio valore intero sarà contenuto in request.GET['parametro'], io però dalla view sto accedendo al numero tramite `num`.
+
+**Attenzione:** Il passaggio di parametri GET cambia se nell'url specificato c'è il `type_enforcement`
+Es:
+
+```python
+urls = [
+    path("test/", get_param, name="get_param"),
+    path("test/<str: param>", enforced_param, name="enforced_param" )
+]
+```
+
+nel primo caso un link valido potrebbe essere: https://127.0.0.1/test/?param=parametro
+se proviamo lo stesso link su quello con type enforcement non verrà eseguita tale funzione! Nel caso del type enforcement non va specificato il parametro, lo si passa semplicemente **come se fosse una parte del path** : https://127.0.0.1/test/contenuto e in questo caso avremo che nella variabile param ci sarà la stringa 'contenuto'.
+
+_reminder:_ Nelle View che usano type enforcement potremmo usare il nome del parametro direttamente nella funzione:
+
+```python
+...
+def got_param(request, param):
+    # generic op con param
+    return ...
+```
+
+Mentre nell'altro caso siamo costretti a usare il dizionario GET e controllare che il parametro esista e che sia corretto.
