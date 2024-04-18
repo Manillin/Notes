@@ -145,7 +145,7 @@ Mentre nell'altro caso siamo costretti a usare il dizionario GET e controllare c
 **ATTENZIONE 2:**
 Abbiamo imparato a prendere parametri dalle richieste GET, sappiamo che si possono passare parametri in due modi:
 
-- Senza **_Type Enforcement_** $\righarrow$ https://127.0.0.1/root/?param1=X&param2=Y  
+- Senza **_Type Enforcement_** $\rightarrow$ https://127.0.0.1/root/?param1=X&param2=Y  
   In questo modo Django creerà un dizionario accessibile tramite `request.GET` che conterrà i seguenti elementi:
 
 ```python
@@ -155,7 +155,7 @@ request.GET = {
 }
 ```
 
-- Con **_Type Enforcement_** $\righarrow$ https://127.0.0.1/X/Y
+- Con **_Type Enforcement_** $\rightarrow$ https://127.0.0.1/X/Y
   La condizione per questo caso è che in urls.py sia cosi definito l'url: `root/<str:p1>/<str:p2>`, in questo caso avremo due varaibili `p1` e `p2` con i valori `X` e `Y`.
   In questo caso il dizionario di request.GET sarà **vuoto!** I parametri diventano direttamente accessibili dalla definizione di funzione con i nomi attribuiti nel url type enforced
 
