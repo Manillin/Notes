@@ -62,5 +62,6 @@ Infatti diremo che un `template` può:
 **_Nota:_** Su Vscode se si edita un file DTL è probabile che intervenga un autoformattatore, se succede il file risulterà errato, **assicurarsi** di salvare i file DTL con: `CMD+k + S` per salvare senza formattare il file.
 
 - **Estendere** un template base
-- **Includere** un template base  
-  note: guardare esempio p.17
+  - Permette di usare variabili di contesto e logica di programmazione
+- **Includere** un template base
+  - Da intendersi come _redera_ questo sub-template e includi il suo HTML generato
