@@ -222,7 +222,6 @@ Per questo motivo precedentemente abbiamo incluso gli urls di `gestione/` dentro
 
 ```python
 # biblio/urls.py
-:
 from django.urls import path, include
 urlpatterns = [
     path(),
@@ -236,7 +235,10 @@ In questo modo sarà possibile accedere agli urls della nostra app che gestisce 
 Es:
 Una volta avviata la webapp notiamo:
 ![wrong url](../../images/404_wrong_url_gestione.png)
+<br><br>
 I path che cercati sono quelli definit ovviamente in `biblio/urls.py`
 Se inseriamo nella root il path `gestione` rendiamo accessibili anche gli urls definiti nell'app ossia `gestione/urls.py`.
 Con questo in mente andiamo in: http://127.0.0.1:8000/gestione/listalibri e vedremo la nostra view definita precedentemente con il template correttament renderizzato
+<br><br>
 ![correct url](../../images/path_con_gestione.png)
+<br><br>
