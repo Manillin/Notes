@@ -116,6 +116,8 @@ def pari_dispari(request):
 Un url valido avrà questa forma: `http://127.0.0.1:8000/paridispari?num=5`.
 Un url invalido, dove diamo un nome diverso alla variabile, non chiamerà correttamente la view che gli corrisponde: `http://127.0.0.1:8000/paridispari?parametro=5` $\rightarrow$ il mio valore intero sarà contenuto in request.GET['parametro'], io però dalla view sto accedendo al numero tramite `num`.
 
+## Passaggio di parametri: normale vs Type Enforcement
+
 **Attenzione:** Il passaggio di parametri GET cambia se nell'url specificato c'è il `type_enforcement`
 Es:
 
