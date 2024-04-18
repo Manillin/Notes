@@ -1,6 +1,7 @@
 # Esercitazione 1: Biblio
 
 Creazione di una webapp per la gestione di libri per una biblioteca.
+Git del progetto: https://git.hipert.unimore.it/ncapodieci/techweb/-/tree/main/django/biblio/biblio?ref_type=heads
 
 ## Richiami di teoria:
 
