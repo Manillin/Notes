@@ -32,7 +32,7 @@ _static_ -> un campo statico ha tempo di vita pari al programma, nasce indipende
 
 Tipi di operazioni:
 
-- chiamiamo **Query** le operazioni che servono a recuperare lo stato dell'oggetto (lettura)
+- chiamiamo **Query** xle operazioni che servono a recuperare lo stato dell'oggetto (lettura)
 - chiamiamo **Modifiers** le op che modificano lo stato dell'oggetto (scrittura)
 
 code smell: se ci sono piu di 4 o 5 parametri in una funzione --> attenzioneeee (un buon upperbound: 3) -> vuol dire che quella classe sta facendo troppo e ha troppe responsabilità, manutenzione diventerbbe difficilissimo.
@@ -44,3 +44,5 @@ code smell: se ci sono piu di 4 o 5 parametri in una funzione --> attenzioneeee 
 3. composizione
 
 check i TRL! -> es nasa
+
+sla -> service level agreement (serve per testare il prototipo secondo standard)
