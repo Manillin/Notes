@@ -278,3 +278,5 @@ Le DjangoQuery set sostituiscono le normali Query SQL, per maggiori dettagli: ht
 `<nome_attributo>__[gt,lt,gte,lte] = value, ...`
 
 _nota:_ Se per una qualche ragione le QuerySet non dovrebbero bastare si possono comunque usare le raw query SQL, bisogna solo stare attenti in quanto tale istruzione restituisce un elemento `RawQuerySet` che si comporta e interagisce in modo diverso rispetto ai `QuerySet`.
+
+## Aggiunta entries nel DB:
