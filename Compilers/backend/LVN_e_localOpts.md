@@ -2,13 +2,13 @@
 
 ## Scope dell'Ottimizzazione :
 
-1. Ottimizzazione Locale:
+1. **Ottimizzazione Locale:**
    Lavora entro un singolo BB e non si preoccupa del flusso di controllo
 
-2. Ottimizzazione Globale:
+2. **Ottimizzazione Globale:**
    Lavora all'interno dell'intero CFG (Control Flow Graph)
 
-3. Ottimizzazione interprocedurale:
+3. **Ottimizzazione interprocedurale:**
    Lavora a livello del call graph e lavora sul CFG di più funzioni.
 
 ### Dead code Elimination:
