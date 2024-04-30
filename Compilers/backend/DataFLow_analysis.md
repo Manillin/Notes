@@ -88,4 +88,46 @@ _Es:_
 
 ## Flow Graph:
 
-Per fare uno schema della Data Flow Analysis usiamo un **Flow Graph**
+![flow graph](../../images/flowGraph.png)
+
+Per fare uno schema della Data Flow Analysis usiamo un **Flow Graph:**
+
+- Aggiungiamo un entry BB e un exit BB (single entry ed exit point)
+- Definiamo un insieme di **equazioni** per tutti i basic blocks $b$:
+  - **funzioni di ingresso e uscita** $\rightarrow$ $in[b]$ e $out[b]$
+  - **funzioni di trasferimento** $\rightarrow$ $f_b$:  
+    Correla un $in[b]$ e $out[b]$ di uno specifico bb per determinare l'effetto del codice in tale BB.
+  - **funzione controllo flusso** $\rightarrow$ $out[b]$ con $in[b]$:  
+    Determina l'effetto che causa il controllo di flusso nel programma e quindi correla $out[b_1]$ con $in[b_2]$ se $b_1$ e $b_2$ sono adiacenti (retroattivo).
+
+## Effetti di uno statement e Formule:
+
+Dato uno statement $s$ $\rightarrow$ `d: x = y + z` definiamo:
+
+### Funzione di Trasferimento di uno Statement: $out[s]$
+
+$out[s] = f_s(in[s]) = Gen[s] \cup (in[s]-Kill[s])$
+
+- **Definizioni Generate**: $Gen[s] = \{d\}$
+- **Definizioni Propagate**: $in[s] - Kill[s]$, dove:
+  - $Kill[s]$ sono le altre definizioni di `x` nel resto dell'intero programma, incluse anche quelle future.
+
+### Funzione di trasferimento di un Basic Block: $out[B]$
+
+La funzione di trasferimento di un BB è la **composizione** delle funzioni di trasferimento di **tutti** gli statement in $B$.
+Prendiamo come esempio questo BB:
+![BB Esempio](../../images/BB_esempio.png)
+
+$out[B] = f_B(in[B]) = f_{d2}\cdot f_{d1}\cdot f_{d0}$
+
+$$
+\text{Gen}[d2] \cup \left(\text{Gen}[d1] \cup \left(\text{Gen}[d0] \cup \left(\text{in}[B] - \text{Kill}[d0]\right)\right) - \text{Kill}[d1]\right) - \text{Kill}[d2]
+
+
+$$
+
+$$
+= \text{Gen}[d2] \cup \left(\text{Gen}[d1] \cup \left(\text{Gen}[d0] - \text{Kill}[d1]\right) - \text{Kill}[d2]\right) \cup \text{in}[B] - \left(\text{Kill}[d0] \cup \text{Kill}[d1] \cup \text{Kill}[d2]\right)
+
+
+$$
