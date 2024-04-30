@@ -118,7 +118,9 @@ La funzione di trasferimento di un BB è la **composizione** delle funzioni di t
 Prendiamo come esempio questo BB:
 ![BB Esempio](../../images/BB_esempio.png)
 
-$out[B] = f_B(in[B]) = f_{d2}\cdot f_{d1}\cdot f_{d0}$
+$$
+out[B] = f_B(in[B]) = f_{d2}\cdot f_{d1}\cdot f_{d0} =
+$$
 
 $$
 \text{Gen}[d2] \cup \left(\text{Gen}[d1] \cup \left(\text{Gen}[d0] \cup \left(\text{in}[B] - \text{Kill}[d0]\right)\right) - \text{Kill}[d1]\right) - \text{Kill}[d2]
@@ -131,3 +133,62 @@ $$
 
 
 $$
+
+$$
+= Gen[B] \cup (in[B] - Kill[B])
+
+
+$$
+
+### In particolare avremo:
+
+$Gen[B]$ conterrà le definzioni **localmente disponibili** (@ fine di BB).  
+$Kill[B]$ conterrà l'insieme delle **definzioni uccise** da B (in tutto il programma )
+
+---
+
+### Grafi Aciclici:
+
+**Nodo di Unione**: Un nodo con predecessori multipli:
+
+- Operatore di **meet**:
+  $in[B] = out[p_1] \cup out[p_2] \cup ... \cup out[p_n]$ .  
+  Dove $p_1, ..., p_n$ sono tutti i **predecessori** di $B$
+
+### Grafi Ciclici
+
+![grafo ciclico](../../images/grafo_ciclico.png)
+
+In questo caso le equazioni valgono ancora:
+
+- $out[B] = f_B(in[B])$
+- $in[B] = out[p_1] \cup out[p_2] \cup ... \cup out[p_n]$
+
+<u>**Attenzione:</u>** I _backedges_ possono **cambiare** le equazioni di $out[B]$, per questo motivo di itera fino a raggiungere la convergenza.
+
+## Reaching Definitions: Algoritmo Iteraivo
+
+```python
+Input -> CFG = (N, E, Entry, Exit)
+
+out[Entry] = None
+
+for all nodes i:
+    out[i] = /
+# Worlist -> contiene variabili che devono essere ancora processate
+ChangedNodes = None
+
+# iterate
+
+
+while ChangedNodes != None:         # quando la worklist termina usciamo
+    i = ChangedNodes.pop()
+    In[i] = U (out[p]) # for all predecessors p of i
+    oldOut = f_i(In[i])
+    if(oldOut != out[i]):
+        for all successors 's' of i:
+            ChangedNodes.append('s')
+
+# Quando raggiungiamo questo punto:
+Convergenza raggiunta!
+```
