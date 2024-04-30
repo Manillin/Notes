@@ -4,7 +4,7 @@
 
 1. [Data Flow Analysis](#data-flow-analysis-dfa)
 2. [Reaching Definitions e Flow Graph](#reaching-definitions)
-3. [Liveness Analysis]()
+3. [Liveness Analysis](#liveness-analysis)
 4. [Generalizzazione ]()
 
 # Tipi di Analisi:
@@ -181,7 +181,7 @@ ChangedNodes = None
 # iterate
 
 
-while ChangedNodes != None:         # quando la worklist termina usciamo
+while ChangedNodes != None:         # Quando la worklist termina usciamo
     i = ChangedNodes.pop()
     In[i] = U (out[p]) # for all predecessors p of i
     oldOut = f_i(In[i])
@@ -192,3 +192,38 @@ while ChangedNodes != None:         # quando la worklist termina usciamo
 # Quando raggiungiamo questo punto:
 Convergenza raggiunta!
 ```
+
+# Liveness Analysis:
+
+### Definizione:
+
+Una variabile `v`è viva **(live)** in un punto $p$ del programma se:
+
+- Il valore di `v` è usata lungo _qualche_ percorso del FlowGraph a partire da $p$.
+
+Altrimenti la variabile è da considerarsi come morta **(dead)**
+
+### Mortivazione:
+
+Essenziale per la **Register Allocation**
+
+## Funzione di Trasferimento:
+
+La funzione di trasferimento traccia gli usi **all'indietro** fino alle definizioni, e diremo:
+
+Un Basic Block $B$ può:
+
+- generare variabili vive: $use[B]$
+- propagare variabili vive in ingresso: $out[B] - def[B]$
+  - dove $def[B]$ è l'insieme delle variabili definite in $B$
+
+**Funzione di Trasferimento** $\rightarrow$ $in[B] = use[B] \cup (out[B]- def[B])$
+
+- dove: $f_B\rightarrow use[B] \cup (out[B]-def[B])$
+
+---
+
+### Altre definizioni:
+
+**Join Node:** Consiste in un nodo con _successori multipli_.  
+**Meet Operator:** $out[B] = in[s_1] \cup in[s_2] \cup ... \cup in[s_n]$, dove $s_n$ sono successori di $B$.
