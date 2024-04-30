@@ -213,8 +213,8 @@ La funzione di trasferimento traccia gli usi **all'indietro** fino alle definizi
 
 Un Basic Block $B$ può:
 
-- generare variabili vive: $use[B]$
-- propagare variabili vive in ingresso: $out[B] - def[B]$
+- **generare variabili** vive: $use[B]$
+- **propagare variabili** vive in ingresso: $out[B] - def[B]$
   - dove $def[B]$ è l'insieme delle variabili definite in $B$
 
 **Funzione di Trasferimento** $\rightarrow$ $in[B] = use[B] \cup (out[B]- def[B])$
