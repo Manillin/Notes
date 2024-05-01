@@ -227,3 +227,7 @@ Un Basic Block $B$ può:
 
 **Join Node:** Consiste in un nodo con _successori multipli_.  
 **Meet Operator:** $out[B] = in[s_1] \cup in[s_2] \cup ... \cup in[s_n]$, dove $s_n$ sono successori di $B$.
+
+![CFG Liveness Analysis](../../images/CFG_LA.png)
+
+## Liveness: Algoritmo Iterativo:
