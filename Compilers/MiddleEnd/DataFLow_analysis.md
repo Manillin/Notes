@@ -3,9 +3,9 @@
 # Table of Contents:
 
 1. [Data Flow Analysis](#data-flow-analysis-dfa)
-2. [Reaching Definitions e Flow Graph](#reaching-definitions)
+2. [Reaching Definitions](#reaching-definitions)
 3. [Liveness Analysis](#liveness-analysis)
-4. [Available Expressions]()
+4. [Available Expressions](#available-expressions)
 
 # Tipi di Analisi:
 
@@ -102,7 +102,7 @@ Per fare uno schema della Data Flow Analysis usiamo un **Flow Graph:**
 
 ## Effetti di uno statement e Formule:
 
-Dato uno statement $s$ $\rightarrow$ `d: x = y + z` definiamo:
+Dato uno statement $s$ $\rightarrow$ `d: x = y + z`
 
 ### Funzione di Trasferimento di uno Statement: $out[s]$
 
@@ -245,15 +245,60 @@ Convergenza raggiunta!
 
 ## Framework
 
-|                         |                     **Reaching Definitions**                     |                          **Live Variables**                           |
-| :---------------------: | :--------------------------------------------------------------: | :-------------------------------------------------------------------: |
-|         Domain          |                       Sets of definitions                        |                           Sets of variables                           |
-|        Direction        | Forward: <br> $out[b]=f_b(in[b])$ <br> $in[b]= sps out[pred(b)]$ | Backward: <br> $in[b] = f_b(out[b])$ <br> $out[b] = spsp in[succ(b)]$ |
-|    Transfer Function    |                   $f_b=gen_b \cup (k-kill_b)$                    |                      $f_b=Use_b \cup (x-def_b)$                       |
-|     Meet Operation      |                              $\cup$                              |                                $\cup$                                 |
-|   Boundary Conditions   |                         $out[entry] = O$                         |                            $in[exit] = O$                             |
-| Initial Interior Points |                           $out[b] = O$                           |                              $in[b] = O$                              |
+|                         |                         **Reaching Definitions**                         |                              **Live Variables**                               |
+| :---------------------: | :----------------------------------------------------------------------: | :---------------------------------------------------------------------------: |
+|         Domain          |                           Sets of definitions                            |                               Sets of variables                               |
+|        Direction        | Forward: <br> $out[b]=f_b(in[b])$ <br> $in[b]=\wedge\space out[pred(b)]$ | Backward: <br> $in[b] = f_b(out[b])$ <br> $out[b] = \wedge\space in[succ(b)]$ |
+|    Transfer Function    |                 $f_b(in[b])=gen_b \cup (in[b]-kill[b])$                  |                   $f_b(out[b])=Use_b \cup (out[b]-def[b])$                    |
+|     Meet Operation      |                                  $\cup$                                  |                                    $\cup$                                     |
+|   Boundary Conditions   |                         $out[entry] =\emptyset$                          |                            $in[exit] = \emptyset$                             |
+| Initial Interior Points |                           $out[b] = \emptyset$                           |                              $in[b] = \emptyset$                              |
 
 <br><br><br>
 
 # Available Expressions:
+
+Direzione dell'analisi $\rightarrow$ **In Avanti (Forward)**
+Le Available Expressions ci permettono di ragionare in modo rigoroso sul problema legato alla **ridondanza**.
+Nel DataFlow delle available expressions ci interessano tutte e sole le espressioni binarie di tipo $\rightarrow$ $e = x\bigoplus y$.
+
+## Terminologia:
+
+- Un'espressione $x\bigoplus y$ è **available** in un punto $p$ del programma se **_ogni_** percorso che parte dal blocco ENTRY e arriva al punto $p$ valuta l'espressione $x\bigoplus y$
+- Un blocco genera l'espressione $x\bigoplus y$ se valuta $x\bigoplus y$ e non ridefinisce in seguto $x$ o $y$
+- Un blocco uccide l'espressione $x\bigoplus y$ se assegna un valore a $x$ o $y$ e non ricalcola successivamente $x\bigoplus y$
+
+Es:
+
+```python
+x = y + 1   # Generates 'y+1'
+y = m + n   # Generates 'm+n' and Kills 'y+1'
+```
+
+### Equazioni e Transfer Function :
+
+$$
+f_B = gen_B \cup (x-kill_B)
+$$
+
+Equazione **OUT** $\rightarrow$ $out[B] = f_B(in[B])$
+
+Equazione **IN** $\rightarrow$ $in[B] = \wedge_{p\in pred(B)}(out[p])$
+
+- dove l'operatore di meet è $\rightarrow \cap$
+  <br><br>
+
+### Punti importanti per l'algoritmo:
+
+**Boundary Condition:** $\rightarrow out[ENTRY] = \emptyset$
+
+**Initial Interior Points:** $\rightarrow out[B_i] = U\space\space$ (dove $U\rightarrow$ Universal Set)
+
+|                           |                    **Available Expressions**                     |
+| :-----------------------: | :--------------------------------------------------------------: |
+|          Domain           |                       Sets of Expressions                        |
+|         Direction         | Forward:<br> $out[B]=f_b(in[B])$ <br>$in[B]=\wedge out[pred(B)]$ |
+|     Transfer Function     |            $f_b(in[b]) = gen[B] \cup (in[b]-kill[B])$            |
+| Meet Operation $(\wedge)$ |                              $\cap$                              |
+|    Boundary Conditions    |                     $out[ENTRY] = \emptyset$                     |
+|  Initial Interior Points  |                   $out[B] = U$ (universal set)                   |
