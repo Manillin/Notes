@@ -5,7 +5,7 @@
 1. [Data Flow Analysis](#data-flow-analysis-dfa)
 2. [Reaching Definitions e Flow Graph](#reaching-definitions)
 3. [Liveness Analysis](#liveness-analysis)
-4. [Generalizzazione ]()
+4. [Available Expressions]()
 
 # Tipi di Analisi:
 
@@ -197,7 +197,7 @@ Una variabile `v`è viva **(live)** in un punto $p$ del programma se:
 
 Altrimenti la variabile è da considerarsi come morta **(dead)**
 
-### Mortivazione:
+### Motivazione:
 
 Essenziale per la **Register Allocation**
 
@@ -207,8 +207,8 @@ La funzione di trasferimento traccia gli usi **all'indietro** fino alle definizi
 
 Un Basic Block $B$ può:
 
-- **generare variabili** vive: $use[B]$
-- **propagare variabili** vive in ingresso: $out[B] - def[B]$
+- **generare variabili vive**: $use[B]$
+- **propagare variabili vive**: $out[B] - def[B]$
   - dove $def[B]$ è l'insieme delle variabili definite in $B$
 
 **Funzione di Trasferimento** $\rightarrow$ $in[B] = use[B] \cup (out[B]- def[B])$
@@ -225,3 +225,35 @@ Un Basic Block $B$ può:
 ![CFG Liveness Analysis](../../images/CFG_LA.png)
 
 ## Liveness: Algoritmo Iterativo:
+
+```python
+# Boundary Condition
+in[Exit] = O
+
+# Initialization fro iterative algorithm
+for each BasicBlock B other than Exit
+  in[B] = O
+
+# Iterative part
+while(Changes to any in[] occur):
+  for each BB B other than Exit:
+    out[B] = U (in[s]) # for all successors s of B
+    in[B] = f_b(out[B])
+
+Convergenza raggiunta!
+```
+
+## Framework
+
+|                         |                     **Reaching Definitions**                     |                          **Live Variables**                           |
+| :---------------------: | :--------------------------------------------------------------: | :-------------------------------------------------------------------: |
+|         Domain          |                       Sets of definitions                        |                           Sets of variables                           |
+|        Direction        | Forward: <br> $out[b]=f_b(in[b])$ <br> $in[b]= sps out[pred(b)]$ | Backward: <br> $in[b] = f_b(out[b])$ <br> $out[b] = spsp in[succ(b)]$ |
+|    Transfer Function    |                   $f_b=gen_b \cup (k-kill_b)$                    |                      $f_b=Use_b \cup (x-def_b)$                       |
+|     Meet Operation      |                              $\cup$                              |                                $\cup$                                 |
+|   Boundary Conditions   |                         $out[entry] = O$                         |                            $in[exit] = O$                             |
+| Initial Interior Points |                           $out[b] = O$                           |                              $in[b] = O$                              |
+
+<br><br><br>
+
+# Available Expressions:
