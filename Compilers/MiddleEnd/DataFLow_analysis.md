@@ -119,25 +119,19 @@ Prendiamo come esempio questo BB:
 ![BB Esempio](../../images/BB_esempio.png)
 
 $$
-out[B] = f_B(in[B]) = f_{d2}\cdot f_{d1}\cdot f_{d0} =
+out[B] = f_B(in[B]) = f_{d2}\cdot f_{d1}\cdot f_{d0}(in[B]) =
 $$
 
 $$
-\text{Gen}[d2] \cup \left(\text{Gen}[d1] \cup \left(\text{Gen}[d0] \cup \left(\text{in}[B] - \text{Kill}[d0]\right)\right) - \text{Kill}[d1]\right) - \text{Kill}[d2]
-
-
+Gen[d_2] \cup (Gen[d_1] \cup (Gen[d_0] \cup (in[B] - Kill[d_0]))-Kill[d_1]) - Kill[d_2]
 $$
 
 $$
-= \text{Gen}[d2] \cup \left(\text{Gen}[d1] \cup \left(\text{Gen}[d0] - \text{Kill}[d1]\right) - \text{Kill}[d2]\right) \cup \text{in}[B] - \left(\text{Kill}[d0] \cup \text{Kill}[d1] \cup \text{Kill}[d2]\right)
-
-
+Gen[d_2] \cup (Gen[d_1] \cup (Gen[d_0]-Kill[d_1])- Kill[d_2])\cup in[B] -(Kill[d_0] \cup Kill[d_1] \cup Kill[d_2])
 $$
 
 $$
 = Gen[B] \cup (in[B] - Kill[B])
-
-
 $$
 
 ### In particolare avremo:
