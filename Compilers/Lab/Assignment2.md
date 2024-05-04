@@ -3,11 +3,7 @@
 ### Problem Definition:
 
 - Determine at which points in the program the variables have a constant value
-<<<<<<< HEAD
-- Calculate for each node of the CFG a set $\<var, constant\_{value}\>$
-=======
 - Calculate for each node of the CFG a set $\space\lt var, const \gt$
->>>>>>> 4b82b3c (change in latec expressions parsing)
 
 ### Motivation:
 
