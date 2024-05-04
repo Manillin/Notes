@@ -3,7 +3,7 @@
 ### Problem Definition:
 
 - Determine at which points in the program the variables have a constant value
-- Calculate for each node of the CFG a set $<var, constant\_{value}>$
+- Calculate for each node of the CFG a set $\<var, constant\_{value}\>$
 
 ### Motivation:
 
