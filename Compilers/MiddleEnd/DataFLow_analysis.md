@@ -106,7 +106,7 @@ Dato uno statement $s$ $\rightarrow$ `d: x = y + z`
 
 ### Funzione di Trasferimento di uno Statement: $out[s]$
 
-$out[s] = f_s(in[s]) = Gen[s] \cup (in[s]-Kill[s])$
+$$out[s] = f_s(in[s]) = Gen[s] \cup (in[s]-Kill[s])$$
 
 - **Definizioni Generate**: $Gen[s] = \{d\}$
 - **Definizioni Propagate**: $in[s] - Kill[s]$, dove:
