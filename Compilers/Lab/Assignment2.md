@@ -144,3 +144,9 @@ while(changes to ant out[] occur):
 |  $in[EXIT]$  | $\{(a,4),(b,2),(y,8)\}$ |
 
 No changes occurred on the third iteration $\rightarrow$ we reached convergence and terminate the algorithm
+
+latex changes and test:
+
+$brackets \rightarrow { miao }$
+$esc brakcets \rightarow \{miao\}$
+$overkill brakcets \rightarow $\{\ miao\}\ 4$
