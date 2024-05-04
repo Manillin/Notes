@@ -3,7 +3,11 @@
 ### Problem Definition:
 
 - Determine at which points in the program the variables have a constant value
+<<<<<<< HEAD
 - Calculate for each node of the CFG a set $\<var, constant\_{value}\>$
+=======
+- Calculate for each node of the CFG a set $\space\lt var, const \gt$
+>>>>>>> 4b82b3c (change in latec expressions parsing)
 
 ### Motivation:
 
@@ -19,7 +23,7 @@
 
 |                           |                        **Constant Propagation**                        |
 | :-----------------------: | :--------------------------------------------------------------------: |
-|          Domain           |                         set of: $<var, const>$                         |
+|          Domain           |                      set of $\lt var, const \gt$                       |
 |         Direction         | Forward:<br>$out[B]=f_B(in[B])$ <br> $in[B]=\wedge\space out[pred(B)]$ |
 |     Transfer Function     |               $f_B(in[B])=gen[B] \cup (in[B] - kill[B])$               |
 | Meet Operation $(\wedge)$ |                  $\cap\space\rightarrow$ Intersezione                  |
@@ -134,10 +138,10 @@ while(changes to ant out[] occur):
 |   $in[B2]$   |       $\{(k,2)\}$       |
 |  $out[B2]$   | $\{(a,4),(x,5),(k,2)\}$ |
 |   $in[B3]$   |       $\{(k,2)\}$       |
-|  $out[B3]$   | \{(a,4),(x,8),(k,2)\}$  |
-|   $in[B4]$   |    \{(a,4),(k,2)\}$     |
-|  $out[B4]$   |    \{(a,4),(k,4)\}$     |
-|   $in[B5]$   |        \{(a,4)\}        |
+|  $out[B3]$   | $\{(a,4),(x,8),(k,2)\}$ |
+|   $in[B4]$   |    $\{(a,4),(k,2)\}$    |
+|  $out[B4]$   |    $\{(a,4),(k,4)\}$    |
+|   $in[B5]$   |       $\{(a,4)\}$       |
 |  $out[B5]$   | $\{(a,4),(b,2),(y,8)\}$ |
 |   $in[B6]$   | $\{(a,4),(b,2),(y,8)\}$ |
 |  $out[B6]$   | $\{(a,4),(b,2),(y,8)\}$ |
