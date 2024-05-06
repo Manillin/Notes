@@ -28,3 +28,18 @@ instruction.args -> operandi
 instruction.dest -> destinazione
 
 ridondanza -> passare lo stesso valore attraverso più variabili
+
+# Code motion
+
+### Condizioni di code motion:
+
+- correttezza: lo spostamento del codice non altera la semantica del programma
+- performance: l'esecuzione del codice non rallenta
+
+_nota:_ Queste condizioni sono valide per tutte le trasformazioni
+
+- **Idea di base**: l'istruzione candidata per la code motion definisce la varia ile nel suo LHS una volta e per tutte nel loop.
+
+bisogna sempre verificare la condizione di dominanaza delle uscite, altrimenti si rischia di alterare la semantica del programma es: iteratore che potrebbe avere un valore superiore alla variabile di controllo non si entra nel ciclo e quindi la definizione interna non viene eseguita -> spostarla fuori rompererebbe la semantica.
+
+-> Dobbiamo determinare il dominance tree
