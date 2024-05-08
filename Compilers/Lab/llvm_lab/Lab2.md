@@ -81,9 +81,9 @@ for (auto Iter = Inst.user_begin(); Iter != Inst.user_end(); ++Iter){
 ### _nota:_ Capire Iteratori, Use e *Op = *It
 
 ```c++
-  for (auto *Iter = Inst1st.op_begin(); Iter != Inst1st.op_end(); ++Iter){
+for (auto *Iter = Inst1st.op_begin(); Iter != Inst1st.op_end(); ++Iter){
     Value *Operand = *Iter;
-  }
+}
 ```
 
 come mai fare `Value *Operand = *Iter;` ? Sappiamo che i puntatori possono essere assegnati solo a indirizzi di memoria, come mai allora sto dereferenziando il puntatore Iter ?  
