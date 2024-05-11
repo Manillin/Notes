@@ -4,7 +4,7 @@ Ricordiamo che i `Loop` sono fondamentali pre i passi di ottimizzazione MiddleEn
 
 **Obiettivo:** $\rightarrow$ Definire un Loop in termini di `GraphTheory` (CFG)
 
-## Definizione di Loop:
+## Definizione di Loop:
 
 Singolo ENTRY Point e gli archi devono formare almeno un ciclo
 
@@ -71,3 +71,9 @@ Un Loop naturale ha le seguenti caratteristiche:
 ### PreHeader:
 
 Le ottimizzazioni sui loop prevedono che venga eseguito del codice prima di entrare nel loop, a questo scopo si crea un blocco _PreHeader_ per ogni loop.
+
+## UD-DU Chains:
+
+- **UD-Chain(Use - Definition):** È il collegamento di una **Definizione** con i suoi **usi**.
+
+- **DU-Chain(Definition - Use):** Collegano un **uso** alla sua definizione $\rightarrow$ dato un uso (es., operando) grazie alla forma SSA è facile trovare la sua _reaching definition_
