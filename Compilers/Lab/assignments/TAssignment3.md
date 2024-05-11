@@ -1,8 +1,6 @@
-# Teoria Terzo Assignment
-
 # Loop Invariant Code Motion:
 
-Un passo che implementa questa ottimizzazione permette di spostarel e istruzione che non dipendono dal control flow del loop fuori dal loop stesso, in modo da evitare di ricalcolare ridondantemente la stessa istruzione.  
+Un passo che implementa questa ottimizzazione permette di spostare le istruzione che non dipendono dal control flow del loop fuori dal loop stesso, in modo da evitare di ricalcolare ridondantemente la stessa istruzione.  
 Essendo il grosso della computazione di un programma contenuta nei loop, questo passo permette di fare miglioramenti di performance significativi.
 
 ```c++
@@ -39,7 +37,7 @@ Es:
 
 ![loop-invariant in loop](../../../images/loopInvariantInLoop.png)
 
-## Condizioni per la Code Motion:
+### Condizioni per la Code Motion:
 
 - **Correttezza:** Lo spostamento del codice non altera la semantica del programma.
 - **Performance:** L'esecuzione del codice non è rallentata
@@ -51,10 +49,10 @@ Es:
 3.  Calcolare i dominatori $\rightarrow$ _DominanceTree_
 4.  Trovare le **uscite** del loop (successori fuori dal loop)
 
-Quindi in conclusione possiamo dire che **_le istruzioni candidate alle code motion:_**
+Quindi in conclusione possiamo dire che <u>**_le istruzioni candidate alle code motion:_**</u>
 
 - Sono Loop Invariant
-- Si trovano in blocchi che **dominano** _tutte_ le uscite del loop **oppure** la variabile definita dall'istruzione candidata è `dead-code` all'uscita del loop.
+- Si trovano in blocchi che **dominano** _tutte_ le uscite del loop **oppure** la variabile definita dall'istruzione candidata è `dead-code` all'uscita dal loop.
 - Definiscono variabili non assegnate altrove nel loop
 - Si trovano in blocchi che dominano **tutti** i blocchi nel loop che usano la variabile a cui sta assegnado un valore l'istruzione candidata.
 
