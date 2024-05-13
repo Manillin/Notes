@@ -43,3 +43,10 @@ _nota:_ Queste condizioni sono valide per tutte le trasformazioni
 bisogna sempre verificare la condizione di dominanaza delle uscite, altrimenti si rischia di alterare la semantica del programma es: iteratore che potrebbe avere un valore superiore alla variabile di controllo non si entra nel ciclo e quindi la definizione interna non viene eseguita -> spostarla fuori rompererebbe la semantica.
 
 -> Dobbiamo determinare il dominance tree
+
+# Lezione 13 maggio:
+
+Se la variabile interna al ciclo possiamo spostarla nel caso si tratti di dead code anche se tale blocco non domina tutte le uscite del loop, questo è l'unico caso però in quanto se non fosse codice dead, potrebbe capitare di non entrare mai nel ciclo e quindi di non eseguire tale istruzione.
+
+in llvm un istruzione è dead, se dal punto di interessse all'uscita non ci sono più usi.  
+-> controlliamo quindi gli usi (per verificare se è deadcode) e verifichiamo in che blocco si trovano. se gli usi sono confinati al loop allora è dead code una volta usciti.
