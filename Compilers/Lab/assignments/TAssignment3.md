@@ -3,7 +3,7 @@
 Un passo che implementa questa ottimizzazione permette di spostare le istruzione che non dipendono dal control flow del loop fuori dal loop stesso, in modo da evitare di ricalcolare ridondantemente la stessa istruzione.  
 Essendo il grosso della computazione di un programma contenuta nei loop, questo passo permette di fare miglioramenti di performance significativi.
 
-```c++
+````c++
 int a = ...;
 int b = ...;
 for(int i = 0; i<100;i++){
@@ -16,7 +16,7 @@ c = a*b;
 for(int i = 0; i<100;i++){
     f(c); // mettiamo c al posto di a*b !
 }
-```
+```i
 
 Per poter implementare questo passo bisogna identifiacare quali istruzioni sono **Loop-Independant** $\rightarrow$ **Istruzioni il cui valore non cambia fintanto che il controllo rimane dentro il loop**.
 
@@ -116,4 +116,4 @@ PreservedAnalyses LoopPasses::run(Loop &L, LoopAnalysisManager &LAM,
 }
 
 
-```
+````
