@@ -73,7 +73,7 @@ Per ogni punto del programma determinare se ogni definizione nel programma raggi
 _Es:_
 ![reaching definitions 1](../../images/reachingDefinitions1.png)
 
-```python
+```python \\\\\\
 -d1 raggiunge d5 ? # SI
     d1 definisce x e fino a d5 x non viene ridefinita
 -d0 raggiunge d5 ? # NO
@@ -302,3 +302,9 @@ Equazione **IN** $\rightarrow$ $in[B] = \wedge_{p\in pred(B)}(out[p])$
 | Meet Operation $(\wedge)$ |                              $\cap$                              |
 |    Boundary Conditions    |                     $out[ENTRY] = \emptyset$                     |
 |  Initial Interior Points  |                   $out[B] = U$ (universal set)                   |
+
+```c++
+
+int a = 5;
+
+```
