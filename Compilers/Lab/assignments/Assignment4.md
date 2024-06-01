@@ -17,7 +17,67 @@ Per definizione un Loop llvm è un insieme di nodi del CFG con le seguenti propr
 
 ![loop llvm teroria](../../../images/loop_llvm.png.png)
 
+<br> <br>
 --- 
 
+# Struttura del passo $\rightarrow$ Loop Fusion:
+
+Per poter eseguire il passo di loop fusion due loop devono soddisfare le seguenti condizioni:
+1. $L_j$ e $L_k$ devono essere **adiacenti**:  
+    Due Loop $L_j$ e $L_k$ si dicono adiacenti se non ci sono blocchi aggiuntivi nel CFG tra l'uscita di $L_j$ e l'entry di $L_k$.  
+    Se i loop sono **guarded** il successore non loop del guard branch di $L_j$ deve essere l'entry block di $L_k$.  
+    Se i loop **non** sono guarded, l'exiting block di $L_j$ deve essere il preheader di $L_k$
+
+2. $L_j$ e $L_k$ devono avere lo stesso numero di iterazioni:  
+    Questa condizione richiede che di determini il `trip count` dei loop, il passo di analisi che determina queste informazioni è la ScalarEvolution.  
+
+3. $L_j$ e $L_k$ devono essere **control flow _equivalent_**:  
+    Due loop $L_j$ e $L_k$ si dicono _control flow equivalent_ se quando esegue uno è garantito che esegua anche l'altro.  
+    Per determinare la control flow equivalenza servono le informazioni di dominanza e postdominanza $\rightarrow$ se $L_j$ domina $L_k$ e $L_k$ postdomina $L_j$ allora sono control flow equivalenti.  
+    (Se un loop L0 domina un altro loop L1, significa che ogni percorso che raggiunge L1 deve passare attraverso L0. Se L1 postdomina L0, significa che ogni percorso che esce da L0 deve passare attraverso L1. Quindi, se L0 domina e L1 postdomina, allora ogni volta che L0 viene eseguito, L1 deve essere eseguito anche)
+    ```c++
+    #include "llvm/IR/Dominators.h"
+    #include "llvm/Analysis/PostDominators.h"
+    PreservedAnalyses LoopFusePass::run(Function &F, FunctionAnalysisManager &AM) {
+        DominatorTree &DT = AM.getResult<DominatorTreeAnalysis>(F);
+        PostDominatorTree &PDT = AM.getResult<PostDominatorTreeAnalysis>(F);
+        ... 
+        }
+
+    ```
+
+4. Non ci possono essere dipendenze di distanza negativa tra i due loop $L_j$ e $L_k$:  
+    Si parla di dipendenza di distanza negativa tra due loop quando un loop dipende dai risultati di un'iterazione futura di un altro loop. Questa condizione è fondamentale perchè la fusione di due loop con questa dipendenza altererebbe l'ordine di esecuzione e la semantica del programma.
+
+    ``` c++ 
+    for(int i=0; i<n; i++) {
+        a[i] = a[i] + b[i];
+    }
+
+    for(int i=0; i<n; i++) {
+        b[i] = a[i+1] + c[i];
+    }
+
+    // il secondo ciclo dipende dai valori di a[] calcolati dal primo ciclo, non possiamo fonderli
 
 
+    // Dependence Analysis:
+    #include "llvm/Analysis/DependenceAnalysis.h"
+
+    PreservedAnalyses LoopFusePass::run(Function &F, FunctionAnalysisManager &AM) {
+        DependenceInfo &DI = AM.getResult<DependenceAnalysis>(F);
+        ...
+        auto dep = DI.depends(&I0, &I1, true);
+            if (!DepResult) // not dependent
+        }
+    ```
+
+<br>
+
+## Trasformazione del codice:
+
+Una volta verificate tutte le condizioni sopra elencate posso passare alla vera e propria Loop Fusion e alla trasformazione del codice, che avviene in due step:  
+1. Modificare gli usi della induction variable nel body del loop2 con quelli della induction variable del loop1, considerando che in forma `SSA` sono sempre due variabili diverse (le induction variables sono quelle variabili che cambiano ad ogni iterazione in modo prevedibile, come l'incremento dell'iteratore).  
+2. Modificare il CFG affinchè il body del loop2 sia agganciato a seguito del body del loop1 (nel loop1).  
+
+![modifica cfg per fusione](../../../images/loop_modifica_cfg.png.png)
