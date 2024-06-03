@@ -81,3 +81,23 @@ Una volta verificate tutte le condizioni sopra elencate posso passare alla vera 
 2. Modificare il CFG affinchè il body del loop2 sia agganciato a seguito del body del loop1 (nel loop1).  
 
 ![modifica cfg per fusione](../../../images/loop_modifica_cfg.png.png)
+
+
+## Note importanti:
+
+Differenza tra loop unrolling e loop fusion!!!!
+- main takeaway:
+    il loop unrolling non migliora l'overhead di controllo ma in particolare non migliora la località spaziale dei dati.  
+
+per questa ragione non basta collegare il latch1 con il header2 e il latch2 con il header1, bisogna proprio spostare i basic block e farli adiacenti.  
+
+- nota 2:
+    Dopo la fusione dei loop, il latch del loop fuso (cioè il blocco che ha il backedge al header del loop fuso) sarà il latch del primo loop. Questo perché, come hai detto, hai sostituito le variabili di induzione del secondo loop con quelle del primo loop, quindi l'incremento della variabile di induzione avviene nel latch del primo loop.
+
+    Rimuovere il latch del secondo loop è un passaggio necessario per completare la fusione dei loop. Tuttavia, devi fare attenzione a due cose:
+
+    Prima di rimuovere il latch del secondo loop, devi assicurarti che tutte le istruzioni nel latch del secondo loop che non sono legate all'incremento della variabile di induzione siano state correttamente spostate in un altro posto nel loop fuso.
+
+    Dopo aver rimosso il latch del secondo loop, devi aggiornare tutte le strutture dati che potrebbero aver fatto riferimento a esso, come il DominatorTree e il LoopInfo.
+
+    Se segui questi passaggi, la rimozione del latch del secondo loop non dovrebbe creare effetti indesiderati
