@@ -46,17 +46,20 @@ Se il linguaggio è infinito può comunque essere descritto con quantità finita
 es: Il linguaggio $L_2$ costituito da tutte le strighe su $B$ che terminano con il carattere $0$: 
  $$L_0 = \{x\in B^* | x=y0, y\in B^*\}$$
 
-### Specifica 
+---
+
+### Caratterizzazioni e Specifiche:
+
 Nel mondo informatico risultano molto più interessanti le  seguenti Caratterizzazioni e Specifiche: 
-- Caratterizzazione Algoritmica (o riconoscitiva):  
+1. **Caratterizzazione Algoritmica (o riconoscitiva):**
     Si ha un algoritmo di decisione, tale che data in input una stringa su un dato alfabeto, risponda `yes` o `no`. Si può usare tale algoritmo per definire un linguaggio:
     $$L_A = \{x \in {\sum}^* | A(x)=True\}$$  
     Es: Il linguaggio C++ è l'insieme delle stringhe sull'alfabeto ASCII per cui il compilatore non produce errore!
 
-- Specifica Generativa:  
+2.  **Specifica Generativa:**  
     Tecnica tramite la quale si danno regole mediante le quali è possibile generare tutte e sole le stringhe del lingagguo che si vogliono specificare.  
     I due formalismi più importnati sono: **_Espressioni Regolari_** e **_Grammatiche Context-Free_**  
     Vedremo che questi due formalismi sono fondamentali per definire il comportamento del lexer e del parser.  
 
 
-    
+
