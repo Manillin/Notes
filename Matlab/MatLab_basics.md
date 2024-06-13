@@ -151,3 +151,26 @@ end
 ```
 
 si usa una sintassi intuitiva per i cicli for (costosi a livello computazionale).  
+
+
+### Scrittura di Script e Funzioni:
+
+Ogni volta che si vuole fare uno script matlab inizializzalo con: `clear all`.  
+Evita di mescolare le variabili con quelle esistenti già nel workspace. 
+
+
+```matlab
+
+function [a] = fibonacci_fun(n)
+
+a = zeros(n,1);
+a(2) = 1;
+for k = 3:n
+    a(k) = a(k-1) + a(k-2);
+end
+
+% il risultato della function verrà salvato in $a$, mnentre il parametro verra usato al posto della $n$
+
+```
+
+
