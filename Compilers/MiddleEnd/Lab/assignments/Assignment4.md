@@ -15,7 +15,7 @@ Per definizione un Loop llvm è un insieme di nodi del CFG con le seguenti propr
 - Il `LoopGuard` è un blocco che considera la condizione di controllo del ciclo e determina se esso deve essere eseguito o meno, il `LoopGuard` ha un arco che punta al header e all'exiting block per gestire questo controllo.
 - `LoopTripCount` rappresenta il numero di volte che un ciclo esegue
 
-![loop llvm teroria](../../../images/loop_llvm.png.png)
+![loop llvm teroria](../../../../images/loop_llvm.png.png)
 
 <br> <br>
 --- 
