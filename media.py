@@ -1,24 +1,24 @@
 # Define the courses with their respective credits and grades
 grades_credits = [
-    (30, 9),
-    (27, 9),
-    (24, 9),
-    (27, 9),
-    (27, 9),
-    (24, 9),
-    (30, 6),
-    (29, 9),
-    (27, 6),
-    (30, 9),
-    (28, 9),
-    (28, 6),
-    (27, 6),
-    (21, 9),
-    (27, 12),
-    (26, 9),  # calcolo
-    (25, 6),  # fisica
-    (27, 6),  # statistica
-    (30, 6)
+    (30, 9),  # Algebra
+    (20, 9),  # Architettura
+    (24, 9),  # Analisi 1
+    (20, 9),  # Algoritmi
+    (20, 9),  # Programmazione 1
+    (24, 9),   # Programmazione 2
+    (30, 6),   # Oop
+    (29, 9),   # Basi di dati
+    (27, 6),   # oli
+    (30, 9),   # AeSa
+    (28, 9),   # SO
+    (28, 6),   # Cprog
+    (27, 6),   # progSW
+    (21, 9),   # Protocolli
+    (27, 12),  # Compilatori
+    (20, 6),   # fisica
+    (24, 6),   # statistica
+    (24, 9),   # Calcolo numerico
+    (30, 6)     # TechWeb
 
 
 ]
