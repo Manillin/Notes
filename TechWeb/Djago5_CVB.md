@@ -134,6 +134,52 @@ class ListaInsegnamentiAttivi(ListView):
         return context
 ```
 
-Notiamo che in get_context_data() viene chiamata in primis il metodo dalla classe padre per ottenere il contesto di default, e una volta ottenuto lo modifichiamo inserendo i dati che vogliamo.  
+
+### Contesto Ereditato:
+
+Notiamo che in get_context_data() viene chiamata in primis il metodo dalla classe padre per ottenere il contesto di default, e una volta ottenuto lo modifichiamo inserendo i dati che vogliamo, salvandolo in una variabile locale.  
+
+```python
+context = super().get_context_data(**kwargs)
+print(context.keys())
+
+#output:
+dict_keys(['paginator', 'page_obj', 'is_paginated', 'object_list', 'insegnamento_list', 'view'])
+```
+
+Notiamo che nel contesto ereditato abbiamo una key **`view`** che ci permette di acceder a metodi e attributi della nostra classe deerivata da ListView $\rightarrow$ Ci consente di definire ulteriori logiche abitrarie e di chiamarle direttamente dal template.  
+
+
+Es: [Fare una CVB che elenca studenti e restituisca il numero di iscrizioni totali]  
+
+```python
+class ListaStudentiIscritti(ListView):
+    model = Studente 
+    template_name = 'iscrizioni/studenti_iscritti.html'
+
+    def get_model_name(self):
+        return self.model._meta.verbose_name_plural
+
+    def get_test():
+        return "Test!"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['titolo'] = 'Lista Studenti Iscritti:'
+        return ctx
+    
+    def get_totale_iscrizioni(self):
+        count = 0
+        for i in Insegnamento.objects.all():
+            count += i.studenti.all().count()
+        return count
+```
+
+Sotto riportato il _template:_  
+
+![view variable in template](../images/view_django_variable.png)
+  
+Notiamo come nel template grazie alla variabile `view` possiamo accedere direttamente a metodi definiti nella classe trasparentemente (ricordare che serve avere il contesto e quindi get_context_data() è fondamentale!).  
+
 
 
