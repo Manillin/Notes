@@ -50,3 +50,16 @@ Tramite Django riusciamo ad esprimere comunque le relazioni tra tabelle, in part
 
 - **OneToOne**:
   Rappresenta una relazione one to one $1 \rightarrow 1$, simile al concetto di FK con il parametro `Unique=True`. Viene principalmente usato come PK di un model che estende un altro model.
+
+
+
+
+--- 
+
+## Inserire Elementi nel DataBase:
+1. **Programmaticamente**  
+  Usando codice Python, tipicamente usato nel setup o in routine di controllo/manutenzione.  
+2. **Tramite console **Admin****
+3. **Tramite `views` e `functionviews`**  
+  modifiche ai dati del Db scatenate da richieste client-side  
+
