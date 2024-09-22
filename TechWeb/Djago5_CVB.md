@@ -183,3 +183,157 @@ Notiamo come nel template grazie alla variabile `view` possiamo accedere diretta
 
 
 
+--- 
+---
+
+<br><br><br>
+
+# CreateView:
+
+Per creare nuove entry alle tabelle del nostro DB partiamo ancora una volta da una `View` ereditata dal solito package Django.  
+Per creare una CreateView specificheremo:
+- **Modello** $\rightarrow$ tramite attributo `model`
+- **Template** $\rightarrow$ tramite attributo `template_name`
+- **Attributo `__fields__`** $\rightarrow$ indica quali attributi si voglia permettere al client di impostare  
+- **Attributo `success_url`** $\rightarrow$ indica l'url di redirezionamento in caso di sccrittura sul DB avvenuta a buon fine.  
+
+
+### reverse & reverse_lazy:
+Queste funzioni eseguono un 'reverse lookup' che permettono di usare un alias del nostro url pattern al posto di specificare un url hardcoded.  
+È composto secondo questa struttura `app_name:url_name`.  
+**Differnze:**  
+- `reverse` $\rightarrow$ si usa nei metodi e nelle funzioni, restituisce una stringa  
+- `reverse_lazy` $\rightarrow$ si usa quando si vuole assegnare l'url di redirezione a una variabile o un attributo, restituisce un oggetto.   
+Come suggerito dal nome, la versione lazy fa il lookup tardivamente, per compensare al modo in cui python gestisce la direttiva import.  
+
+Confondere i due metodi potrebbe causare errore del tipo reverse not found, quindi fare attenzione al contesto e alla situazione at hand.  
+
+
+Es: [Creazione di uno studente via client request]
+
+In views.py e urls.py inseriamo:
+
+```python
+#in iscrizioni/views.py
+class CreateStudenteView(CreateView):
+    model = Studente
+    template_name = 'iscrizioni/crea_studente.html'
+    fields = '__all__'
+    success_url = reverse_lazy('iscrizioni:listastudenti')
+
+
+# in iscrizioni/urls.py 
+app_name = 'iscrizioni'
+url_patterns = [
+    ...,
+    path('createstudente/', views.CreateStudenteView.as_view(), name= 'creastudente')
+]
+```
+Il template sarà invece il seguente:
+
+```python
+{% extends 'base.html' %}
+{% block title %} Crea Studente {% endblock %} 
+
+{% block content %}
+<h1> Crea Studente </h1>
+
+<form method="post"> {% csfr_token %}
+    {{form.as_p}}
+    <input type='submit' value='Save'> 
+</form>
+
+{% endblock %}
+```
+
+Notiamo che i campi della tabella che sto cercando di modificare sono inclusi in una variabile chiamata `form` $\rightarrow$ che **deve** essere compreso all'intero dei tag HTML `<form> ... </form>`.  
+Inoltre bisogna specificare che la sottomissione avviene tramite richiesta `POST` e bisogna includere il CSRF token per questioni di sicurezza.  
+ 
+### La variabile `form`:
+
+la variabile form espicita i campi da noi definiti nel modello, rendendoli accessibili direttamente nel template.  
+Formalmente rappresenta un Django Form baato sul modello che vogliamo manipolare.  
+
+
+Similmente a quanto visto per il passaggio di parametri tramite URL, nel caso di request di tipo `POST`avremo i parametri nel `request.POST['param_name']`.  
+
+---
+---
+
+<br><br><br>
+
+
+# Detail View:
+
+La **DetailView** ci permette di fare **query** ad una tabella partendo dalla sua PrimaryKey (pk), ciò ci permette di avere un contesto in cui esiste la variabile 'object', attraverso la quale andremo a scegliere quali campi visualizzare e come all'intero del template.   
+Come nei precedenti  casi consiste in una classe base di Django importabile (`django.views.generic.detail`).  
+
+Per fare una DetailView specifichiam:
+- Il modello $\rightarrow$ nella cbv
+- Il template $\rightarrow$ nella cbv
+- La PrimaryKey $\rightarrow$ direttamente nell'url  
+
+```python
+#In iscrizione/views.py
+
+class DetailInsegnamentoView(DetailView):
+    model = Insegnamento
+    template_name = 'iscrizioni/insegnamento.html'
+
+#In iscrizioni/urls.py
+
+path('insegnamento/<pk>/', views.DetailInsegnamentoView.as_view(), name='insegnamento')
+```
+
+---
+---
+
+<br><br><br>
+
+# UpdateView
+
+**Accessibilità** simili a DetailView, la PK per ottenere una entry di una tabella va passata in egual modo, ossia tramite url.  
+**Modifica** simile a CreateView, stesso metodo per restituire un form lato template e sottomissione valori modificati tramite richiesta POST protetto con CSRF token.  
+
+Attributi richieste:
+- model
+- template_name
+- success_url
+- fields 
+
+```python
+class UpdateInsegnamentoView(UpdateView):
+    model = Insegnamento 
+    template_name = 'iscrizioni/edit_insegnamento.html'
+    fields = '__all__'
+
+    def get_success_url(self):
+        pk = self.get_context_data()['object'].pk
+        return reverse('iscrizioni:insegnamento',kwargs={'pk':pk})
+```
+
+### Spiegazione del flusso di update:
+
+1. Utente fa una richiesta GET alla pagina di modifica specificando la PK tramite l'url
+    - La `UpdateView` carica l'oggetto dal database usando il metodo `get_object` ereditato da `SingleObjectMixin`
+2. L'oggetto viene incluso nel dizionario di contesto con chiave `object`, il tutto gestito automaticamente da `UpdateView`
+3. Il form viene reso nel template 
+4. Quando il client manda il form viene mandata una richiesta POST per aggiornare l'oggetto nel database e il CSRF token
+5. Per determinare **l'url di successo** per il redirect abbiamo bisogno della pk dell'insegnamento che abbiamo modificato:
+    - carichiamo con `self.get_context_data()` il contesto **aggiornato**
+    - otteniamo la pk accedendo all'elemento tramite la key `'object'`
+    - la mandiamo tra i parametri di reverse ( metodo per reverselookkup)
+
+
+---
+---
+
+<br><br><br>
+
+# DeleteView
+
+Meccanismo simile a `CreateView`e `UpdateView` per ottnere la primary key (pk) dell'elemento da cancellare, inoltre occorre avere un form di conferma all'intero del template associato alla View.  
+
+Essendo le due entità nel nostro caso (Studente e Insegnamento), si può creare una classe per cancellare un entità generica e gestire i casi a seconda del modello che si voglia cancellare.  
+
+
