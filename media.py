@@ -16,9 +16,9 @@ grades_credits = [
     (21, 9),   # Protocolli
     (27, 12),  # Compilatori
     (20, 6),   # fisica
-    (24, 6),   # statistica
-    (24, 9),   # Calcolo numerico
-    (30, 6)     # TechWeb
+    (25, 6),   # statistica
+    (27, 9),   # Calcolo numerico
+    (28, 6)    # TechWeb
 
 
 ]

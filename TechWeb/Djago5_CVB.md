@@ -336,4 +336,124 @@ Meccanismo simile a `CreateView`e `UpdateView` per ottnere la primary key (pk) d
 
 Essendo le due entità nel nostro caso (Studente e Insegnamento), si può creare una classe per cancellare un entità generica e gestire i casi a seconda del modello che si voglia cancellare.  
 
+Attributi richiesti:
+- model 
+- template_name 
+- success_url 
+
+### Workflow di cancellazione:
+
+1. Richiesta GET client side:
+    - L'utente accede alla pagia di coancellazione tramite URL specificando la `pk` dell'oggetto da cancellare.  
+    - Django carica l'oggetto e lo include nel contesto con la chiave `object`  
+    - Viene fatto il rendering del template con il contesto 
+2. Richiesta POST client side:  
+    - L'utente conferma la cancellazione inviando il form
+    - Django esegue la `delete` dell'oggetto specificato, rimuovendolo dal DB
+    - il metodo `get_success_url` determina l'URL di reindirizzamento
+    - l'utente viene reindirizzato a tale pagina di successo
+
+**Note:** Il vero responsabile della cancellazione è la classe che eredita da `DeleteView`, dopo aver verificato la validità della richiesta POST, la classe chiama 'invisibilmente' il metodo `delete` e lo rimuove.  
+
+---
+---
+
+<br><br><br>
+
+
+
+# Combinazioni di Views con input arbitrari passati tramite url
+
+Es. [ricerca studenti per cognome]
+
+```python
+#In insegnamenti/urls.py
+
+path('studente/<str:surname>/', view.ListStudenteBySurname.as_view(), name='studente')
+
+#In insegnamenti/views.py
+
+class ListStudenteBySurname(ListaStudentiView):
+    #da ListaStudentiView ereditiamo il model e il template_name
+
+    #si fa un override del metodo per modellarlo secondo le nostre esigenze
+    def get_queryset(self):
+        arg = self.kwargs['surname'] # leggiamo  l'argomento passato 
+        qs = self.model.objects.filter(surname__iexact=arg)
+        return qs
+```
+**Nota (IMPORTANTE):** Nell'esempio sopra notiamo una principale differenza tra FBV e CBV, nelle CBV i parametri passati tramite URL risiedono nel dizionario `self.kwargs`, nell'esempio sopra notiamo infatti come si faccia la fetch del valore 'surname' scelto dal client chimando il dizionario conl'opportuna key.  
+
+---
+
+<br>
+
+### Es complesso: 
+```
+Creare un URL che porti a una pagina tramite "/cercastudente" in cui compare un form in cui l'utente può fare una ricerca per studente tramite nome E/O cognome. Al click del pulsante "ricerca" i dati vanno spediti tramite metodo POST.  
+Si operi una redirezione su una ListView degli studenti che soddisfano i criteri di ricerca e visualizzare anche i corsi a cui sono iscritti.  
+```
+
+
+### Soluzione:
+
+```python
+def cerca_studenti(request):
+    if request.method == 'GET':
+        return render(request, template_name='iscrizioni/cerca_studenti.html')
+    else:
+        # validazione parametro name
+        if len(request.POST['name']) < 1:
+            nome = 'null'
+        else: nome = request.POST['name']
+
+        # validazione parametro surname 
+        if len(request.POST['surname']) < 1:
+            cognome = 'null'
+        else: cognome = request.POST['surname']
+
+        return redirect('iscrizioni:studentecercato', name=nome, surname=cognome)
+
+
+class ListStudentByNameAndSurname(ListView):
+    model = Studente 
+    template_name = 'iscrizioni/listastudenteinsegnamento.html'
+
+    def get_queryset(self):
+
+        # fetch nome 
+        try:
+            arg = self.kwargs['name']
+            qs_name = self.model.objects.filter(name__iexact=arg)
+        except:
+            qs_name = self.model.objects.none()
+
+        # fetch cognome
+        try:
+            arg = self.kwargs['surname']
+            qs_surname = self.model.objects.filter(surname__iexact=arg)
+        except:
+            qs_surname = self.model.objects.none()
+        
+        return (qs_name | qs_surname)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titolo'] = 'Studenti e loro insegnamenti'
+        ls = set()
+
+        for s in self.get_queryset():
+            for i in Insegnamento.objects.all():
+                if s in i.studenti.all():
+                    ls.add(i)
+        context['set_ins'] = ls
+        return context
+```
+
+Per guardare i template -> git 
+
+
+### Spiegazione: 
+
 
