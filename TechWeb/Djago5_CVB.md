@@ -454,6 +454,28 @@ class ListStudentByNameAndSurname(ListView):
 Per guardare i template -> git 
 
 
-### Spiegazione: 
+### Spiegazione \<Flusso dell'eserczio\> : 
+
+1. Richiesta GET alla pagina di ricerca:
+    - client va su `iscrizioni/ricercastudente` e viene servito il template con le textbox per inserire i parametri di ricerca.  
+2. Compilazione del form e invio dati tramite POST:
+    - l'utente inserisce i dati e clicca il pulsante di invio
+    - il form viene mandato tramite metodo `POST` (specificato nel template) allo stesso url `iscrizioni/cercastudente`
+3. Gestione della richiesta `POST`:
+    - la function view gestisce la richiesta post e legge i dati inviati dal form (nome e cognome)
+    - Una volta estratti i dati (sfruttando il dizionario `request.POST[key]`) fa una redirezione al'url gestito dalla classe che incorpora una la ListView. 
+
+4. La ListView riceve i parametri di ricerca e filtra gli studenti di conseguenza personalizzando la `get_queryset()` (ottiene i parametri da `self.kwargs[]`)
+5. La ListView passa la lista di studenti al template tramite un aggiornamento del conteto eseguito in `get_context_data()`
+
+
+**Note:**  
+La querySet restituisce un set e dalla ListView aggiungiamo un pair key:set() al dizionario di contesto, di modo che il template possa accedere alla lista filtrata tramite questa variabile.  
+
+**Operatore OR(|) tra `QuerySet`:**  
+L'operatore OR unisce i risultati di due QuerySet restituendone uno che contiene gli elementi presenti in almeno uno dei due (unione insiemistica).  
+
+es: se `qs_nome` contiene tutti gli studenti di nome 'Mario' e `qs_cognome` contiene gli studenti di cognome 'Rossi', allora  `qs_finale = qs_nome | qs_cognome` ottieniamo la lista di studenti che si chiamano mario O che fanno rossi di cognome!  
+
 
 
