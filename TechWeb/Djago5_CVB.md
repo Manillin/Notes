@@ -476,6 +476,3 @@ La querySet restituisce un set e dalla ListView aggiungiamo un pair key:set() al
 L'operatore OR unisce i risultati di due QuerySet restituendone uno che contiene gli elementi presenti in almeno uno dei due (unione insiemistica).  
 
 es: se `qs_nome` contiene tutti gli studenti di nome 'Mario' e `qs_cognome` contiene gli studenti di cognome 'Rossi', allora  `qs_finale = qs_nome | qs_cognome` ottieniamo la lista di studenti che si chiamano mario O che fanno rossi di cognome!  
-
-
-
