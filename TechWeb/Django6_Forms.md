@@ -152,7 +152,7 @@ Il template sarà cosi definito:
     - Il sistema legge i dati passati e li valida in modo da mettere a disposizioni istruzioni come `form.cleaned_data.get('...')` che ci permettono di avere un input sanitizzato.  
 - Cona la `redirect` siamo in grado di dirottare i campi letti verso un url a nostra scelta, in questo caso viene mandato con due parametri verso l'url che ha la CBV `SearchResultList` collegata, leggendo i parametri questa CBV farà la query adeguata per ottenere l'output  desiderato.   
 
-[forms reach](../images/forms_reach.png)
+![forms reach](../images/forms_reach.png)
 
 
 ## Integrazione tra Models e Forms
