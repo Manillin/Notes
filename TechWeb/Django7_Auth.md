@@ -280,6 +280,45 @@ class BiblioCreateView(PermissionRequiredMixin, UserCreateView):
 ## Protezione di Views con criterio di appartenenza a Gruppi: 
 
 Ora che abbiamo diversi gruppi di utenti possiamo usare dei decoratori per controllare che l'utente che richiede una certa funzionalità abbia l'autorizzazione necessaria.  
+Sfruttiamo però dei mixin offerti da una libreria chiamata `django-braces`, sarà quindi necessario scaricarla dentro il progetto: `pipenv install django-braces`  
+
+Questa libreria esterna fornisce molte classi da utlizzare come `access mixins`, il suo utilizzo ci permette di risparmiare codice per risolvere problemi ricorrenti quali i testi di appartenenza a uno o più gruppi per l'accesso a determinate View.  
+
+Es: [GroupRequiredMixin per accedere alle View]
+
+```python
+from braces.views import GroupRequiredMixin
+
+class BiblioSituationView(GroupRequiredMixin,ListView):
+    group_required = ['Bibliotecari'] # Qui specificato il gruppo/i !!
+    model = Libro
+    template_name = "gestione/sitationb.html"
+
+class BiblioDetailView(GroupRequiredMixin, DetailView):
+    group_required = ['Bibliotecari'] # Qui specificato il gruppo/i !!
+    model = Libro
+    template = 'gestione/detailb.html'
+
+
+# Valido anche per la creazione di classi e sottoclassi che ereditano:
+
+class CreateLibroView(GroupRequiredMixin, CreateView):
+    group_required = ['Bibliotecari']
+    title = 'Aggiungi libro alla biblioteca'
+    form_class = CreateLibroForm
+    template_name = 'gestione/create_entry.html'
+    success_url = reverse_lazhy('gestione:home')
+
+# Questa classe eredita gli attributi da quella sopra!
+
+class CreateCopiaView(CreateLibroView):
+    title = 'Aggiungi una copia ad un libro'
+    form_class = CreateCopiaForm
+    # il resto di attributi sono ereditati da CreateLibroView
+```
+
+---
+
 
 
 
