@@ -210,7 +210,7 @@ def vote(request,pk):
 
 ### Osservazioni:
 Rispetto all'esercizio precedente abbiamo una sostanziale differenza, ossia il modo in cui abbiamo instanziato `VoteForm` nei due casi (GET e POST).  
-In entrambi i casi abbiamo specificato la `pk` che serve per riempire le scelte del nostro `ModelChoiceField`.  
+In entrambi i casi abbiamo specificato la `pk` che serve per riempire le scelte del nostro `ModelChoiceField`.    
 Per il resto facciamo la solita redirezione verso una CBV di tipo `DetailView` che userà il parametro `pk`per mettere nella variabile di contesto `object` la Question corrispondente (su questa View faremo override di `get_context_data` per aggiungere le informazioni richieste).  
 
 
