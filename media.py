@@ -24,6 +24,7 @@ grades_credits = [
 # 28.10 if adding extra credit for graduation in time
 # 28.36 should be lower bound for 110
 # 28.63 should be lower bound for lode
+
 magistrale = {
     (28, 9),  # High Performance Computing
     (30, 6),  # Metodologie Sviluppo SW
