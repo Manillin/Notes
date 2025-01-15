@@ -196,3 +196,50 @@ adeguata
 - `semilogy()` - scala logaritmica su asse y
 - `semilogx()` - scala logaritmica su asse x 
  
+
+
+--- 
+
+## Grafici di funzioni di 2 variabili 
+
+Occorre fornire le ascisse e le ordinate dei punti del grafico 
+
+
+l'idea base è di discretizzare il dominio bidimensionale della funzione, quindi individuare 
+un isieme di punti su cui valutare la funzione, e con un istruzione di grafica chiedere a matlab di 
+collegare i valori che la funzione assume sui punti del dominio.  
+
+
+**discretizzare il dominio**  
+
+con due vettori si forniscono i valori della discretizzazione del dominio, ossia le ascisse e le 
+ordinate dei punti del piano che discretizzano il dominio.  
+
+x = [1 2 3]; y = [4 5 6 7]; (3 valori per le x e 4 valori per asse y)
+
+Matlab permette di usare un comando ossia `[X,Y] = meshgrid(x,y)` che mi permettono di far valutare 
+la funzione sui punti del dominio in maniera efficinete e senza dover usare cicli annidati.
+
+tale comando porta le info contenute nei vettori in due matrici costituite da un numero di righe pari 
+alla lunghezza di `y` e un numero di colonne pari alla lunghezza di `x`.  
+
+```matlab
+X = 
+    1 2 3
+    1 2 3
+    1 2 3
+    1 2 3
+
+Y = 
+    4 4 4 
+    5 5 5
+    6 6 6 
+    7 7 7
+```
+
+A questo punto le coordinate dei punti sulla griglia sono esprimibili usando le due matrici prodotte
+es: (3,2) trovo (ascissa:2 , ordinata:6)  
+
+
+
+
