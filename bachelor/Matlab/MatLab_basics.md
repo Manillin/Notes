@@ -71,7 +71,7 @@ k = 1:5 %crea vettore: [1,2,3,4,5]
 
 I = 2.5:10 %crea vettore: [2.5, 3.5, 4.5, ..., 8.5, 9.5]
 
-k2 = 1:2:10 %crea vettore: [1, 3, 5, 7, 9]
+k2 = 1:2:10 %crea vettore: [1, 3, 5, 7, 9] con passo 2 
 ```
 
 Questo operatore è molto utile per creare sottomatrice, tipo splicing in python.  
@@ -105,7 +105,7 @@ A.^2 % equivale ad elevare al quadrato tutti gli elementi di A
 
 
 ### Operazioni e Funzioni utili per lavorare con le matrici:
-- `eye(n)` $\rightarrow$ matrice identica nxn
+- `eye(n)` $\rightarrow$ matrice identità nxn
 - `zeros(m,n)` $\rightarrow$ matrice mxn con tutti elementi uguali a zero
 - `ones(m,n)` $\rightarrow$ matrice mxn con tutti elementi uguali a uno
 - `size(x)` $\rightarrow$ restituisce la dimensione della matrice (es: mxn)
