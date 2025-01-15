@@ -174,3 +174,25 @@ end
 ```
 
 
+--- 
+
+
+# Creazione di Grafici in Matlab
+
+L'istruzione che permette di creare grafici è `plot(x,y)` 
+ - apre una finestra grafica detta figure
+ - disegna la spezzata che congiunge i punti $(x_i,y_i)$
+ - opzione di tratteggio: `plot(x,y,':m')` $\rightarrow$ la `m` sta per magenta, ci sono altre opzioni
+
+Ogni nuova istruzione `plot` sovrascrive il contenuto della precedente
+- `hold on` permette di visualizzare più grafici in una stessa finestra 
+- `figure` permette di aprire più finestre grafiche
+- `subplot` divide un finestra in più aree grafiche 
+
+
+Quando i valori da rappresentare hanno una grande varaibilità la scala lineare potrebbe non essere 
+adeguata
+- `loglog()` - scala logaritmica su asse x e y 
+- `semilogy()` - scala logaritmica su asse y
+- `semilogx()` - scala logaritmica su asse x 
+ 
