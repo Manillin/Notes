@@ -241,5 +241,11 @@ A questo punto le coordinate dei punti sulla griglia sono esprimibili usando le 
 es: (3,2) trovo (ascissa:2 , ordinata:6)  
 
 
+Esistono varie opzioni per cambiare la colorbar delle figure:
+- summer, autumn, winter, pink $\rightarrow$ altre opzioni 
+
+`countour(X,Y,Z)` $\rightarrow$ Crea curve di livello, servono le informazioni sui punti della griglia (X,Y) e i valori che la funzione assume su tali punti (Y)  
+
+`[c,h] = countour(X,Y,Z); clabel(c,h);` $\rightarrow$ permette di associare i valori delle costanti che la funzione assume sulle curve di livello.  
 
 
