@@ -17,6 +17,38 @@ Recall: Esistono varie opzioni per cambiare la colorbar delle figure:
 ## Convessità di funzioni 
 
 
+<br><br>
+
+### Es1: Funzione strettamente convessa
+
+$$
+A = \begin{bmatrix}
+1 & 0 \\
+0 & 3
+\end{bmatrix}, \quad
+b = \begin{bmatrix}
+-1 \\
+0
+\end{bmatrix}, \quad
+c = 50
+$$
+
+$$
+z = 0.5 * (x_1.^2 + 3 * x_2.^2) - x_1 + 50
+$$
+
+In questo primo esempio la matrice $A$ (Hessiana) è definita positiva in quanto ha gli autovalori $\gt 0$ e di conseguenza la funzione ha un unico punto di minimo (globale).   
+
+
+![convessita stretta](../images/convessita_stretta.png)
+
+Possiamo notare nel grafico che la funzione si incurva verso l'alto in tutte le direzioni, quindi tutte le traiettorie che partono da un punto più alto conducono verso un unico punto più basso al centro.  
+
+Le curve di livello sono chiuse e concentriche attorno a un unico punto al centro. Questo suggerisce che la funzione ha un'unica direzione in cui decresce fino a raggiungere il minimo.  
+L'ellisse più interna corrisponde al livello più basso della funzione, ossia il minimo globale.  
+
+
+
 <br>
 
 ### Es2: Funzione convessa non strettamente 
@@ -58,10 +90,13 @@ $$
 z = 0.5*( 3 * x_2.^2) - x_1 + 50;
 $$
 
+
+
+![convessita non stretta2](../images/convessita_non_stretta2.png)
+
 Anche questa funzione è assente di punto di minimo, tale funzione non è limitata dal basso $\rightarrow$ se $x1$ cresce la funzione decresce.  
 Tale informazione è intuibile dalle curve di livello che assumono valori sempre più piccoli per $x1$ crescente.  
 
-![convessita non stretta2](../images/convessita_non_stretta2.png)
 
 <br>
 
