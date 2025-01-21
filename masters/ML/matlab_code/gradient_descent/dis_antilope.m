@@ -19,7 +19,8 @@ pause
 
 tic 
 %[ris,info] = steepest('sofer','grad_sofer',[2.5,0.21],1e-4,20000);
-[ris,info] = newton_sofer('sofer','grad_sofer','hess_sofer',[2.5,0.21],1e-4,20000);
+%[ris,info] = newton_sofer('sofer','grad_sofer','hess_sofer',[2.5,0.21],1e-4,20000);
+[ris,info] = BB1_m_sofer('sofer','grad_sofer',[2.5,0.21],1e-4,20000);
 toc 
 
 if info == 0
