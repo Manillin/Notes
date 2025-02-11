@@ -84,6 +84,17 @@ Includes all the Docker technologies, which are:
 
 The Docker Engine is the heart of docker and handles basically everything, its the part that really executes the commands and knows how to talk to the OS kernel, makes the system calls to create, operate and manage containers.  
 
+**Comunication Flow:**
+
+Docker Client (CLI) $\rightarrow$ Request via REST API $\rightarrow$ Docker Daemon $\rightarrow$ Execution of commands on host OS
 
 
+
+## Benefits: 
+- Portability: As long as the server settings are identical across different systems, an application container can run on any system and in any cloud without requesting code change.  
+- Higher efficiency compared to VMs: Reduced resource footprint (memory, CPU,...)
+- Lower costs: We can run more containers on the same machine compared to the number of VMs we could run.  
+- Lower maintenance costs: The maintenance operations may be performed on a single system and not on multiple OSes as in the case of VMs.
+- Isolated Environment: A container creates an isolated environment which also provides fault isolation. 
+- Easy Troubleshooting: We can easily identify the faulty container and deduce the problem must be on a service running on that container.
 
