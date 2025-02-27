@@ -126,8 +126,8 @@ if __name__ == "__main__":
     SESSIONID = ""
     CSRFToken = ""
     USERNAME = ""
-    FOLLOWING_FILE = ""
-    FOLLOWERS_FILE = ""
+    FOLLOWING_FILE = "following2.json"
+    FOLLOWERS_FILE = "followers2.json"
     DELAY_FOLLOWERS, DELAY_FOLLOWING = 1.55, 1.55  # high delays to avoid rate limits
     follow = get_followers(USER_ID, SESSIONID, CSRFToken,
                            USERNAME, DELAY_FOLLOWING, DELAY_FOLLOWERS)
