@@ -7,16 +7,10 @@ Suddivisione di materie per semestre con relativa suddivisione delle date di esa
 ### High Performance Computing (HPC):
 - Credits: 9CFU
 - Exam method: Assignments + oral exam 
-- Exam dates: 
-    - 05/02
-    - 21/02 @ 10am
 
 ### Machine Learning:
 - Credits: 6CFU
-- Exam method: TBD
-- Exam dates:
-    - 05/02 @ 9am
-    - 19/02 @ 9am
+- Exam method: Oral exam 
 
 ### Privacy e Tutela dei Dati 
 - Credits: 6CFU
@@ -24,23 +18,25 @@ Suddivisione di materie per semestre con relativa suddivisione delle date di esa
 
 ### Algoritmi di Ottimizzazione
 - Credits: 6CFU
-- Exam method: Personal Assignment 
-- Exam dates:
-    - 20/02 @ 9am 
+- Exam method: written test + oral 
 
 ## Second Semester:
 
 ### Metodologie di Sviluppo Software 
 - Credits: 6CFU
+- Exam Method: pre-appello scritto
 
 ### Sviluppo di Software Sicuro 
 - Credits: 9CFU
+- Exam Method: Orale con 3 domande (come OS)
 
 ### Big Data Analytics 
 - Credits: 9CFU
+- Exam Method: 3 assignments (complete in time for reward)c  
 
 ### Computational & Statistical Learning
 - Credits: 6 CFU
+- Exam method: Progetto finale + miniorale 
 
 ### Teoria dei Giochi
 - Credits: 6CFU 
