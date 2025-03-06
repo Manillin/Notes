@@ -24,7 +24,6 @@ chi progetta un db di questo tipo deve decidere le column family!
 ### Data Model 
 
 una tabella è sparsa, distribuita, e una mappa multidimensionale ed ordinata.  
-
 (row:string, column:string, time:int64) $\rightarrow$ uninterpreted byte array  
 
 
@@ -37,4 +36,3 @@ Nasce dalla teoria dei grafi e sono asmpiamente utilizzati dai social network.
 label property graph model -> possiamo applicare etichette ai nodi che ci dicono il tipo di nodo e di arco.
 
 Questo permette di salvare costo nelle operazioni di tipo join che calcola le relazioni a tempo di query, memorizzo le relazioni direttamente !
-
