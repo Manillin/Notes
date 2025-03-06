@@ -100,5 +100,60 @@ Pandas è in grado di leggere dati in diverso formato, rifarsi alla [documentazi
 Possiamo esplorare il DataFrame importato :
 
 ```python
+df = pd.read_csv("....")
+# list first 5 records
+df.head()
+```
+
+```python
+# restituisce il tipo di dato a cui accediamo con la chiave specificata 
+df['salary'].dtype
+
+# restituisce il tipo di dato di tutte le colonne 
+df.types 
+```
+
+Fare riferimento al ipynb per visualizzare i comandi interattivamente  
+
+### Data Types:
+- `Object`: Corrispode a `string` in python (assegnato di default se ha numeri e caratteri)
+- `int64`: Corrisponde a `int`, allora 64b di memoria per questo intero
+- `float64`: Analogo a sopra ma per i `float`
+- `datetime64,timedelta[ns]`: Non esiste una corrispondenza in pyrhon ma simile al modulo `datetime`.   
+
+
+
+## Uso di Filri sul DataFrame:
+
+Possiamo usare filtrare la tabella per ottenere solo le informazioni che voglioamo, per fare ciò si usano i **Filtri Booleani**.  
+Questi ritorneranno un T o F e selezioneremo solo gli elementi della tabella conformi al tipo di ritorno che vogliamo (T).  
+
+```python
+filtro = df['salary'] > 120000 # seleziono gli elementi da salary con valori > 120k
+
+df[filtro] # per visualizzarli 
+df[ df['salary'] > 120000 ] # stessa cosa ma inline
+
+```
+
+Si possono anche concatenare più filtri per ottenere un risultato più specifico con l'operatore `&`, racchiuedere le condizioni multiple tra parentesi tonde `()`:
+
+```python
+'female professors with salary over 120k'
+df_fsalary_over120 = df[(df['salary'] > 120000) & (df['sex'] == 'Female')]
+print(df_fsalary_over120.head()) #stampo prime 5 entry 
+```
+
+**Nota:** Quando si applicano filtri si vede l'intero DataFrame, se si vuole visualizzare solo una tabella la si può proiettare con l'operatore `[]`, se se ne vogliono visualizzare di più ricordati che devi annidare le `[]`
+
+```python
+
+# --- print() omessi
+
+#visualizzare solo 'salary'
+df[df['sex'] == 'Female']['salary'] 
+
+# visualizzare colonne 'salary' e 'sex'
+df[df['sex'] == 'Female'][['salary','sex']]
 
 ```
