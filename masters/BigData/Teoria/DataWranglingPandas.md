@@ -157,3 +157,93 @@ df[df['sex'] == 'Female']['salary']
 df[df['sex'] == 'Female'][['salary','sex']]
 
 ```
+
+<br>
+
+### loc vs iloc:
+
+
+- `loc[i:j]`: Seleziona i dati in base alle etichette degli indici, gli estremi sono **_inclusi_** 
+
+- `iloc[i:j]`: Seleziona i dati in base alla posizione (come se fosse un array), l'estremo superiore è **_escluso_** mentre quello inferiore è incluso.  
+
+
+Esempio pratico 
+
+```python
+data = {'valore':[10,20,30,40,50,60]} 
+df = pd.DataFrame(data, index=[1,2,5,9,12,19])  
+
+# DataFrame Risultante: 
+
+'''
+    valore
+1      10
+2      20
+5      30
+9      40
+12     50
+19     60
+
+'''
+
+df.loc[0:5]
+
+#Risultato: cerca di selezionare le righe con indice compreso tra 0 e 5
+'''
+   valore
+1      10
+2      20
+5      30
+
+'''
+
+df.iloc[0:5]
+
+#Risultato: Prende le righe dalla posizione 0 alla 4 indipendentemente dai loro indici (si guarda solo la posizione delle righe).  
+'''
+    valore
+1      10  # posizione 0
+2      20  # posizione 1
+5      30  # posizione 2
+9      40  # posizione 3
+12     50  # posizione 4
+
+'''
+```
+
+**In breve:**
+
+
+| **Metodo** | **Basato su** | **Inclusione estremi** | **Esempio** |
+|------------|-------------|-----------------|-----------|
+| `.loc[]`  | **Indice** | Inclusi | `df.loc[1:5]` prende le righe con indice 1, 2 e 5 |
+| `.iloc[]` | **Posizione** | Escluso superiore | `df.iloc[0:5]` prende le prime 5 righe |
+
+
+
+### Common Functions:
+
+
+| **Funzione** | **Descrizione** |
+|-------------|---------------|
+| `count()` | Numero di valori non NaN |
+| `sum()` | Somma dei valori |
+| `mean()` | Media dei valori |
+| `mad()` | Deviazione assoluta media |
+| `median()` | Mediana |
+| `min()` | Minimo |
+| `max()` | Massimo |
+| `mode()` | Moda (valore più frequente) |
+| `abs()` | Valore assoluto |
+| `prod()` | Prodotto dei valori |
+| `std()` | Deviazione standard |
+| `var()` | Varianza |
+| `sem()` | Errore standard della media |
+| `skew()` | Asimmetria della distribuzione |
+| `kurt()` | Curtosi (appiattimento della distribuzione) |
+| `quantile()` | Quantile di un valore % |
+| `cumsum()` | Somma cumulativa |
+| `cumprod()` | Prodotto cumulativo |
+| `cummax()` | Massimo cumulativo |
+| `cummin()` | Minimo cumulativo |
