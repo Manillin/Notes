@@ -37,7 +37,7 @@ s2 = pd.Series(5.,index=['a','b','c','d','e'])
 
 # --- Res: 
 
-b 0 
+b 1 
 a 0 
 c 2 
 ```
