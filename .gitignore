@@ -8,3 +8,5 @@ Status/
 a.out
 .DS_Store
 media.py
+.venv/
+
