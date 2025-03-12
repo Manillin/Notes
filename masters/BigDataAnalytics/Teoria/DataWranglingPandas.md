@@ -222,7 +222,7 @@ df.iloc[0:5]
 
 
 
-### Common Functions:
+### Common Functions - Data Frame methods:
 
 
 | **Funzione** | **Descrizione** |
@@ -247,3 +247,66 @@ df.iloc[0:5]
 | `cumprod()` | Prodotto cumulativo |
 | `cummax()` | Massimo cumulativo |
 | `cummin()` | Minimo cumulativo |
+
+
+### Aggregazione e Riduzione in un DataFrame  
+
+
+I metodi del DataFrame (alcuni sopra elencati) prendono **due** parametri: 
+1. `axis`: Se vale `0`, stiamo aggregando lungo le righe, operando sulle colonne; se vale `1` aggreghiamo lungo le colonne operando sulle righe.  
+    - axis=0 $\rightarrow$ operazione verticale 
+    - axis=1 $\rightarrow$ operazione orizzontale
+
+2. `skipna`: esclude dati che hanno nel loro campo `NA`, può essere impostato a True o False.   
+
+Se sono richieste funzioni lungo un asse del df si può usare `apply()`, se invece si vogliono fare più aggregazioni ma farle nella stessa istruzione, si usa `aggregate()`.  
+
+Aggregare significa applicare una funzione su un gruppo di dati per ottenere un dato riassuntivo, può avvenire su righe o su colonne.    
+
+
+
+```python
+df = pf.DataFrame({
+    'A': [1, 2, 3],
+    'B': [4, 5, 6],
+    'C': [7, 8, 9]    
+})
+
+# --- Res
+
+'''
+   A  B  C
+0  1  4  7
+1  2  5  8
+2  3  6  9
+'''
+
+# --- Aggregazione Righe 
+
+df.sum(axis=0) 
+
+'''
+A 6
+B 15
+C 24
+'''
+```
+
+_Aggregare lungo le righe_ significa che le righe vengono percorse **verticalmente** e i valori vengono sommati per **colonna**.   
+L'operazione percorre tutte le righe di una colonna e le riassume in un solo valore (aggregandole quindi).  
+
+
+```python
+df.sum(axis=1)
+
+'''
+0 12 
+1 15
+2 18
+'''
+```
+
+_Aggregare lungo le colonne_ significa che le colonne vengono percorse orizzontalmente e i valori vengono sommati riga per riga.  
+L'operazione attraversa tutte le colonne di una riga e le riassume in un solo valore.  
+
+Notare la differenza di indice usato dall'operazione di aggregazione, per axis=0 si usano gli indici di colonna, per axis=1 si usano gli indici di riga.  
