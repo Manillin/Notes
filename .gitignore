@@ -6,3 +6,5 @@ Pipfile.lock
 ./Status
 Status/
 a.out
+.DS_Store
+media.py
