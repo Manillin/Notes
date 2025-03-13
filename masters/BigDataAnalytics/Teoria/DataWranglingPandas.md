@@ -253,7 +253,7 @@ df.iloc[0:5]
 
 
 I metodi del DataFrame (alcuni sopra elencati) prendono **due** parametri: 
-1. `axis`: Se vale `0`, stiamo aggregando lungo le righe, operando sulle colonne; se vale `1` aggreghiamo lungo le colonne operando sulle righe.  
+1. `axis`: può valere `0` o `1`:  
     - axis=0 $\rightarrow$ operazione verticale 
     - axis=1 $\rightarrow$ operazione orizzontale
 
@@ -297,6 +297,9 @@ L'operazione percorre tutte le righe di una colonna e le riassume in un solo val
 
 
 ```python
+
+# --- Aggregazione colonne 
+
 df.sum(axis=1)
 
 '''
