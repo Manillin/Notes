@@ -80,7 +80,7 @@ pipenv run python script.py
 **Spostare un progetto:**  
 1. Spista l'intera cartella con il Pipfile e codice 
 2. Nel nuovo percorso esegui `pipenv install` 
-3. L'ambiente verrà creato con tutte le dipende correttamente 
+3. L'ambiente verrà creato con tutte le dipendenze correttamente 
 
 **Utilizzo in Editor:**  
 Se si utilizza come editor **VScode**, esso riconoscerà automaticamente gli ambienti virtuali e selezionerà l'interprete Python del venv nelle impostazioni.  
