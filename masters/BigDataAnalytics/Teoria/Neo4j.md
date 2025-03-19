@@ -7,6 +7,7 @@
 2. [Property Graph Data Model](#property-graph-data-model)
 3. [Cypher Basic](#cypher-basics)
 4. [Selection Constraints](#selection-constraints)
+5. [Advanced Features](#advanced-features)
 
 
 
@@ -157,7 +158,7 @@ La sintassi di Cypher permette di specificare questi path in modo dichiarativo, 
 ![path example](../../images/path_example.png)
 
 Le funzioni `nodes(p)` e `relationships(p)` sono utilizzate per estrarre i nodi e le relazioni da un path. 
-- `nodes(p)` $\rightarrow$ restituisce tutti i nodi che fanno partedel path `p` 
+- `nodes(p)` $\rightarrow$ restituisce tutti i nodi che fanno partedel path `p` in una lista 
 - `return p` restituisce l'intero path - simile al formato JSON - includendo sia i nodi che le relazioni 
 - `relationships(p)` restituisce una lista di relazioni che fanno parte del path `p`
 
@@ -203,18 +204,20 @@ RETURN actor.born
 ## Aggregation - Sort and Limit
 
 Funzioni di aggregazione (similmente a SQL): 
-- `count(x)` $\rightarrow$ conta il numero di occorrenze 
+- `count(x)` $\rightarrow$ conta il numero di occorrenze **non applicarlo** a liste
+- `size(x)`$\rightarrow$ conta gli elementi all'interno di una **lista**
 - `min(x)` $\rightarrow$ ottiene il valore minore
 - `max(x)` $\rightarrow$ ottiene il valore maggiore 
 - `avg(x)` $\rightarrow$ ottiene la media di un valore numerico 
 - `collect(x)` $\rightarrow$ inserisce (colleziona) tutte le occorrenze in un array  
 
+
 Le funzioni di aggregazione prendono multipli valori come argomenti,  calcolano e ritornano un valore aggregato da essi.  
 Possono esser calcolati:
 - Sui sottografi che fanno match
 - Su sottografi di tali sottografi usando `grouping keys`:  
-    Le Grouping Keys sono espressioni usati per raggruppare i valori che vanno in pasto alle funzioni di aggregazione, per seguire un ordine flessibile
-    - I sottografi che matchano sono divisi in diversi `buckets`
+    Le Grouping Keys sono espressioni usate per raggruppare i valori che vanno in pasto alle funzioni di aggregazione, per seguire un ordine flessibile
+    - I sottografi che matchano diventano $\rightarrow$ `buckets`
     - La funzione di aggregazione poi viene eseguita su questi buckets, calcolando un valore aggregato _per_ bucket.  
     ![esempio aggregate](../../images/esempio_aggregate.png)  
 
@@ -226,12 +229,93 @@ Possono esser calcolati:
         MATCH (a)-[:ACTED_IN]->(m)<-[:DIRECTED]-(d)
         RETURN a.name, d.name, count(*) 
         ```  
+        Qui la Grouping Key è `a.name, d.name` e count(*) restituisce il numero di match di questo bucket - ossia il numero di film dove un'attore e lo stesso direttore hanno lavorato.  
+        Se avessimo voluto avere la lista di film invece del numero di film, dovevamo usare  `collect(m.title)` dove la clausola collect mi crea un array.   
         ![attori-direttori numero film](../../images/count_esempio_adf.png)
 
 
 Funzioni di ordinamento (sorting):
-- `ORDER BY`$\rightarrow$ ordina le query in base a filtri 
+- `ORDER BY`$\rightarrow$ ordina le query in base a filtri.  
+    Può essere imposto il verso dell'ordinamento con `ASC`e `DESC` (di default è impostato ASC)  
+    ```
+    ORDER BY n.title, n.price DESC|ASC
+    ```  
 
 Funzioni limite:
-- `LIMIT`$\rightarrow$ limita il numero di occorrenze che ritorna la query
+- `LIMIT`$\rightarrow$ limita il numero di occorrenze che ritorna la query  
+
+
+Funzione labels:
+- `labels(<nodo>)` $\rightarrow$ restituisce una lista di label associata a un nodo 
+
+
+<br><br>
+
+# Advanced Features:  
+
+
+<br>
+
+## Variable Length Paths:  
+
+I percorsi sono definiti da sequenze di nodi e relazioni. Ad esempio, per descrivere un percorso da a a d attraverso tre relazioni si scrive:  
+
+```
+(a)-[:REL]->(b)-[:REL]->(c)-[:REL]->(d)
+```
+
+**Tuttavia** se il percorso è lungo o la lunghezza è _sconosciuta_, specificare manualmente ogni nodo e relazione diventa inefficiente $\rightarrow$ per questo motivo è stata introdotta la sintassi dei **percorsi a lunghezza variabile**.  
+
+### Sintassi e Funzionamento: 
+
+Si utilizza `[*min..max]` per definire un percorso di lunghezza variabile:  
+- `(a) - [*1..3] -> (b)`    
+    Definisce un **range** di hop (salto da un nodo ad un altro)  
+    `1` lunghezza minima del hop ; `3` lunghezza massima del hop
+- `[*2..]` $\rightarrow$ percorsi con almeno due relazioni senza limite superiore
+- `[*3]` $\rightarrow$ percorsi con **esattamente** 3 relazioni
+- `[*]` equivale a `[1*..]` $\rightarrow$ percorsi senza limite, ovvero con almeno 1 di lunghezza.  
+
+
+
+
+
+## Shortest Path Planning:  
+
+Per trovare lo shortest path tra due nodi si usa la funzione `shortestPath()`, esiste anche la variabile `allShortestPaths()` per trovare tutti i cammini minimi - implementazione di Dijkstra.  
+
+```
+MATCH (diane:Person{name:'Diane Keaton'}), (madonna:Person{name:'Madonna'}),
+p = shortestPath((diane)-[*]-(madonna))
+RETURN p
+```
+
+**List Comprehension:**  
+La List Comprehension è una sintassi compatta per crere o filtrare liste in Cypher
+
+```
+[<variable> IN <lista> WHERE <condizione> | <espressione>]
+```
+
+- `<variabile>` $\rightarrow$ variabile temporanea che rappresenta ogni elemento della lista
+- `<lista>` $\rightarrow$ la lista su cui iterare (tipo nodes(p))
+- `WHERE <condizione>` $\rightarrow$ filtra gli elementi della lista (opzionale)
+- `<espressione>` $\rightarrow$ trasforma o selezione un valore per ogni elemento (opzionale)  
+
+
+Es di query strutturata 
+
+numero minimo di film che separano Charlize Theron da Kevin Bacon - _bacon number_  
+
+```
+match p=shortestPath( (a:Person{name:'Charlize Theron'}) - [:ACTED_IN*] - (b:Person{name:'Kevin Bacon'}) )
+return size([n in nodes(p) where 'Movie' in labels(n)]) as baconNum
+```
+
+**nota importante:** Nella clausola di return era _necessario_ usare `size()` e non `count()` in quanto count conta le occorrenze di un valore, e una lista restituisce sempre `1` se passata a `count`. Size invece conta il numero di elementi all'intero di una lista, ed è quindi la funzione corretta per il nostro caso.  
+- size([Movie1,Movie2]) $\rightarrow$ 2 
+- count([Movie1,Movie2]) $\rightarrow$ 1 
+
+
+
 
