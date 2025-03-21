@@ -37,7 +37,7 @@ Consideriamo un attributo $X$ e un set $\{x_i\}_{i=1,...,N}$ come insieme di $N$
 ### Media Aritmetica: 
 
 $$
-\bar{x} = \frac{1}{N} \sum_{i=1}^{N}x_i
+\bar{x} = \frac{1}{N} \sum_{i=1}^{N}x_i  
 $$  
 
 Nel caso non tutti i valori siano ugualmente significativi, si può definire un set di pesi $\{w_i\}_{i=1,..,N}$ per ogni valore e calcolare: 
@@ -45,7 +45,7 @@ Nel caso non tutti i valori siano ugualmente significativi, si può definire un 
 ### Media aritmetica pesata:  
 
 $$
-\bar{x} = \frac{1}{N} \sum_{i=1}^{N}w_i x_i
+\bar{x} = \frac{1}{N} \sum_{i=1}^{N}w_i x_i  
 $$
 
 
@@ -57,7 +57,7 @@ $$
 x_{50} = \begin{cases}
 1. & \bar{x_{(N+1)/2}} \space\space\space\space N\text{dispari}\\
 2. & \frac{x_{N/2} + x_{(N+1)}}{2} \space\space\space\space N\text{pari}
-\end{cases}
+\end{cases}  
 $$
 
 <br>
@@ -70,7 +70,7 @@ Per grandi valori di $N$ (cioè quando il numero di dati è molto elevato), calc
 
 
 $$  
-x_{50} = L_{50} + \left( 0.5 - CD(L_{50}) \right) \cdot \frac{U_{50} - L_{50}}{CD(U_{50}) - CD(L_{50})}  \space\space\space\space\space\space CD(y) = \frac{1}{N} \sum_{i=1}^{N} \delta_{x_i < y} 
+x_{50} = L_{50} + \left( 0.5 - CD(L_{50}) \right) \cdot \frac{U_{50} - L_{50}}{CD(U_{50}) - CD(L_{50})}  \space\space\space\space\space\space CD(y) = \frac{1}{N} \sum_{i=1}^{N} \delta_{x_i < y}  
 $$  
 
 
@@ -86,7 +86,7 @@ $$
 La moda è il valore $x$ dove la PMF (Probability Mass Function) di $X$ prende il valore massimo - nel caso di variabili aleatorie discrete.  
 Nel caso di variabili aleatorie continue la moda è quel valore che massimizza la PDF $f(x)$, in altre parole:
 $$
-\text{Moda} = \text{arg}\space\space {max}_x f(x)
+\text{Moda} = \text{arg}\space\space {max}_x f(x)  
 $$
 
 
@@ -96,11 +96,11 @@ $$
 Può essere dimostrato che per una distribuzione unimodale si ha questo comportamento: 
 
 $$
-|\bar{X} - X_{50}| \leq 0.77\sigma 
+|\bar{X} - X_{50}| \leq 0.77\sigma  
 $$
 
 $$
-|\text{mode}(X) - X_{50}| \leq 1.73\sigma
+|\text{mode}(X) - X_{50}| \leq 1.73\sigma  
 $$
 
 ![](../../images/moda_media_mediana_skewed.png)
@@ -112,7 +112,7 @@ Queste formule indicano che la media tende a essere più influenzata da valori e
 **Recall: Deviazione Standard**  
 
 $$
-\sigma = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - \bar{X})^2}
+\sigma = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - \bar{X})^2}   
 $$
 
 La deviazione standard $\sigma$ misura la dispersione dei dati, se $\sigma$ è grande significa che i dati sono molti dispersi.   
@@ -133,7 +133,7 @@ $$
 ### Person's Correlation: 
 
 $$  
-r_{A,B} = \frac{1}{N \sigma_A \sigma_B} \sum_{i=1}^{N} (a_i - \bar{A})(b_i - \bar{B}) \space\space\space\space \text{values bounded to} -1 \leq r_{A,B} \leq 1
+r_{A,B} = \frac{1}{N \sigma_A \sigma_B} \sum_{i=1}^{N} (a_i - \bar{A})(b_i - \bar{B}) \space\space\space\space \text{values bounded to} -1 \leq r_{A,B} \leq 1  
 $$  
 
 
@@ -147,7 +147,7 @@ $$
 ### Correlazione $\chi^2$ di Pearson: 
 
 $$
-\chi^2 = \sum_{i=1}^{\alpha}\sum_{j=1}^{\beta} \frac{(M_{ij}-E_{ij})^2}{E_{ij}}
+\chi^2 = \sum_{i=1}^{\alpha}\sum_{j=1}^{\beta} \frac{(M_{ij}-E_{ij})^2}{E_{ij}}  
 $$
 
 
