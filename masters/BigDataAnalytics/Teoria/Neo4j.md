@@ -312,9 +312,17 @@ match p=shortestPath( (a:Person{name:'Charlize Theron'}) - [:ACTED_IN*] - (b:Per
 return size([n in nodes(p) where 'Movie' in labels(n)]) as baconNum
 ```
 
-**nota importante:** Nella clausola di return era _necessario_ usare `size()` e non `count()` in quanto count conta le occorrenze di un valore, e una lista restituisce sempre `1` se passata a `count`. Size invece conta il numero di elementi all'intero di una lista, ed è quindi la funzione corretta per il nostro caso.  
+**nota importante:** Nella clausola di return era _necessario_ usare `size()` e non `count()` in quanto count conta le occorrenze di un valore, e una lista restituisce sempre `1` se passata a `count`. `size()` invece conta il numero di elementi all'intero di una lista, ed è quindi la funzione corretta per il nostro caso.  
 - size([Movie1,Movie2]) $\rightarrow$ 2 
 - count([Movie1,Movie2]) $\rightarrow$ 1 
+
+
+
+
+### WITH
+
+La clausola `WITH` permette di unire parti di query insieme.  
+Effettua il `piping` dei risultati di una sottoquery e li restituisce come input per la sottoquery successiva.  
 
 
 
