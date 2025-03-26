@@ -17,7 +17,7 @@ Per maggiori dettagli ed esempi grafici controllare il primo pacco di slide da p
 
 <br>
 
-## Introduction to Pandas: 
+# Introduction to Pandas: 
 
 ### Series:
 
@@ -123,9 +123,9 @@ Fare riferimento al ipynb per visualizzare i comandi interattivamente
 
 
 
-## Uso di Filri sul DataFrame:
+## Uso di Filtri sul DataFrame:
 
-Possiamo usare filtrare la tabella per ottenere solo le informazioni che voglioamo, per fare ciò si usano i **Filtri Booleani**.  
+Possiamo filtrare la tabella per ottenere solo le informazioni che voglioamo, per fare ciò si usano i **Filtri Booleani**.  
 Questi ritorneranno un T o F e selezioneremo solo gli elementi della tabella conformi al tipo di ritorno che vogliamo (T).  
 
 ```python
