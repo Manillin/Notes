@@ -313,3 +313,114 @@ _Aggregare lungo le colonne_ significa che le colonne vengono percorse orizzonta
 L'operazione attraversa tutte le colonne di una riga e le riassume in un solo valore.  
 
 Notare la differenza di indice usato dall'operazione di aggregazione, per axis=0 si usano gli indici di colonna, per axis=1 si usano gli indici di riga.  
+
+
+## Map e metodi di stringhe 
+
+Esistono due varianti del metodo `map`:
+- `applymap` funziona element wise su un Dataframe
+- `map` funziona element wise su una Series 
+
+es:
+```python
+def dollarConvert(x):
+    return x*1.14
+df['dollar'] = df['salary'].map(dollarConvert)
+```
+
+I metodi di stringhe sono i seguenti:
+- `str.lower(), str.upper(), str.len(), str.split()`  
+- `df['sex'] = sf['sex'].str.lower()` $\rightarrow$ trasforma le entry della colonna sex in minuscolo.  
+
+## Groupby: 
+
+Il metodo `groupby` permette di splittare i dati del dataframe in gruppi secondo specifici criteri (singoli o multipli)
+
+```python
+# raggruppo usando il 'rank' (ruolo)
+df_rank = df.groupby(['rank'])
+
+# raggruppo secondo 'rank' e 'sex'
+df_rs = df.groupby(['rank','sex'])
+```
+
+Questo metodo restituisce un oggetto **`groupby`**, possiamo enumerare i gruppi presenti sotto forma di dizionario con `df_rs.groups`.  
+
+Una volta che abbiamo creato un gruppo, risulta facile ottenere statistiche su di essi:
+
+```python
+# fare un gruppo per tipologia di prof e calcolare la media del loro salario
+
+df_rank = df.groupby(['rank'])
+df_rank[['salary']].mean()
+```
+
+
+## Concat e Merge
+
+Permette di concatenare due o più dataframe verticalmente o orizzontalmente, il verso è specificato dalla variabile `axis` 
+
+Sintassi $\rightarrow$ `pd.concat([list of DataFrames],join=)`
+
+- **concatenazione verticale**:  
+    `axis=0` $\rightarrow$ se si hanno 2 DataFrame con le stesse colonne, concat li unirà aggiungendo le righe del secondo DataFrame sotto quelle del primo.
+
+- **concatenazione orizzontale**:  
+    `axis=1` $\rightarrow$ concatena lungo le colonne. Usa questo quando vuoi aggiungere colonne da un DataFrame all'altro.  
+
+- **Inner join** Vengono concatenati i df solo in corrispondenza di indici uguali, vengono lasciate fuori le righe con indici presenti in una e assenti nell'altro df (Simile a un **intersezione insiemistica**)
+
+- **Outer join** (default) Tutti gli indici vengono inclusi nella concatenazione, nella tabella che non ha un indice presenta nell'altra vengono inseriti NaN lungo quella riga (Simile ad un **unione insiemistica**)
+
+---
+
+<br>
+
+La funzione **merge** è utilizzata per unire due DataFrame basandosi su una o più **colonne** comuni, simile a un'operazione di join in SQL.  
+
+Sintassi $\rightarrow$ `pd.merge(left, right, on=, how=, ...)`  
+
+- Colonne di unione:  
+    - `on`: Specifica le colonne su cui unire i DataFrame. Se non specificato, merge utilizza l'intersezione dei nomi delle colonne.
+
+- Tipi di join:  
+    - `how='left'` Mantiene tutte le righe del DataFrame di sinistra e aggiunge i dati corrispondenti dal DataFrame di destra.
+    - `how=right` Analogo ma verso il dataframe di destra.  
+    - `how=outer|inner`La prima opzione mantiene le righe da entrambi i df (mettendo NaN) mentre la seconda opzione mantiene le righe con valori corrispondenti in entrabi i df.  
+
+
+Es:  
+students_df:
+
+| StudentID | Name | Age |
+|-----------|---------|-----|
+| 1 | Alice | 20 |
+| 2 | Bob | 21 |
+| 3 | Charlie | 22 |  
+
+grades_df:  
+| StudentID | Course | Grade |
+|-----------|---------|-------|
+| 1 | Math | A |
+| 1 | Science | B |
+| 2 | Math | B+ |
+| 3 | Science | A- |
+| 4 | Math | C |
+
+```python
+merged_df = pd.merge(students_df, grades_df, on='StudentID', how='inner')
+
+print(merged_df)
+
+```
+Risultato:  
+| StudentID | Name    | Age | Course  | Grade |
+|-----------|---------|-----|---------|-------|
+| 1         | Alice   | 20  | Math    | A     |
+| 1         | Alice   | 20  | Science | B     |
+| 2         | Bob     | 21  | Math    | B+    |
+| 3         | Charlie | 22  | Science | A-    |
+
+
+
+
