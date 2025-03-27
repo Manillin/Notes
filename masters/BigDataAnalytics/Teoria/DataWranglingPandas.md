@@ -372,6 +372,10 @@ Sintassi $\rightarrow$ `pd.concat([list of DataFrames],join=)`
 
 - **Outer join** (default) Tutti gli indici vengono inclusi nella concatenazione, nella tabella che non ha un indice presenta nell'altra vengono inseriti NaN lungo quella riga (Simile ad un **unione insiemistica**)
 
+Comportamento default: concatenazione verticale ed include tutti gli indici (unione insiemistica) inserendo NaN dove necessario  
+- `pd.concat([df1,df2], axis=0, join='outer')`
+
+
 ---
 
 <br>
@@ -422,5 +426,8 @@ Risultato:
 | 3         | Charlie | 22  | Science | A-    |
 
 
+<br>
+
+---
 
 
