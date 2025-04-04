@@ -204,7 +204,7 @@ RETURN actor.born
 ## Aggregation - Sort and Limit
 
 Funzioni di aggregazione (similmente a SQL): 
-- `count(x)` $\rightarrow$ conta il numero di occorrenze **non applicarlo** a liste
+- `count(x)` $\rightarrow$ conta il numero di occorrenze (**non applicarlo** a liste)
 - `size(x)`$\rightarrow$ conta gli elementi all'interno di una **lista**
 - `min(x)` $\rightarrow$ ottiene il valore minore
 - `max(x)` $\rightarrow$ ottiene il valore maggiore 
