@@ -324,10 +324,22 @@ Se $\chi^2$ fosse stato minore di 10.828 allora le variabili sarebbero state ind
 La correlazione $\chi^2$ di Pearson **NON** misura la forza dell'associazione, ne verifica solo la sua esistenza o assenza.  
 
 
+### Coefficiente di correlazione punto Biseriale
 
 
+Questa correlazione stima la correlazione tra due attributi $A$ e $B$ quando **solo** uno dei due è binario.  
 
+Presa la variabile binaria ($B$) dividiamo il dataset in oggetti identificati da $B=1$ e $B=0$ di sample $n_1$ e $n_0$ rispettivamente.  
+Chiamiamo $n=n_1+n_0$ il numero totale di sample 
 
+$$
+
+r_{pb} = \frac{\bar{A_1}-\bar{A_0}}{\sigma_A}\sqrt{\frac{n_1n_0}{n}}
+
+$$
+
+- $\bar{A_1},\bar{A_2}$ sono le medie di $A$ per i due gruppi
+- $\sigma_A$ è la deviazione standard dell'intero dataset 
 
 
 
