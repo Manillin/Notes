@@ -5,8 +5,10 @@
 
 1. [Data Types](#data-types)
 2. [Central Tendency](#central-tendency)
-3. [TBD]()
-
+3. [Covarianza](#covarianza)
+4. [Correlazione di Pearson & Correlazione di Spearman](#correlazione-di-pearson)
+5. [Correlazione di Rango di Spearman & Rango di Kendall ($\tau$)](#correlazione-di-rango-di-spearman)
+6. [Correlazione $\chi^2$ e Coefficiente di punto Biseriale ](#coefficiente-di-correlazione-punto-biseriale)
 
 
 <br> <br>
