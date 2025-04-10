@@ -111,3 +111,194 @@ $$
 J(i,j) = 1-d(i,j)= \frac{q}{q+r+s}
 $$
 
+
+<br>
+
+---
+
+### Attributi  Numerici:  
+
+Gli attributi numerici (es. età, reddito, temperatura) richiedono metriche di distanza per quantificare la dissimilarità tra oggetti.  
+
+Le principali sono:  
+
+$$
+\text{Distanza Euclidea:}\space\space\space\space d(i,j) = \sqrt{\sum_{\alpha=1}^{p} (x_{i\alpha} - x_{j\alpha})^2}  
+$$
+
+$$
+\text{Distanza Manhattan:}\space\space\space\space d(i,j) = \sum_{\alpha=1}^{p} |x_{i\alpha} - x_{j\alpha}|  
+$$
+
+
+$$
+\text{Distanza Chebyshev:}\space\space\space\space d(i,j) = \max_{\alpha} |x_{i\alpha} - x_{j\alpha}|  
+$$
+
+$$
+\text{Distanza Minkowski}\space\space\space\space d(i,j) = \left( \sum_{\alpha=1}^{p} (x_{i\alpha} - x_{j\alpha})^{h} \right)^{1/h}  
+$$
+
+$$
+- d(i,j) \geq 0  
+- d(i,i) = 0  
+- d(i,j) = d(j,i)  
+- d(i,j) \leq d(i,k) + d(k,j)  
+$$
+
+
+
+<br>
+
+---
+
+### Attributi Ordinali:  
+
+Gli attributi ordinali rappresentano categoire con un **ordine intrinseco** ma non hanno una misura numerica diretta $\rightarrow$  {freddo,moderato,caldo}.  
+Per poter utlizzare attributi ordinali in data science bisogna convertirli in valori numerici e normalizzarli.  
+
+**Conversione in Ranghi Numerici:**  
+- Ogni categoria viene mappata a un numero intero, preservando l'ordine
+- Attributi diversi (colonne del df) possono avere un numero di categorie diverse ($M_\alpha$), per questo motivo si riscala ogni attributo per garantire comparabilità.  
+
+
+
+<center>
+
+$$
+r_{i\alpha} = \text{rank}(x_{i\alpha})  
+$$
+
+
+$$
+z_{i\alpha} = \frac{r_{i\alpha} - 1}{M_\alpha - 1}  
+$$
+
+
+
+</center>
+
+
+Es:  
+Temperatura $\rightarrow$ {Freddo:1, Moderato:2, Caldo:3}  
+Normalizzazione $\rightarrow$ {Freddo: (1-1/3-1 = **0.0**), Moderato: (2-1/3-1=**0.5**),...}
+
+Successivamente conversione e alla normalizzaione, si usano le stesse matriche degli attributi _numerici_.   
+
+<br>
+
+--- 
+
+
+
+### Attributi Misti:   
+
+In molti dataset reali, gli oggetti sono descritti da attributi di diverso tipo, per calcolare la dissimilarità si combina il contributo di ogni attributo, normalizzandolo.  
+
+
+Formula generale: 
+
+
+$$
+d(i,j) = \frac{\sum_{\alpha=1}^{p} \delta_{ij}^{(\alpha)} \cdot d_{ij}^{(\alpha)}}{\sum_{\alpha=1}^{p} \delta_{ij}^{(\alpha)}}  
+$$  
+
+Ricordiamo i termini chiave:   
+
+- $i$ e $j$ sono due record/oggetti nel dataset (due righe di una tabella)  
+- $\alpha$ indice che rappresenta un indice specifico (es: Eta, Temperatura, ...)  
+- $x_{i\alpha}$ valore del record $i$ per l'attributo $\alpha$
+- $x_{j\alpha}$ valore del record $j$ per l'attributo $\alpha$
+
+
+
+Significato della formula:  
+
+- $\delta_{ij}^{(\alpha)}$ :
+    - $0$ se uno dei due valori $x_{ia}$ o $x_{ja}$ è mancante o se l'attributo $\alpha$ è binario asimmetrico ed entrambi i valori sono $0$
+    - $1$ altrimenti   
+- $d_{ij}^{(\alpha)}$ è la dissimilarità normalizzata per l'attributo $\alpha$ e varia dal tipo attributo.  
+    - Binari/Nominali: $d_{ij} = 0 \space\space\text{se}\space\space x_{ia}=x_{ja}$ o $0$ altrimenti.   
+    - Numerici: $d_{ij}^{(\alpha)} = \frac{|x_{ia}-x_{ja}|}{\text{max}(\alpha)-\text{min}(\alpha)}$  
+    - Ordinali: $d_{ij}^{(\alpha)} = |x_{ia}-x_{ja}|$  
+
+
+
+<br>
+
+---
+
+
+### Similarità Coseno:  
+
+Misura la similarità tra de vettori in base all'angolo $\theta$ tra essi (valori bound tra -1 e 1).  
+
+$$
+S_C(\vec{i}, \vec{j}) = \text{cos}(\theta_{ij}) =\frac{\vec{i} \cdot \vec{j}}{\|\vec{i}\| \|\vec{j}\|}  
+$$
+
+- $S_C = 1$ vettori nella stessa direzione (massima simlarità)
+- $S_C = 0$ vettori ortogonali (nessuna correlazione tra essi)
+- $S_C = -1$ vettori in direzioni opposte
+  
+
+
+Se i vettori sono normalizzati, esiste questa relazione con la distanza euclidea  
+
+$$
+\|\vec{i} - \vec{j}\| = \sqrt{2(1 - S_C(\vec{i}, \vec{j}))}  
+$$
+
+
+<br>
+
+
+---
+
+<br>
+
+## Similarità tra Distribuzioni:  
+
+Capire come i dati sono distribuiti in un dataset è fondamentale, si confrontano distribuzioni per: 
+- valutare similarità: capire se due campioni provengono dalla stessa popolazione 
+- ottimizzare modelli: misurare quanto un modello approssima i dati reali 
+- analizzare cambiamenti: studiare variazioni temporali o geografiche (vendite in anni diversi,...)  
+
+
+<br>
+
+### Divergenza di Kullback-Leibler (KL-Divergence):   
+
+Misura quanto una distribuzione $q(x)$ diverge da una distribuzione di riferimento $p(x)$   
+- $p(x)$ distribuzione 'vera' (es:dati reali)
+- $q(x)$ distribuzione 'approssimata' (es:modello statistico)  
+
+<br>
+
+La KL Divergence $D_{KL}(p \| q)$ misura quanto $q(x)$ **è sbagliata rispetto a** $p(x)$
+
+
+
+$$
+\text{Caso discreto:}\space\space\space\space\space D_{KL}(p \| q) = \sum_{x \in X} p(x) \ln\left(\frac{p(x)}{q(x)}\right)  
+$$
+
+
+$$
+\text{Caso continuo:}\space\space\space\space\space D_{KL}(p \| q) = \int_{-\infty}^{\infty} p(x) \ln\left(\frac{p(x)}{q(x)}\right) dx  
+$$
+
+- $D_{KL}=0$ distribuzioni identiche
+- $D_{KL} \lt 0.1$ distribuzioni simili 
+- $D_{KL}\approx 0.5$ distribuzioni notevolmente diverse
+- $D_{KL} > 1$ distribuzioni incompatibili
+
+**Nota:** Potrebbe 
+
+
+
+-pic nic mega improvvisato in un qualche parco a modena (amendola) + carte (tipo uno che cazzo ne so)
+- marina pool | sottosopra bowling 
+- aperitivo centro (gasa il giusto)
+- palazzo dei musei - gallerie estensi 
+
