@@ -293,12 +293,70 @@ $$
 - $D_{KL}\approx 0.5$ distribuzioni notevolmente diverse
 - $D_{KL} > 1$ distribuzioni incompatibili
 
-**Nota:** Potrebbe 
+**Nota:** Se il modello $q$ assegna probabilità zero a un evento che nella realtà $p$ (o nella distribuzione di riferimento) è possibile, la KL Divergence esplode e tende a $\infty$.  
+
+
+<br>
+
+---
+
+### Jensen-Shannon Divergence  
+
+Misura la similarità tra distribuzioni, ed è:
+- Simmetrica: $D_{JS}(p \| q) = D_{JS}(q \| p)$ Utile quando l'ordine delle distribuzioni non è importante.  
+- Limitata: Valori compresi tra 0 e $ln(2) \approx 0.69
+- Smooth: Più liscia e meno sensibili a piccoli cambiamenti nelle distribuzioni  
+
+Particolarmente usata quando si confrontano due distribuzioni senza che una sia quella di riferimento (tipo una distribuzione sperimentale confrontata con quella reale).  
+
+$$
+D_{JS}(p \| q) = \frac{1}{2}D_{KL}(p \| \frac{p+q}{2}) + \frac{1}{2} D_{KL}(q \| \frac{p+q}{2})
+$$
+
+
+Essendo limitata è più facile capire se due distribuzioni si assomigliano o meno, inoltre è più robusta per applicazioni pratiche in quanto non esplode verso $\infty$.  
+In breve: 
+- KL-Divergence: Misura quanto un modello $q$ si discosta dai dati del modello di riferimento $p$ - misura la perdita di informazioni quando $q$ approssima $p$   
+- Jensen-Shannon Divergence: Versione simmetrica e limitata della KL, serve per confrontare distribuzioni generiche tra di loro, misura la distanza media tra tra $p$ e $q$.  
+
+
+<br>
+
+---
+
+
+### Distanza di Wasserstein - Kantorovich 
+
+La distanzadi Wasserstein (Earth Mover's Distance) misura il minimo sforzo necessario per spostare la distribuzione $p$ nella distribuzione $q$.  
 
 
 
--pic nic mega improvvisato in un qualche parco a modena (amendola) + carte (tipo uno che cazzo ne so)
-- marina pool | sottosopra bowling 
-- aperitivo centro (gasa il giusto)
-- palazzo dei musei - gallerie estensi 
+$$
+W_m(p, q) = \left( \inf_{\gamma \in \Gamma(p, q)} \mathbb{E}_{(x, x') \sim \gamma} \left[ d(x, x')^m \right] \right)^{1/m}
+$$
+
+
+- $\Gamma(p,q)$ è l'insieme di tutti gli accoppiamenti (o trasporti) $\gamma$ tra $p$ e $q$, dove per accoppiamento si intende una distribuzione congiunta tale che le marginali siano $p$ e $q$.  
+- $d(x,x')$ è la distanza tra due punti $x$ (di $p$) e $x'$ (di $q$)
+- $m$ è un parametro che penalizza gli spostsamenti, per $m=1$ il costo è la distanza semplcie, mentre per $m=2$ la distanza è quadratica (penalizzando spostamenti lunghi)  
+- $W_m(p, q)$ cerca il trasporto ottimale $\gamma$ che minimizza il costo medio per trasformare la distribuzione di probabilita $p$ nella distribuzione $q$.   
+
+<br>
+
+Es: nel caso unidimensionale la distanza di Wasserstein ha una formula esplicita
+
+$$
+W(p, q) = \int_{-\infty}^{\infty} \left| \text{CDF}_p(x) - \text{CDF}_q(x) \right| dx
+$$
+
+- $\text{CDF}_p(x) = \int_{-\infty}^x p(z) dz$
+- $\text{CDF}_q(x)$ è la CDF di $q$
+- In 1D il trasporto ottimale mappa ogni quantile di $p$ al corrispondente quantile di $q$
+- La differenza tra le CDF rappresenta quanta massa deve essere spostata per allineare $p$ a $q$
+
+
+![Wasserstein 1D](../../images/wasserstein1D.png)
+
+[Formulazione matematica a pg30]  
+
 
