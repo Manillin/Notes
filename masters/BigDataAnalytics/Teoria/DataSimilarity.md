@@ -304,7 +304,7 @@ $$
 
 Misura la similarità tra distribuzioni, ed è:
 - Simmetrica: $D_{JS}(p \| q) = D_{JS}(q \| p)$ Utile quando l'ordine delle distribuzioni non è importante.  
-- Limitata: Valori compresi tra 0 e $ln(2) \approx 0.69
+- Limitata: Valori compresi tra 0 e $ln(2) \approx 0.69$
 - Smooth: Più liscia e meno sensibili a piccoli cambiamenti nelle distribuzioni  
 
 Particolarmente usata quando si confrontano due distribuzioni senza che una sia quella di riferimento (tipo una distribuzione sperimentale confrontata con quella reale).  
@@ -355,7 +355,12 @@ $$
 - La differenza tra le CDF rappresenta quanta massa deve essere spostata per allineare $p$ a $q$
 
 
+<center>
+
 ![Wasserstein 1D](../../images/wasserstein1D.png)
+
+
+</center>
 
 [Formulazione matematica a pg30]  
 
