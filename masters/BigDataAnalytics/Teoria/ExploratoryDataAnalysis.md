@@ -128,7 +128,10 @@ Oltre ad usare metriche per misurare i dati più caratteristici bisogna **quanti
     - 2-Quantile: Divide i dait in due (ottiene la mediana)  
     - 4-Quantile | Quartile: Introduce 3 punti chiave per suddividere i dati in 4: $Q_1, Q_2=x_{50}, Q_3$ creando 4 intervalli.  
     - **Range Interquartile**: Un ulteriore misura di dispersione, corrisponde a $IQR=Q_3-Q_1$  
-    - 100-Quantile | Percentile: Usati normalmente come 'percuentuali' da 1 a 100.  
+    - 100-Quantile | Percentile: Usati normalmente come 'percuentuali' da 1 a 100. 
+    - **Es**: Il primo quantile `quantile(0.25)` è il valore sotto al quale cade il 25% dei dati, mentre il terzo quantile `quantile(0.75)` è il valore sotto al quale cade il 75% dei dati -> il range interquartile $Q3-Q1$ misura quindi la dispersione dei dati centrali escludendo gli outlier.  
+        -Indica il valore sotto il quale cade la percentuale $p$ dei dati. Non significa che esattamente $p%$ dei dati ha quel valore, ma che $p%$ dei dati è uguale o inferiore a quel valore. (es-titanic: `quantile(1) = 1` mi indica che il 100% dei valori è uguale o inferiore a 1, tutti i dati rientrano dei valori 0 o 1).  
+        
 
 
 
