@@ -17,6 +17,9 @@
 12. [Concat e Join](#concat-e-join)
 13. [Merge](#merge)
 14. [Casi interessanti](#casi-interessanti)
+15. [Bar Plots](#bar-plots)
+16. [Box Plots](#box-plot)
+17. [QQ-Plots](#qq-plot)
 
 
 ### Creazione Series:  
@@ -83,6 +86,7 @@ df['disciplines'].value_counts()
 df.isna().sum()
 df['col'].isna().sum()
 df['disciplines'].count()
+df['col'].values
 
 ```
 
@@ -93,6 +97,7 @@ df['disciplines'].count()
 5. Conta il numero di `NaN` che appaiono in un dataframe  
 6. Conta i `NaN` che appaiono in una singola colonna 
 7. Conta il numero di elementi in una colonna 
+8. Restituisce gli elementi sotto forma di array numpy monodimensionale
 
 <br>
 
@@ -352,6 +357,109 @@ print(data)
 - Concateno il dataframe selezionando solo la colonna 'Patient' dall'originale e concatenando in orizzontale (`axis=1`) (aggiungendo colonne) le nuovi colonne, in questo modo otteniamo il dataframe nella struttura che desideravamo.  
 
 
+<br><br>
+
+---
+
+
+## Bar Plots
+
+Crea un grafico a barre, ideale per visualizzare la frequenza/conteggi di categorie discrete (es: maschio,femmina).  
+- Asse $x$: mostra le categorie 
+- Asse $y$: mostra la frequenza di ciascuna categoria (es:577 per maschi e 314 per femmine - ds titanic)  
+
+```python
+
+# Contenuto colonna 'Sex'
+df['Sex'].head(2)
+'''
+0      male
+1    female
+Name: Sex, dtype: object
+'''
+
+# Value counts su colonna 'Sex' -> returns dati discreti
+df['Sex'].value_counts()
+'''
+Sex
+male      577
+female    314
+Name: count, dtype: int64
+'''
+
+# Creo barplot sui dati discreti per visualizzare frequenza 'Sex'
+df['Sex'].value_counts().plot.bar(title='Sex')
+```
+
+![barplot sex](../../images/barplot_sex.png)
+
+
+<br><br>
+
+---
+
+
+## Box Plot
+
+
+Riassume la distribuzione di un insieme di dati attraverso 5 statistiche:
+1. Minimo: Il valore più basso, esclusi gli outlier.
+2. Primo Quartile (Q1): Il 25° percentile.
+3. Mediana (Q2): Il 50° percentile, o valore centrale.
+4. Terzo Quartile (Q3): Il 75° percentile.
+5. Massimo: Il valore più alto, esclusi gli outlier.
+ 
+Viene visualizzata una scatola che contiene il Q1 e Q3 con una linea che indica la mediana (Q2).  
+I baffi sono gli estremi max e min esclusi gli outlier, che vengono rappresentati come cerchi.  
+
+La lunghezza della scatola rappresenta la dispersione dei dati centrali (se la mediana è al centro della scatola i dati la distribuzione è simmetrica)  
+
+**Raggruppamento nei Boxplot:**  
+Si indica a pandas che vuoi creare boxplot separati per ciascun gruppo definito dalla colonna specificata 
+
+```python
+df['Fare'].boxplot('Fare',by='Survived')
+```
+
+![boxplot grouped by survived - fare](../../images/boxplot_fare_survived.png)
+
+Spiegazione: `by='Survived'` crea boxplot serparati per ciascun valore unico nella colonna Survived (0 e 1), ogni boxplot rappresenta la distribuzione dei prezzi dei biglietti (Fare) per i passeggieri che sono sopravvissuti (1) e non (0).  
+
+**Note-Osservazioni:**  
+boxplot non mostrano il numero di osservazioni in ciascun gruppo. Non puoi determinare quanti passeggeri sono sopravvissuti o non sopravvissuti solo guardando il boxplot.  
+I boxplot sono ideali per analizzare la distribuzione e la variabilità dei dati all'interno di ciascun gruppo.
 
 
 
+<br><br>
+
+--- 
+
+## QQ-Plot
+
+Un QQPlot confronta i quantili di due distribuzioni per verificare se hanno la stessa forma:
+- se i punti seguono la retta diagonale ($y=x$) le due distribuzioni sono identiche 
+- se i punti deviano dalla diagonale allora le due distribuzioni differiscono in modo sistematico
+
+Per costruire un QQPlot si ordinano i dataset in modo crescente e si calcolano gli stessi quantili per entrambe le distribuzioni.  
+I punti si generano prendendo i quantili delle due distribuzioni:
+- Ascissa: quantile della prima distribuzione 
+- Ordinata: quantile della seconda distribuzione  
+Si tracciano i punti e la linea di riferimento e si osserva come tali punti seguono la diagonale.  
+
+**Interpretazione dei punti:**  
+- Se il punto è sulla diagonale allora le due distribuzioni hanno lo stesso valore in quel quantile 
+- Se il punto è **sopra** la diagonale, allora la seconda distribuzione ha valori maggiori in quel quantile  
+- Se il punto è **sotto** la diagonale, allora la seconda distribuzione ha valori minori in quel quantile  
+
+Serve principalmente per confrontare se due distribuzioni sono simili, ma può anche essere utilizzato per vedere se una distribuzione segue una normale (si confronta la distribuzione con una distribuzione normale -> QQPlot vs Normale).  
+
+Esempio concreto:  
+
+![qqplot titanic tariffe uomini e donne](../../images/qqplot.png)  
+
+Notiamo che i punti (rossi) in basso sono vicini alla linea, di conseguenza possiamo dire che per i biglietti di costo ridotto uomini e donne pagano tariffe quasi uguali.  
+I punti nelle zone più alte dove le tariffe sono maggiori invece sono molto sopra la linea, il che vuol dire che le donne tendono a pagare **molto di più** per i biglietti più cari.  
+
+Il QQplot ci permette di avere più informazioni rispetto a una semplice media (che in questo caso sarebbe males: 25.5 e females: 44.4), infatti ci fornisce informazioni anche nelle code e sugli outlier.  
+Ogni punto rosso risponde alla domanda: "A parità di posizione nella distribuzione (es. mediana), chi paga di più?"
