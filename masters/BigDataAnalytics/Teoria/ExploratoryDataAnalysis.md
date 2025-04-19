@@ -353,8 +353,15 @@ $$
 - $\bar{A_1},\bar{A_2}$ sono le medie di $A$ per i due gruppi
 - $\sigma_A$ è la deviazione standard dell'intero dataset 
 
-
-
+Questo metodo (`pointbiserial()`) restituisce due valori:
+- `r`: Coefficiente di correlazione, in un intervallo [-1,1] che mi dice:
+    - _r positivo_: indica una correlazione positiva (quando uno aumenta, aumenta anche l'altro)
+    - _r negativo_: correlazione negativa (quando uno aumenta, l'altro diminuisce)  
+    - _r vicino a zero_: indica poca o nessuna correlazione 
+- `p_value`: Indica la probabilità che la correlazione osservata sia dovuta al caso 
+    - _p\_value basso_: indica che la correlazione è statisticamente **significativa**
+    - _p\_value alto_: indica che la correlazione potrebbe essere dovuta al caso
+    - Un tipico valore di soglia per il p_value è 0.05
 
 
 
