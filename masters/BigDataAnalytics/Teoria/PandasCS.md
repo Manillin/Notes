@@ -20,7 +20,7 @@
 15. [Bar Plots](#bar-plots)
 16. [Box Plots](#box-plot)
 17. [QQ-Plots](#qq-plot)
-
+18. [Histograms](#histogram)
 
 ### Creazione Series:  
 
@@ -79,14 +79,15 @@ df.dtypes
 ### count 
 
 ```python
-df['disciplines'].nunique()
-df.nunique()
-df.value_counts()
-df['disciplines'].value_counts()
-df.isna().sum()
-df['col'].isna().sum()
-df['disciplines'].count()
-df['col'].values
+1. df['disciplines'].nunique()
+2. df.nunique()
+3. df.value_counts()
+4. df['disciplines'].value_counts()
+5. df.isna().sum()
+6. df['col'].isna().sum()
+7. df['disciplines'].count()
+8. df['col'].values
+9. crosstab = pd.crosstab(df['col1'], df['col2']) #.reset_index() if plot needed
 
 ```
 
@@ -98,6 +99,9 @@ df['col'].values
 6. Conta i `NaN` che appaiono in una singola colonna 
 7. Conta il numero di elementi in una colonna 
 8. Restituisce gli elementi sotto forma di array numpy monodimensionale
+9. `crosstab` crea una matrice di contingenza che mostra la ferequenza di combinazioni di 2 o più variabili categoriali
+    ![crosstab](../../images/crosstab.png)  
+    nota: se si vuole poi plottare la tabella di contingenza ricordarsi di resettare gli indici: `.reset_index()`
 
 <br>
 
@@ -463,3 +467,29 @@ I punti nelle zone più alte dove le tariffe sono maggiori invece sono molto sop
 
 Il QQplot ci permette di avere più informazioni rispetto a una semplice media (che in questo caso sarebbe males: 25.5 e females: 44.4), infatti ci fornisce informazioni anche nelle code e sugli outlier.  
 Ogni punto rosso risponde alla domanda: "A parità di posizione nella distribuzione (es. mediana), chi paga di più?"
+
+
+<br> <br>
+
+
+--- 
+
+
+
+## Histogram
+
+
+bla bla bla placeholder per istrogramma
+
+
+```python
+df['col'].plot.hist()
+
+df.plot.hist(column=['Col'], by='Col2', density=True)
+```
+
+
+- `by = 'Col2'`: Divide i dati in base alla colonna specificata e crea un istogramma seprato per ciascun gruppo (es. male vs females)
+- `density=True`: L'asse $Y$ rappresenta la densità di frequenza, ossia normalizza l'istogramma in modo che l'area totale sia uguale a 1. Utile per cofrontare distribuzioni con diverse dimensioni di campione (es. campione1 molto maggiore rispetto campione2), e mostra la proporzione relativa di dati in ciascun intervallo.
+
+
