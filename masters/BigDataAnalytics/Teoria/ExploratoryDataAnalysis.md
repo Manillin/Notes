@@ -285,7 +285,7 @@ Dove $C$ sono le coppie concordanti e $D$ quelle discordanti
 ### Correlazione $\chi^2$ di Pearson: 
 
 La correlazione Chi-Quadro $\chi^2$ di Pearson consiste in un test per valutare se esiste un'associazione significativa tra due variabili categoriche (nominali o ordinali).  
-Il $\chi^2$ verifica se le frequenze osservate in una tavella di contingenza si discostano da quelle attese sotto l'ipotesi di indipendenza delle variabili.  
+Il $\chi^2$ verifica se le frequenze osservate in una tabella di contingenza si discostano da quelle attese sotto l'ipotesi di indipendenza delle variabili.  
 
 **Tabella di contingenza:**    
 Mostra le frequenze osservate ($M_{ij}$) delle combinazioni delle categorie
@@ -322,6 +322,13 @@ $$
 Nell'esempio avremo: $v = (2-1)(2-1) = 1$ e tale numero va confrontato con la tavola $\chi^2$ per trovare il **valore critico** e il livello di significatività.   
 In questo caso avremo $t_{1,p=0.999}=10.8$ ma dato che $\chi^2=507.9 >> 10.8$ diremo che le varaibili sono **dipendenti**.  
 Se $\chi^2$ fosse stato minore di 10.828 allora le variabili sarebbero state indipendenti.  
+Indichiamo con $H_0$ l'ipotesi di indipendenza.  
+
+Esistono due modi per controllare l'ipotesi $H_0$:
+- utilizzando il pvalue restituito da $\chi^2$ -> si confronta se tale valore è inferiore a un valore di soglia, tipicamanete 0.05 (può variare leggermente a seconda del tipo di test)
+- utilizzando il valore critico (`stat` da `chi2_contingency()`) e confrontandolo con la tabella, questo confronto dipende fortemente dai dof della matrice di contingenza.  
+Entrambi i modi di verificare l'ipotesi $H_0$ sono validi ma il metodo del pvalue è più informativo e non richiede l'uso del valore dei dof.  
+
 
 ![pearson chi quadro](../../images/pearsonchiquadro.png)
 
