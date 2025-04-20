@@ -1,5 +1,19 @@
 # Data Similarity
 
+### Table of Contents:
+
+1. [Dissimilarità per i vari tipi di attributi](#dipendenza-dal-tipo-di-dati)
+2. [Kullback Leiber KL-Divergence](#divergenza-di-kullback-leibler-kl-divergence)
+3. [Jensen Shannon JS-Divergence](#jensen-shannon-divergence)
+4. [Wasserstein-Kantrovich Distance](#distanza-di-wasserstein---kantorovich)
+
+### Similarità e Dissimilarità:
+
+- **Similarità**:Misura quanto due oggetti siano simili in un intervallo [0,1], un valore alto indica maggiore somiglianza (1 indica identità e 0 differenza completa).  
+- **Dissimilarità**: Misura quanto due oggetti siano diversi in un intervallo [0,1], un valore alto indica maggiore differenza (1 indica differenza completa e 0 identità).  
+
+Es: un valore 0.333 indica una dissimilarità moderata, non è ne troppo alto ne troppo basso, suggerendo che ci sono alcune differenze ma anche somiglianze tra i vari oggetti.   
+
 
 
 ### Dipendenza dal tipo di dati: 
@@ -140,10 +154,10 @@ $$
 $$
 
 $$
-- d(i,j) \geq 0  
-- d(i,i) = 0  
-- d(i,j) = d(j,i)  
-- d(i,j) \leq d(i,k) + d(k,j)  
+d(i,j) \geq 0  \space
+d(i,i) = 0  \space 
+d(i,j) = d(j,i)  \space
+d(i,j) \leq d(i,k) + d(k,j)  
 $$
 
 
@@ -183,7 +197,7 @@ Es:
 Temperatura $\rightarrow$ {Freddo:1, Moderato:2, Caldo:3}  
 Normalizzazione $\rightarrow$ {Freddo: (1-1/3-1 = **0.0**), Moderato: (2-1/3-1=**0.5**),...}
 
-Successivamente conversione e alla normalizzaione, si usano le stesse matriche degli attributi _numerici_.   
+Dopo la conversione e la normalizzazione, si usano le stesse matriche degli attributi _numerici_.   
 
 <br>
 
@@ -264,6 +278,10 @@ Capire come i dati sono distribuiti in un dataset è fondamentale, si confrontan
 - ottimizzare modelli: misurare quanto un modello approssima i dati reali 
 - analizzare cambiamenti: studiare variazioni temporali o geografiche (vendite in anni diversi,...)  
 
+Un concetto importante quando valutiamo l'analisi delle distribuzioni di probabilità è quello di **Entropia**.  
+L'Entropia è una misura di **incertezza** o della **casualità** di una distribuzione, essa misura quanto è imprevedibile una distribuzione:
+    - Più è alto il valore di entropia $\rightarrow$ maggiore è l'incertezza associata alla distribuzione.  
+
 
 <br>
 
@@ -327,7 +345,7 @@ In breve:
 
 ### Distanza di Wasserstein - Kantorovich 
 
-La distanzadi Wasserstein (Earth Mover's Distance) misura il minimo sforzo necessario per spostare la distribuzione $p$ nella distribuzione $q$.  
+La distanzadi Wasserstein (Earth Mover's Distance) misura il minimo sforzo necessario per spostare la distribuzione $p$ nella distribuzione $q$, ossia quanto "lavoro" è necessario per trasformare una distribuzione in un'altra.  
 
 
 
@@ -363,5 +381,3 @@ $$
 </center>
 
 [Formulazione matematica a pg30]  
-
-
