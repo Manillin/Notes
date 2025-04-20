@@ -192,17 +192,18 @@ df.iloc[s:e]
 ### Aggregazioni, map e metodi di stringa
 
 ```python
-df['colonna'].agg(['min','max','sum'])
-df['salary'].map(lambda x:x*1.14)
-df['colonna'].sum(axis=0,skipna=True)
-df[['colonna1','colonna2']].sum(axis=0,skipna=True)
-df['colonna'] = df['colonna'].str.lower()
+1. df['colonna'].agg(['min','max','sum'])
+2. df['salary'].map(lambda x:x*1.14)
+3. df['colonna'].sum(axis=0,skipna=True)
+4. df[['colonna1','colonna2']].sum(axis=0,skipna=True)
+5. df['colonna'] = df['colonna'].str.lower()
 
 ```
 
 
 1. Aggrega le funzioni specificate ai valori di una colonna
-2. Mappa e applica una funzione a tutti i valori di una colonna, la funzione può essere una lambda o normalmente definita  
+2. Mappa e applica una funzione a tutti i valori di una colonna, la funzione può essere una lambda o normalmente definita. 
+    - Può essere passato anche un dizionario al posto di una funzione e in tal caso map sostituisce ogni valore della colonna con il valore corrispondente nel dizionario.  
 3. Somma i valori in base all'asse specificato, `axis=0` somma verticalmente lungo la colonna specificata, saltando i NaN
 4. Somma i valori orizzontalmente in quanto `axis=1` **Attenzione:** Ricordarsi che quando si selezionano più colonne manualmente bisogna metterli in una lista!! (_doppie quadre dopo df_)  
 5. Trasformo le stringhe della colonna in minuscolo
