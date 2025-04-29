@@ -14,14 +14,24 @@ Ogni punto nel dataset è un _vettore_ nello spazio delle feature la cui dimensi
 
 ---
 
-**Univariate vs Multivariate**: 
-- Univariate: si analizza una sola variabile/feature (es: altezza della persone), i dati si trovano su una retta 
-- Multivariate: Si analizzano più variabili contemporaneamente (es: altezza, peso, età), i dati sono punti in uno spazio d-dimensionale ($R^d$)
-Effetto del passaggio al multivariabile $\rightarrow$ Bisogna considerare la correlazione tra le variabili e risulta necessario usare la covarianza e misure adeguate di distanza (non basta la deviazione standard). Inoltre la normalità non sarà più su una curca ma su una 'nuvola' di punti a forma ellittica.  
+**Analisi Univariata vs Multivariata**: 
+
+L'analisi _**univariata**_ consiste nello studio di una singola variabile, indipendentemente dalla sua dimensionalità, essa potrebbe esssere:
+- variabile scalare: $x \in R$ (es: altezza persona)
+- variabile vettoriale $x \in R^d$ (es: immagine come vettore di pixel)
+In breve finche si tratta di una sola entità statistica, è univariata.  
+
+L'analisi _**multivariata**_ si ha quando si studiano relazioni tra variabili, infatti consiste nello studio di più variabili contemporaneamente, indipendentemente dalla loro dimensionalità
+- $x_1,x_2,x_3\rightarrow$ (altezza,peso,età) sono tre variabili scalari analizzate insieme
+- $x\in R^d$ e $y\in R^k$ (immagini+dati clinici) sono due variabili vettoriali analizzati congiuntamente.  
+
+
+
 
 <br>
 
 ---
+
 
 **Variabile stocastica:**  
 È una variabile che può assumere diversi valori casuali secondo una certa distribuzione di probabilità, possiamo dire che una variabile stocastica è compatibile con una distribuzione se:
