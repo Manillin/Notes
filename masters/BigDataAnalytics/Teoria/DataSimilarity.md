@@ -380,4 +380,22 @@ $$
 
 </center>
 
-[Formulazione matematica a pg30]  
+[Formulazione matematica a pg30]   
+
+
+Distinguiamo due principali casi d'uso:
+1. **Distanza tra campioni empirici:**  
+    Utile quando non si conosce la distribuzione teorica ma abbiamo solo osservazioni, è un metodo che risulta robusto ad _outlier_.  
+    Supponiamo di avere due insiemi di misure osservate(es: altezza di due gruppi di persone) e non abbiamo una distribuzione teorica, solo dati grezzi.  
+    La distanza di Wasserstein calcola allora quanto 'lavoro' serve per trasformare la distribuzione del primo gruppo in quella del secondo:
+        - ordina i dati
+        - calcola la differenza tra i valori corrispondenti 
+        - La distanza si calcola ordinando i dati (vale solo per dati in 1D, in più dimensioni bisogna risolvere un problema di ottimizzazione - trasporto ottimo) e confrontando le differenze tra i quantili corrispondenti, ottenendo il costo medio di 'spostamento' tra le due distribuzioni empiriche   
+
+2. **Distanza tra distribuzioni discrete:**  
+    Quando conosciamo le probabilità esatte (distribuzione di probabilità) la distanza di Wasserstein calcola il laovoro per trasformare la prima distribuzione nella seconda **ma** servirà il supporto in quanto la distanza dipende dai valori assunti dalla variabile aleatoria.  
+    Il confronto tra distribuzioni note è preciso solo se il modello teorico è corretto. Con dati grezzi limitati, la stima empirica può essere rumorosa, ma con molti dati converge alla distanza teorica $\rightarrow$ genericamente il confronto tra distribuzioni è più preciso rispetto al confronto tra dati grezzi
+
+
+**reminder:** Il supporto di una distribuzone discreta è l'insieme dei valori che la variabile casusale può assumere, se ho un dado a 6 faccie allora il supporto sarà: {1,2,3,4,5,6}.
+
