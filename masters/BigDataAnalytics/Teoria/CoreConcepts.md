@@ -6,6 +6,22 @@
 ### Elementi base:
 
 
+**Notazione:**
+
+| Simbolo | Italiano                          | Inglese                       | Alternative comuni        |
+|---------|-----------------------------------|-------------------------------|---------------------------|
+| $( X )$ | Variabile casuale continua        | Continuous random variable    | Variabile, feature        |
+| $( x_i )$ | Osservazione (i-esima)             | data point, i-th observation | Dato, esempio             |
+| $( x )$ | Punto di stima / valore generico  | Evaluation point / generic value | Valore, input di stima |
+
+
+
+
+
+<br>
+
+---
+
 **Spazio delle feature (feature space)**: È lo spazio in cui si trovano i dati che stiamo studiando, corrisponde alla dimensionalità di questi.  
 Se i dati hanno una sola caratteristica (feature) siamo in 1 dimensione, se hanno 2 caratteristiche allora siamo in 2 dimensioni e cosi via.  
 Ogni punto nel dataset è un _vettore_ nello spazio delle feature la cui dimensione dipende dal numero di feature.  
