@@ -134,17 +134,154 @@ Il metodo consiste dei seguenti passaggi:
         MD^2(x_i) = (x_i - \hat{\mu})^T\hat{\Sigma^{-1}}(x_i-\hat{\mu})
     $$  
 
-3. Si fissa un intervallo di significatività $\alpha$, tipicamente 0.005, ossia confidenza del 95%, e questo serve a determinare la soglia oltre la quale considerare un punto un outlier.  
+3. Si fissa un intervallo di significatività $\alpha$, tipicamente 0.05, ossia confidenza del 95%, e questo serve a determinare la soglia oltre la quale considerare un punto un outlier.  
 
-4. Calcola la soglia critica (quantile della distribuzione \Chi^2 con $d$ gradi di libertà):
+4. Calcola la soglia critica (quantile della distribuzione $\chi^2$ con $d$ gradi di libertà):
     $$
         \text{Soglia Critica} = \chi^2_{d,1-\alpha}
     $$  
+    La notazione $\chi^2_{d,1-\alpha}$ indica il quantile $1-\alpha$ (cioè il percentile) della distribuzione $\chi^2$ con $d$ gradi di libertà
 
 5. Confronta $MD^2(x_i)$ con la soglia:
-    - Se $MD^2(x_i) \gt \chi^2_{d,1-\alpha}$ allora $x_i$ è un outlier multivariato
+    - Se $MD^2(x_i) \gt \chi^2_{d,1-\alpha}$ allora $x_i$ è un outlier multivariato  
 
-Questo metodo generalizza la regola di $3\sigma$ al caso multivariato.   
+Es: Se abbiamo $d=3$ variabili e $\alpha=0.05$ allora stiamo usando il quantile del 95% della distribuzione $\chi^2$ con 3 gradi di libertà. Questo valore è circa 7.81   
+$\rightarrow$ quindi se $MD^2(x_i) \gt 7.81$ il punto è considerato un **outlier**
+
+Questo metodo generalizza la regola di $3\sigma$ al caso multivariato.  
+
+
+### Calcolo della distanza di Mahalanobis in modo robusto con Python  
+
+L'approccio classico non è robusto, in presenza di outlier nel dataset si potrebbero falsatre la media e la covarianza stimata, si introduce allora un metodo robusto:
+- **Minimum Covariance Determinant (MCD)**:  
+    Cerca il sottoinsieme di osservazioni per cui la determinante della matrice di covarianza è minima $\rightarrow$ in questo modo si escludono gli outlier (che causerebbero una forte varianza) e si rappresenta il nucleo pulito dei dati.  
+    Questo metodo produce una stima robusta della media $\hat{\mu}_{MCD}$ e una stima robusta della covarianza $\hat{\Sigma}_{MCD}$.  
+    Queste due stime vengono usate per calcolare la distanza di Mahalanobis con la formula classica e una volta calcolata la distanza per ogni punto saremo in grado di identificare gli outlier impostsando una soglia critica.  
+
+```python
+from sklearn.covariance import MinCovDet 
+from scipy.stats import chi2
+
+
+# il metodo fit() calcola sia la media che la covarianza robusta 
+robust_cov = MinCovDet().fit(df[cols])
+mahalanobis_squared = robust_cov.mahalanobis(df[cols])
+
+# ppf -> percent-point function
+# df -> degrees of freedom 
+# restituisce la soglia critica sopra la quale solo il 5% dei punti dovrebbe cadere, se un punto è sopra tale soglia allora è un outlier
+bool_outliers = mahalanobis_squared > chi2.ppf(0.95,df=len(cols))
+
+```
+
+---
+
+### **Non Parametric Methods: BoxPlot Method**
+I metodi non parametrici non assumano a priori un modello statistico parametrico, essi cercano di determinare il modello a partire dai dati in input.  
+Un metodo comune di questa natura per individuare outlier è il **Boxplot Method**  
+
+Data un campione (sample) per una variabile $x$, possiamo impostare come outlier tutti i punti che cadono al di fuori da questo range:  
+
+$$
+Q_1 - 1.5IQR \lt x \lt Q_3 + 1.5IQR
+$$
+
+Ricordiamo che con sample/campione stiamo indicando l'insieme dei valori osservati per quella specifica variabile nel nostro dataset, se abbiamo una colonna 'età' con 100 valori, il campione della variabile età è l'insieme di quei 100 punti.  
+
+Es: Abbiamo una colonna età con dati: {25,30,33,55,28}
+- Prendiamo tutti i valori della colonna età {25,30,22,55,28}
+- Calcoliamo Q1, Q3, e IQR per questi valori di età
+- I valori di età che cadono fuori da questo range (nell'esempio sarebbe '55') sono **outlier**
+
+<br>
+
+---
+
+### **Kernel Density Estimate (KDE)**
+
+La KDE è un metodo non parametrico per stimare la **densità di probabilità** di una variabile _**continua**_.  
+Diversamente da un istogramma la KDE fornisce una curva continua e più liscia.  
+
+Un punto in uno spazio delle feature è _più probabile_ (cioè ha maggiore densità) se si trova in una regione con tanti altri punti vicini. La KDE quantifica questa densità usando funzioni kernel.  
+
+Es: prendiamo una colonna dati 'altezza' = [165, 168, 170, 171, 172, 173, 173, 174, 175, 175, 176, 178, 180, 181, 182, 183, 185]  
+
+Prendiamo due valori A=173 e B=160.  
+Notiamo che A=173 è più vicino ad altri dati (172,173,174,175) e che B=160 è lontano da tutti gli altri (nessuno è vicino a 160), allora possiamo dire che A si trova in una regione più densa e quindi più probabile mentre B si trova in una regione di bassa densità e con probabilità bassa.  
+
+
+
+$$
+\int^{\infty}_{-\infty} K(u)du=1; \space\space\space\space\space K(-u) = K(u)
+$$
+  
+- $K(u)$ è simmetrica e normalizzata $\rightarrow K(-u) = K(u)$ e l'integrale è uguale a 1
+
+
+<br>
+
+I metodi standard usano un **Kernel Gaussiano**:
+
+$$
+K(\frac{x-x_i}{h}) = \frac{1}{\sqrt{2\pi}}exp(- \frac{(x-x_i)^2}{2h^2})
+$$
+
+- $x$ è il punto dove si valuta la densità
+- $x_i$ è il dato osservato
+- $h$ è la bandwidth $\rightarrow$ controlla la 'larghezza' del Kernel, ossia quanto sarà liscia la curva finale (valori bassi - curva spezzettata ,valori alti - curva liscia)  
+
+### Stima KDE - Media dei Kernel:
+
+La stima della densità kernel per una $x$ diventa:
+
+$$
+f_h(x)=\frac{1}{nh}\sum_{i=1}^n K(\frac{x-x_i}{h}) \space\space\space\space \text{h=bandwidth}
+$$
+
+Per identificare **outliers** allora seguiamo il seguente procedimento:
+
+0. Scegliere una bandwidth $h$ adeguata (estremamente importante)
+1. Per ogni punto $x_i$ relativo alla variabile che stiamo valutando viene creato un Kernel gaussiano con la campana centrata proprio su $x_i$ e con ampiezza fissata, otterremmo un insieme di campane gaussiane centrate sui vari $x_i$ della variabile.  
+2. Calcolo la media dei kernel con la funzione $f_h(x)$ che mi serve per stimare la densità, è come se sommassi tutte le varie campane ottenute al passo precedente, questo introduce il concetto di peso intrinseco, siccome in prossimità di più dati ravvicinati la campana sarà maggiormente alta (più densa) in quanto sommo varie campane vicine. 
+3. Identifico come **outlier** i punti $x_i$ per cui la la funzione $f_h(x_i)$ restituisce valori bassi (densità bassa) 
+
+
+<center>
+
+![Kernel Density Estimation](../../images/KDE.png)
+
+</center>
+
+
+Notiamo le varie campane Kernel create al primo passo, e che sono centrate sui vari valori che assume la $x_i$.  
+Infine la campana grande blu è $f_h(x)$ ossia la somma media di tutte le varie campane precedenti, notiamo che tale campana sarà maggiormente alta in presenza di più $x_i$ vicini e bassa quando abbiamo valori di $x_i$ più isolati.
+
+Si presti particolare attenzione al valore del parametro di **bandwidth $h$** in quanto determiana il successo del metodo.  
+
+<center>
+
+![Bandwidth importance](../../images/KDE_h_value.png)
+
+</center>
+
+
+
+**Codice Python:**  
+
+```python
+from sklearn.neighbors import KernelDensity
+
+# defaul kernel is gaussian, bandwidth is passed as parameter 
+kern_dens = KernelDensity(bandwidth=1.0)
+kern_dens.fit(X)
+# returns log likelihood of the points 
+scores = kern_dens.score_samples(X)
+# assume we expect 2% of pooints to be outliers
+threshold = np.quantile(scores, .02)
+# boolean mask identifying outliers
+outliers = scores <= threshold 
+```
 
 ---
 
