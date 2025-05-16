@@ -1,100 +1,48 @@
-# Exams and Caledars:
-
-Suddivisione di materie per semestre con relativa suddivisione delle date di esame
-
-## First Semester:
-
-### High Performance Computing (HPC):
-- Credits: 9CFU
-- Exam method: Assignments + oral exam 
-
-### Machine Learning:
-- Credits: 6CFU
-- Exam method: Oral exam 
-
-### Privacy e Tutela dei Dati 
-- Credits: 6CFU
-- Exam method: Oral exam
-
-### Algoritmi di Ottimizzazione
-- Credits: 6CFU
-- Exam method: written test + oral 
-
-## Second Semester:
-
-### Metodologie di Sviluppo Software 
-- Credits: 6CFU
-- Exam Method: pre-appello scritto
-
-### Sviluppo di Software Sicuro 
-- Credits: 9CFU
-- Exam Method: Orale con 3 domande (come OS)
-
-### Big Data Analytics 
-- Credits: 9CFU
-- Exam Method: 3 assignments (complete in time for reward)c  
-
-### Computational & Statistical Learning
-- Credits: 6 CFU
-- Exam method: Progetto finale + miniorale 
-
-### Teoria dei Giochi
-- Credits: 6CFU 
+# Calendario Esami Magistrale:
 
 
-## Third Semester
+<br><br>
 
-### Algoritmi Distribuiti
-- Credits: 9CFU
+## Sessione Estiva: 
 
-### Cloud & Edge Computing 
-- Credits: 6CFU
-
-### IoT Systems
-- Credits: 6CFU
-
-### Algoritmi di Ottimizzazione
-- Credits: 6CFU
-
-
-## Fourth Semester:
-
-### Computational & Statistical Learning
-- Credits: 6 CFU
-
-### Teoria dei Giochi
-- Credits: 6CFU 
-
-## Sistemi Complessi:
-- Credits: 6CFU
-
-
-### Internship + Thesis 
-- Credits: 30CFU
-
---- 
+- ### Big Data Analytics:  
+    - modalità: Orale (presentazione assignment)
+    - consegne: Tre assignment con relative scadenze
+    - data esame: TBD
 
 
 
-exams:
-metodologie sviluppo
-hpc
-
-big data analytics 
-sviluppo sw sicuro
-
-fondamenti machine learning 
-sistemi complessi 
-
-privacy | diritto 
-teoria dei giochi 
-
-Algorimti distribuiti 
-
-IoT Systems 
-Cloud and Edge computing 
-
-computational and statistical learning 
-algoritmi di ottimizzazione
+- ### Fondamenti di Machine Learning: 
+    - modalità: orale
+    - consegne: nessuna 
+    - data: 10/06 - 24/07 - 10/09
 
 
+- ### Computational and Statistical Learning: 
+    - modalità: Orale (presentazione assignment)
+    - consegne: Progetto finale su un dataset
+    - date: 09/06 - 25/06 - 18/07 - 28/08 - 16/09
+
+
+- ### Sistemi Complessi:  
+    - modalità: Scritto 
+    - consegne: 
+    - date: 
+
+
+- ### Metodologie di Sviluppo Software:
+    - modalità: Scritto 
+    - consegne: nessuna 
+    - date: 29/05
+
+
+- ### Teoria dei giochi: 
+    - modalità: Orale (presentazione progetto)
+    - consegne: Progetto finale 
+    - date: 24/06 - 03/07 - 21/07
+
+
+- ### Sviluppo di SW sicuro: 
+    - modalità: Orale di 30 min (3 domande) 
+    - consegne: nessuna
+    - date: 30/06 - 14/07 - 28/07
