@@ -33,7 +33,7 @@ Per identificare global outlier bisogna trovare una misura di deviazione appropr
 **2. Local Outlier**  
 Sono oggetti nel dataset la cui densità devia significativamente da quella dell'area locale in cui compaiono
 
-![global and local outlier](../../images/global_local_outlier.png)  
+![global and local outlier](../../../images/global_local_outlier.png)  
 
 **3. Contextual Outlier**  
 Data points che deviano significativamente rispetto al contesto specifico degli oggetti, sono conosciuti anche come **conditional outliers** in quanto sono condizionali al contesto selezionato.  
@@ -153,9 +153,9 @@ Questo metodo generalizza la regola di $3\sigma$ al caso multivariato.
 
 ### Calcolo della distanza di Mahalanobis in modo robusto con Python  
 
-L'approccio classico non è robusto, in presenza di outlier nel dataset si potrebbero falsatre la media e la covarianza stimata, si introduce allora un metodo robusto:
+L'approccio classico non è robusto, in presenza di outlier nel dataset si potrebbero falsare la media e la covarianza stimata, si introduce allora un metodo robusto:
 - **Minimum Covariance Determinant (MCD)**:  
-    Cerca il sottoinsieme di osservazioni per cui la determinante della matrice di covarianza è minima $\rightarrow$ in questo modo si escludono gli outlier (che causerebbero una forte varianza) e si rappresenta il nucleo pulito dei dati.  
+    Cerca il sottoinsieme di osservazioni per cui il determinante della matrice di covarianza è minima $\rightarrow$ in questo modo si escludono gli outlier (che causerebbero una forte varianza) e si rappresenta il nucleo pulito dei dati.  
     Questo metodo produce una stima robusta della media $\hat{\mu}_{MCD}$ e una stima robusta della covarianza $\hat{\Sigma}_{MCD}$.  
     Queste due stime vengono usate per calcolare la distanza di Mahalanobis con la formula classica e una volta calcolata la distanza per ogni punto saremo in grado di identificare gli outlier impostsando una soglia critica.  
 
@@ -181,7 +181,7 @@ bool_outliers = mahalanobis_squared > chi2.ppf(0.95,df=len(cols))
 I metodi non parametrici non assumano a priori un modello statistico parametrico, essi cercano di determinare il modello a partire dai dati in input.  
 Un metodo comune di questa natura per individuare outlier è il **Boxplot Method**  
 
-Data un campione (sample) per una variabile $x$, possiamo impostare come outlier tutti i punti che cadono al di fuori da questo range:  
+Dato un campione (sample) per una variabile $x$, possiamo impostare come outlier tutti i punti che cadono al di fuori da questo range:  
 
 $$
 Q_1 - 1.5IQR \lt x \lt Q_3 + 1.5IQR
@@ -224,7 +224,7 @@ $$
 I metodi standard usano un **Kernel Gaussiano**:
 
 $$
-K(\frac{x-x_i}{h}) = \frac{1}{\sqrt{2\pi}}exp(- \frac{(x-x_i)^2}{2h^2})
+K(\frac{x-x_i}{h}) = \frac{1}{2\pi h}exp(- \frac{(x-x_i)^2}{2h^2})
 $$
 
 - $x$ è il punto dove si valuta la densità
@@ -249,7 +249,7 @@ Per identificare **outliers** allora seguiamo il seguente procedimento:
 
 <center>
 
-![Kernel Density Estimation](../../images/KDE.png)
+![Kernel Density Estimation](../../../images/KDE.png)
 
 </center>
 
@@ -261,7 +261,7 @@ Si presti particolare attenzione al valore del parametro di **bandwidth $h$** in
 
 <center>
 
-![Bandwidth importance](../../images/KDE_h_value.png)
+![Bandwidth importance](../../../images/KDE_h_value.png)
 
 </center>
 
@@ -283,7 +283,98 @@ threshold = np.quantile(scores, .02)
 outliers = scores <= threshold 
 ```
 
----
+
+
+
+
+## Unsupervised/Proximity-based Methods:  
+
+### Density-Based Spatial Clustering of Applications with Noise (DBSCAN): 
+
+Questo metodo di detection assume che
+- i punti **normali** siano racchiusi in regioni dense nello spazio delle feature e che siano separati da regioni di densità più bassa.    
+- gli **outlier** siano punti non aventi abbastanza vicini a una distanza predefinita.  
+
+DBSCAN richiede solamente due parametri: 
+1. $\varepsilon\rightarrow$ è il raggio della ipersfera che si crea attorno ad ogni data point per controllare la sua densità.  
+    Può esser ottenuto dal kNN-distance graph, il punto di massima curvatura ci dice il valore che deve assumere $\varepsilon$ (nota: prima di calcolare la kNN bisogna scalare gli attributi per evitare distorsioni dei dati).    
+    
+2. $m\rightarrow$ è il numero minimo di vicini che devono essere compresi nella ipersfera per clasificare quel punto come normale.   
+    Il valore di $m$ deve essere maggiore di $d+1$, dove $d$ è la dimensione dei punti, tipicamente si imposta $m=2d$.  
+
+Si classificano i punti in: {core points, border points, outliers}.  
+
+
+Nell'immagine di esempio identifichiamo in rosso i core points, in giallo i border points e in viola gli outlier!  
+
+![DBSCAN](../../../images/dbscan_example.png)
+
+<br>
+
+
+--- 
+
+
+### Local Outlier Factor (LOF):
+
+LOF individua outlier basandosi sulla densità dei NN dei data points e funziona particolarmente bene quando lo spread (densità) del dataset non è uniforme.  
+Confronta la densità attorno a un punto con la densità dei duoi NN; l'idea chiave è che la densità attorno ad un outlier è _significativamente diversa_ dalla densità attorno ai suoi vicini. 
+Ha due iperparametri:
+1. $k$ è il numero di NN che prendiamo in considerazione per ogni punto
+2. $c$ è il fattore di contaminazione, ossia la percentuale di outliers che ci aspettiamo di avere dentro il dataset.   
+
+Step della LOF:  
+
+1. Per ogni $x_i$ identifichiamo i suoi k-NN e definiamo: 
+    - $N_k(x_i)$ il set dei $k$ NN (nearest neighbors) del punto $x_i$
+    - $d_k(x_i)$ il raggio minimo della sfera centrata in $x_i$ che contiene tutti i $k$ vicini  
+
+<br>
+
+2. Definiamo la **Reachability Distance** ossia una variabile proxy per misurare la _densità locale_ (non misura direttamente la densità ma la stima usando le distanze, la reachability distance serve come surrogato della densità locale - se è alta: densità bassa).
+
+    $$
+    rd_k(x\leftarrow x') = \text{max}\{d_k(x'),d(x,x')\}
+    $$
+
+    - $d(x,x')$ è la distanza tra $x$ e $x'$
+    - non è simmetrica: $rd_k(x\leftarrow x') \ne rd_k(x' \leftarrow x)$
+
+3. Calcoliamo la **local reachability density** per ogni $x_i$: 
+
+    $$
+    l\rho_k(x_i) = \frac{|N_k(x_i)|}{\sum_{x' \in N_k(x_i)}rd_k(x\leftarrow x')}
+    $$
+
+
+4. Caloliamo il Local Outlier Factor (LOF): 
+
+$$
+\text{LOF}_k(x_i) = \frac{1}{|N_k(x_i)|}\sum_{x' \in N_k(x_i)} \frac{l\rho_k(x')}{l\rho_k(x_i)}
+$$
+
+5. Individuiamo come outlier la frazione $c$ di punti che hanno un fattore LOF maggiore, infatti i punti normali solitamente hanno un valore $\text{LOF}\sim 1$ mentre gli outliers hanno $\text{LOF} \gt 1$
+
+
+**Nota:** Bisogna prestare particolare attenzione quando si applicano metodi per la detection di outlier, in quanto usare il metodo sbagliato può compromettere la fase di detection.  
+- Se usiamo metodi globali consideriamo solo quanto è lontano un punto, questa discriminazione sarebbe sbagliata per punti che sono in code naturali di una distribuzione (tipo una esponenziale).  
+
+In conclusione i metodi globali possono fallire in presenza di distribuzioni sbilanciate, mentre i metodi locali come LOF guardano il contesto di ogni punto per fare la discriminazione e sono idonei in dataset complessi e reali.  
+I metodi locali come LOF sono computazionalmente più pesanti.  
+
+
+
+<br><br>
+
+
+## Feature Engineering 
+
+
+
+
+
+
+
 
 domande:
 differenze tra data points, data objects, e objects  
