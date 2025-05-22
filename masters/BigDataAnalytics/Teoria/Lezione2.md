@@ -39,7 +39,7 @@
     \bar{x}_a = \frac{1}{n}\sum_{j=1}^K c_j n_j
     $$
 
-    - $c_j$ è il valore centrale della classe, si calcola seguendo $c_j =[\text{estremo superiore} - \text{estremo inferiore}]$
+    - $c_j$ è il valore centrale della classe, si calcola seguendo $c_j =[\text{estremo superiore} + \text{estremo inferiore} \text{diviso 2 }]$
 
 
     <center>
@@ -464,14 +464,62 @@ Il coefficiente di variazione dà indicazioni sulla variabilità del fenomeno , 
 
     </center>  
 
+    <br>
 
-- **Asimmetria:**  
-Una distribuzione si dice simmetrica se è possibile dividerla in due parti uguali, altrimenti si dice che è _asimmetrica_.  
-Esistono due tipi di asimmetrie:
+- **Simmetria:**  
+    Una distribuzione si dice simmetrica se è possibile dividerla in due parti uguali, altrimenti si dice che è _asimmetrica_.  
+    Esistono due tipi di asimmetrie:
     1. asimmetrica positiva: sono più frequenti le modalità grandi del carattere (coda a destra)
     2. asimmetrica negativa: sono più frequenti le modalità piccole del carattere (coda a sinistra)  
 
 
-Usiamo due regole per valutare l'asimmetria di una distribuzione unimodale:
-- Se: Moda < $M_e$ < $\bar{x}_a\rightarrow$ Asimmetrica positiva 
-- Se: $\bar{x}_a$ < $M_e$ < Moda $\rightarrow$ Asimmetrica negativa
+    Usiamo tre regole per valutare la simmetria di una distribuzione unimodale:
+    - Se: Moda = $M_e$ = $\bar{x}_a\rightarrow$ Simmetrica
+    - Se: Moda < $M_e$ < $\bar{x}_a\rightarrow$ Asimmetrica positiva 
+    - Se: $\bar{x}_a$ < $M_e$ < Moda $\rightarrow$ Asimmetrica negativa
+
+
+    <center>
+
+    <img src="../../images/distribuzioni_simmetriche_e_non.png" alt="local connectivity" width="500px">
+
+    </center>  
+
+
+
+# Analisi dell'associazione tra due caratteri
+
+Ricordiamo la forma della tabella a doppia entrata, che rappresenta una **distribuzione congiunta**, ossia una distribuzione dove sono stati rilevati contemporaneamente due caratteri:  
+
+
+<center>
+
+<img src="../../images/tabella_doppia_entrata.png" alt="local connectivity" width="400px">
+
+</center>  
+
+<br>
+
+Se navighiamo lungo le righe $\rightarrow$ teniamo fermo il valore della $x_i$ e facciamo variare orizzontalmente i valori delle $y_i$.  
+Se navighiamo lungo le colonne $\rightarrow$ teniamo fermo il valore della $y_i$ e facciamo variare verticalmente i valori delle $x_i$.  
+
+Esempio analisi tabella:
+
+<center>
+
+<img src="../../images/esempio_2entrata.png" alt="local connectivity" width="450px">
+
+</center>
+
+<br>
+
+- Qual'è la moda del colore degli occhi per gli individui con capelli castani ?  
+    Fissiamo il valore della $x=\text{castani}$ e analizziamo i dati orizzontalmente, notiamo che il valore più frequente (moda) in quella riga è 75, concluderemo dicendo quindi che la moda per questo valore è colore degli occhi 'castani'.  
+
+- Qual'è la moda del colore dei capelli per gli individui con occhi verdi ?  
+    Procediamo analogamente a prima, questa volta fissiamo $y=\text{verdi}$ e analizzando verticalmente concluderemo che la moda è colore dei capelli 'castani'.  
+
+- Moda del colore degli occhi? e del colore dei capelli?  
+    Dobbiamo guardare la distribuzione marginale degli occhil ossia della $y$, e guardando l'ultima riga concuderemo dicendo che la moda è colore 'castani'  
+    Per trovare la moda del colore dei capelli ossia della $x$ guardiamo la distribuzione marginale di questo carattere che si trova nell'ultima colonna della matrice, quindi concluderemo dicendo che la moda è colore 'castani'.  
+
