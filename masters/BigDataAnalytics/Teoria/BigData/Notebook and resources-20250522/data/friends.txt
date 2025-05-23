@@ -1,0 +1,5 @@
+Isaac -> Mikel John Lucy
+Mikel -> Isaac John Lucy Claudia
+John -> Isaac Mikel Lucy Claudia
+Lucy -> Isaac Mikel John Claudia
+Claudia -> Mikel John Lucy
