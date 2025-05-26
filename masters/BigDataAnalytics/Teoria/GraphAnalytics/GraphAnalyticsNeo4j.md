@@ -153,8 +153,83 @@ MERGE (p1)-[:KNOWS {since: 2022}]->(p3)            // Alice conosce Charles
 
 ## Cypher Projection: 
 
+Usiamo questo tipo di proiezione quando selezionare le label dei nodi e le loro relazioni non è sufficientemente selettivo per descrivere il sottografo su cui vogliamo runnare l'algoritmo.  
+
+Le Cypher Projection operano secondo un processo sequenziale, riga per riga 
+- La query Cypher viene eseguita per prima, essa produce un flusso di risultati che vengono salvati in una tabella. Ogni riga di questa tabella rappresenta una soluzione o una corrispondenza trovata dalla query nel database.  
+- La GDS non processa la tabella in un colpo singolo, essa consuma la tabella riga per riga e su ciascuna singola riga gds esegue la sua logica di proiezione 
+- gds è un costruttore incrementale, per ogni riga che processa (e da cui crea una proiezione) aggiunge informazioni al grafo finale, in modalità append, è da vederlo come un processo aggregativo dove ogni riga contribuisce aggiungendo nodi o arhchi al grafo in costruzione, al termine del processo avremo il nostro grafo finale.  
 
 
+Una Cypher Projection si costruisce in due step:
 
+1. Una o più clausole in sintassi Cypher (query) per costruire il set di nodi o le coppie di nodi **source-target**
+2. Una chiamata alla funzione `gds.graph.project` che opera su ogni riga prodotta dalla query Cypher, prendendo i nodi sorgente-destinazione per costruire gli archi del grafo proiettato, usa la seguente sintassi:
+    ```python
+    RETURN gds.graph.project(
+        graphName: String,
+        sourceNode: Node or Integer,
+        [targetNode: Node or Integer,]
+        [dataConfig: Map,]
+        [configuration: Map]
+        )
+    ```
+
+Es:  
+
+```python
+MATCH (source:Person)-[r:KNOWS]->(target:Person)       // 1. Trova tutte le relazioni :KNOWS tra nodi :Person
+WITH gds.graph.project('persons', source, target) AS g // 2. Per ogni relazione trovata, passala a gds.graph.project
+                                                       //    'persons' è il nome del grafo proiettato
+                                                       //    source è il nodo di partenza della relazione
+                                                       //    target è il nodo di arrivo della relazione
+RETURN                                                 // 3. Restituisci informazioni sul grafo creato
+    g.graphName AS graph,
+    g.nodeCount AS nodes,
+    g.relationshipCount AS rels
+```
+
+- la clausola `WITH` chiama `gds.graph.project` per ogni riga prodotta dal `MATCH`. 
+- `source` e `target` sono i nodi identificati dal `MATCH`, la `gds.graph.project` userà questi per creare un arco nel grafo `persons`.  
+- La clausola return mostra le informazioni aggregate sul grafo `persons` una volta che tutte le righe sono state processate  
+
+
+```python
+MATCH (source:Person)                                  // 1. Seleziona tutti i nodi :Person
+OPTIONAL MATCH (source)-[r:KNOWS]->(target:Person)     // 2. POI, opzionalmente, cerca relazioni :KNOWS da questi nodi
+WITH gds.graph.project('persons', source, target) AS g // 3. Passa source e (opzionalmente) target a gds.graph.project
+RETURN
+    g.graphName AS graph,
+    g.nodeCount AS nodes,
+    g.relationshipCount AS rels
+```
+- La clausola `OPTIONAL` tenta di trovare una relazione, se un source non ha la relazione che cerchiamo uscente, allora r e target saranno `null` per quella riga.  
+    - Se target non è null, gds crea un arco tra source e target nel grafo 
+    - se target è null, gds aggiungerà comunque source come nodo isolato al grafo (sconnesso).  
+- Questo approccio assicura che tutti i nodi Person vengano inclusi nel grafo proiettato.  
+
+
+### Cypher projection parameters: 
+- graphName: nome con cui salvo il grafo nel catalogo
+- sourceNode: nodo sorgente della relazione, ogni arco nel grafo deve avere un nodo sorgente  
+- targetNode: nodo destinazione, può essere nullo (come nel caso di optional match, in tal caso il nodo sorgente sarà proiettato sconnesso)  
+- dataConfig: Configurazione delle proprietà e delle label per i nodi sorgente e destinazione.  
+    È una mappa al cui interno possiamo specificare:  
+    - sourceNodeLabels: label (o lista di labels) da assegnare ai nodi sorgente nel grafo proiettato
+    - targetNodeLabels: uguale a sopra ma per i nodi destinazione 
+    - sourceNodeProperties: Specifica le proprietà del nodo sorgente originale da caricare
+    - targetNodeProperties: uguale a sopra ma per i nodi destinazione
+    - relationshipType: tipo delle realazioni create nel grafo proiettato
+    - relationshipProperties: quali proprietà della relazione originale caricare sulla relazione proiettata
+- configuration: parametri aggiuntivi per configurare la proiezione 
+
+Nota: Bisogna prestare molta attenzione a distinguere tra **source** e **target** nodes, la logica di Cypher si basa su questo concetto e deve chiaramente poterli distinguere.  
+
+
+**NOTA IMPORTANTISSIMA: Valutazione Dinamica delle Funzioni (es. `labels()`, `type()`):**
+-   Quando si utilizzano funzioni Cypher come `labels(sourceNode)` o `type(relationship)` all'interno della configurazione di `gds.graph.project` (ad esempio, nel parametro `dataConfig`), queste non rappresentano valori statici.
+-   Sono funzioni che vengono eseguite dinamicamente, a runtime, per **ogni singola riga** che `gds.graph.project` sta elaborando.
+-   Il risultato di `labels(sourceNode)` sarà l'elenco effettivo delle etichette del `sourceNode` specifico di *quella riga corrente*. Analogamente per `type(relationship)`.
+-   Questo permette a GDS di assegnare le corrette etichette e tipi a nodi e relazioni man mano che vengono processati dal flusso di dati della query Cypher, garantendo che il grafo proiettato rifletta accuratamente le caratteristiche di ogni elemento specifico identificato dalla query.
 
 
