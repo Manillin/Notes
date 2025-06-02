@@ -180,8 +180,6 @@ Identificare il nodo più centrale ad un grafo è un informazione importante che
 
     È spesso normalizzato da $\bar{C_B}(i)=\frac{C_B(i)}{\frac{[(n-1)(n-2)]}{2}}$  
 
-    <center>
-
     <img src="../../../images/betweenness_centrality.png" alt="local connectivity" width="450px">
 
     </center>

@@ -232,4 +232,106 @@ Nota: Bisogna prestare molta attenzione a distinguere tra **source** e **target*
 -   Il risultato di `labels(sourceNode)` sarà l'elenco effettivo delle etichette del `sourceNode` specifico di *quella riga corrente*. Analogamente per `type(relationship)`.
 -   Questo permette a GDS di assegnare le corrette etichette e tipi a nodi e relazioni man mano che vengono processati dal flusso di dati della query Cypher, garantendo che il grafo proiettato rifletta accuratamente le caratteristiche di ogni elemento specifico identificato dalla query.
 
+Esempio di uso di NodeProperties:  
+
+```python 
+(...)
+with gds.graph.project(
+    'graphProperies'
+    source,
+    target,
+    {
+        sourceNodeProperties: source {age: coalesce(source.age,18), price: coalesce(source.price,5), .ratings},
+        targetNodeProperies: target {age: coalesce(source.age,18), price: coalesce(source.price,5), .ratings}
+    }
+    {
+        undirectedRelationshipTypes: ['*']
+    }
+) as g 
+return g.graphName as graph, g.nodeCount ad nodes, g.relationshipCount as rels 
+```
+
+- source/targetNodeProperties specifica le proprietà che i nodi avranno nel grafo proiettato
+- la struttura `source {...}` è una mappa che speficica:
+    - per il nodo source della riga corrente, crea un nodo nel grafo proiettato 
+    - la funzione dinamica `coalesce()` restituisce il primo valore non null tra i suoi parametri 
+    - `.ratings` è una scorciatoia per copiare il valore di una proprietà dal nodo source che stiamo processando, può assumere il valore `null`.  
+- la mappa al 5o posto tra i parametri della project è quella relativa alla configuration, in qusto caso stiamo dicendo di trasformare tutte le relazioni in collecamenti senza direzione.  
+
+
+Nota: Se nella nostra gds.graph.project non specifichiamo nessun parametro per dataConfig, allora il grafo proiettato avrà le label del grafo di partenza ma perderà le proprietà.  Analogamente non avremo proprietà e distinzione tra le varie relazioni che collegano i nodi, saranno tutte dello stesso tipo generico.  
+
+
+<br>
+
+## Memory Estimation: 
+
+La libreria di algoritmi runnabili sul grafo operano completamente nel heap, questi algoritmi all'inizio della loro esecuzione faranno una stima della memoria che andranno ad usare 
+- se la attuale memoria disponibile è inferiore alla stima calcolata dall'algoritmo allora il processo verrà abortito e verrà segnato un errore.  
+- è quindi utile runnare prima il modello che calcola la stima di meoria prima di chiamare l'algoritmo su un grande dataset.  
+- Si può fare la stima di memoria sia per le call di algoritmi che per la creazione di proiezioni.   
+
+### Memory Estimation for algorithms
+
+```python 
+CALL gds[.<tier>].<algorithm>.<execution-mode>.estimate(
+    graphNameOrConfig: String or Map,
+    configuration: Map
+) YIELD
+    nodeCount: Integer,
+    relationshipCount: Integer,
+    requiredMemory: String,
+    treeView: String,
+    mapView: Map,
+    bytesMin: Integer,
+    bytesMax: Integer,
+    heapPercentageMin: Float,
+    heapPercentageMax: Float
+```
+
+### Memory Estimation for graph projections: 
+
+```py
+CALL gds.graph.project.cypher.estimate(
+    nodeQuery: String,
+    relationshipQuery: String,
+    configuration: Map
+)
+YIELD 
+    requiredMemory, 
+    treeView, 
+    mapView, 
+    bytesMin,
+    bytesMax,
+    heapPercentageMin, 
+    heapPercentageMax,
+    nodeCount,
+    relationshipCount
+```
+
+
+<br> 
+
+
+## Overview degli algoritmi per i grafi
+
+Gli algoritmi hanno la seguente sintassi:  
+
+```py
+CALL gds[.<tier>].<algorithm>.<execution-mode>[.<estimate>](
+    graphName: String,
+    configuration: Map
+)
+```
+
+Esistono 3 livelli di maturità degli algoritmi: 
+1. Production Quality: `gds.<algorithm>`
+2. Beta: `gds.beta.<algorithm>`
+3. Alpha: `gds.alpha.<algorithm>` 
+
+Gli algoritmi vengono eseguiti scegliendo una modalità di esecuzione: 
+- `stream`: restituisce il risultato della computazione dell'algoritmo come righe in formato Cypher
+- `stats`: restituisce risultati statistici 
+- `mutate`: scrive i risultati dell'algoritmo nel in-memory graph mutandolo 
+- `write`: scrive i risultati direttamente nel database neo4j 
 

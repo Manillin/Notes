@@ -22,7 +22,7 @@
 
     <center>
 
-    <img src="../../images/distro_frequenza.png" alt="local connectivity" width="300px">
+    <img src="file:///Users/chris/Notes/masters/images/distro_frequenza.png" alt="local connectivity" width="300px">
 
     </center>
 
@@ -44,7 +44,7 @@
 
     <center>
 
-    <img src="../../images/media_distro_classi.png" alt="local connectivity" width="500px">
+    <img src="file:///Users/chris/Notes/masters/images/media_distro_classi.png" alt="local connectivity" width="500px">
 
     </center>
 
@@ -63,7 +63,7 @@
 
     <center>
 
-    <img src="../../images/media_ponderata.png" alt="local connectivity" width="500px">
+    <img src="file:///Users/chris/Notes/masters/images/media_ponderata.png" alt="local connectivity" width="500px">
 
     </center>
 
@@ -119,7 +119,7 @@ Si definisce _moda_ la modalità che presenta la massima frequenza, può essere 
 
 <center>
 
-<img src="../../images/moda.png" alt="local connectivity" width="300px">
+<img src="file:///Users/chris/Notes/masters/images/moda.png" alt="local connectivity" width="300px">
 
 </center>
 
@@ -138,7 +138,7 @@ Si definisce _moda_ la modalità che presenta la massima frequenza, può essere 
 
     <center>
 
-    <img src="../../images/moda_densita.png" alt="local connectivity" width="300px">
+    <img src="file:///Users/chris/Notes/masters/images/moda_densita.png" alt="local connectivity" width="300px">
 
     </center>
 
@@ -343,7 +343,7 @@ $$
 
 <center>
 
-<img src="../../images/deviazione_std.png" alt="local connectivity" width="400px">
+<img src="file:///Users/chris/Notes/masters/images/deviazione_std.png" alt="local connectivity" width="400px">
 
 </center>
 
@@ -356,7 +356,7 @@ La deviazione standard ha la stessa unità di misura delle variabili osservate *
 
 ### Coefficiente di Variazione: 
 
-Varianza e deviazione standard sono indici che risentono dell’unità di misura e dell’ordine di grandezza dei dati. Pertanto il confronto della variabilità tra collettivi diversi o variabili diverse non può essere fatto.  
+Varianza e deviazione standard sono indici che risentono dell'unità di misura e dell'ordine di grandezza dei dati. Pertanto il confronto della variabilità tra collettivi diversi o variabili diverse non può essere fatto.  
 
 A questo scopo si può utilizzare il _Coefficiente di variazione_ che è una misura data dal rapporto tra la deviazione standard e la media aritmetica moltiplicata per 100.  
 _Nota:_ È calcolabile sono quando la media è positiva (>0) 
@@ -383,7 +383,7 @@ Applicando il coefficiente di variazione otteniamo invece:
 
 <center>
 
-<img src="../../images/esempio_cv.png" alt="local connectivity" width="650px">
+<img src="file:///Users/chris/Notes/masters/images/esempio_cv.png" alt="local connectivity" width="650px">
 
 </center>
 
@@ -452,7 +452,7 @@ Il coefficiente di variazione dà indicazioni sulla variabilità del fenomeno , 
 
     <center>
 
-    <img src="../../images/distro_standardizzata.png" alt="local connectivity" width="300px">
+    <img src="file:///Users/chris/Notes/masters/images/distro_standardizzata.png" alt="local connectivity" width="300px">
 
     </center>  
 
@@ -460,7 +460,7 @@ Il coefficiente di variazione dà indicazioni sulla variabilità del fenomeno , 
 
     <center>
 
-    <img src="../../images/plot_standardizzata_vs_normale.png" alt="local connectivity" width="450px">
+    <img src="file:///Users/chris/Notes/masters/images/plot_standardizzata_vs_normale.png" alt="local connectivity" width="450px">
 
     </center>  
 
@@ -481,7 +481,7 @@ Il coefficiente di variazione dà indicazioni sulla variabilità del fenomeno , 
 
     <center>
 
-    <img src="../../images/distribuzioni_simmetriche_e_non.png" alt="local connectivity" width="500px">
+    <img src="file:///Users/chris/Notes/masters/images/distribuzioni_simmetriche_e_non.png" alt="local connectivity" width="500px">
 
     </center>  
 
@@ -494,7 +494,7 @@ Ricordiamo la forma della tabella a doppia entrata, che rappresenta una **distri
 
 <center>
 
-<img src="../../images/tabella_doppia_entrata.png" alt="local connectivity" width="400px">
+<img src="file:///Users/chris/Notes/masters/images/tabella_doppia_entrata.png" alt="local connectivity" width="400px">
 
 </center>  
 
@@ -507,7 +507,7 @@ Esempio analisi tabella:
 
 <center>
 
-<img src="../../images/esempio_2entrata.png" alt="local connectivity" width="450px">
+<img src="file:///Users/chris/Notes/masters/images/esempio_2entrata.png" alt="local connectivity" width="450px">
 
 </center>
 
