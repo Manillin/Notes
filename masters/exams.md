@@ -8,7 +8,7 @@
 - ### Big Data Analytics:  
     - modalità: Orale (presentazione assignment)
     - consegne: Tre assignment con relative scadenze
-    - data esame: TBD
+    - data esame: 17/06 @ 9.30 AM
 
 
 
@@ -18,7 +18,7 @@
     - data: 10/06 - 24/07 - 10/09
 
 
-- ### Computational and Statistical Learning: 
+- ### Computational and Statistical Learning: 
     - modalità: Orale (presentazione assignment)
     - consegne: Progetto finale su un dataset
     - date: 09/06 - 25/06 - 18/07 - 28/08 - 16/09
@@ -27,16 +27,16 @@
 - ### Sistemi Complessi:  
     - modalità: Scritto 
     - consegne: 
-    - date: 
+    - date: 20/06 - 08/07
 
 
-- ### Metodologie di Sviluppo Software:
+- ### Metodologie di Sviluppo Software:
     - modalità: Scritto 
     - consegne: nessuna 
-    - date: 29/05
+    - date: 29/05 -> 30L
 
 
-- ### Teoria dei giochi: 
+- ### Teoria dei giochi: 
     - modalità: Orale (presentazione progetto)
     - consegne: Progetto finale 
     - date: 24/06 - 03/07 - 21/07
