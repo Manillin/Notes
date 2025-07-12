@@ -3,12 +3,32 @@
 
 <br><br>
 
+
+
+### Updated to-do: 
+1. Big Data Analytics $\rightarrow$ 17/07 @ 14.30 
+2. Fondamenti di ML $\rightarrow$ 24/07 @ 9.30 
+3. Sistemi Complessi $\rightarrow$ 23/07 @ 9.30 
+4. Sviluppo di SW sicuro $\rightarrow$ 28/07 @ 9.30
+
+
+Confirmed: 
+- big data 
+
+Must confirm/pick:
+- ML | Sys complessi | SW sicuro
+ 
+
+
+
+
+
 ## Sessione Estiva: 
 
 - ### Big Data Analytics:  
     - modalità: Orale (presentazione assignment)
     - consegne: Tre assignment con relative scadenze
-    - data esame: 17/06 @ 9.30 AM
+    - data esame: 17/07 @ 14.30 AM
 
 
 
