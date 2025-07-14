@@ -60,9 +60,11 @@ Svantaggi:
     Composto da:
     - Tabelle $\rightarrow$ collezione di data items
     - Items $\rightarrow$ gruppo di attributi univocamente identificabile dalla primary key
-    - Key $\rightarrow$ esistono due tipi di key, **simple key (partition key)** è il valore che dato a una funzione hash mi retituisce la partizione in cui verranno salvati i dati; **composite key (partition + sort key)** tutti gli items con stessa simple key vengono salvati insieme e ordinati in ordine numerico dal key value. 
+    - Key $\rightarrow$ esistono due tipi di key:  
+    **simple key (partition key)** è il valore che dato a una funzione hash mi retituisce la partizione in cui verranno salvati i dati;   
+    **composite key (partition + sort key)** tutti gli items con stessa simple key vengono salvati insieme e ordinati in ordine numerico dal key value. 
     - Attributi $\rightarrow$ ogni item è composto da uno o più attributi  
-        Attribute = (name,value)  
+        Attribute = (name,value) - corrisponde a una entry nel  'dizionario' k:v
     PRO: Non richiedono uno schema, hanno il concetto di PK, estremamente veloci e scalabili  
     CONTRO: Non supportano Join cross-table, ne aggregazione; supportano un numero limitato di data types (int,string,binario) e hanno un supporto di indicizzazione limitato (solo hash-range).   
 
