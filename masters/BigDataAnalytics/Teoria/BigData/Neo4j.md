@@ -41,7 +41,7 @@ Le componenti di un nodo `Neo4j` includono:
     Sono aggettivi per descrivere meglio i **nodi**, o avverbi per descrivre meglio le  **relazioni**.  
     Seguono la forma `key:value`, possono essere _opzionali_ o _requested_, e i valori possono essere _unique_ se lo di desidera.  
 
-![nodes & relationships](../../images/nodoes_relationship.png)
+![nodes & relationships](../../../images/nodoes_relationship.png)
 
 
 # Cypher Basics:  
@@ -155,7 +155,7 @@ Questa clausola `MATCH` cerca un pattern in cui:
 In Neo4j, un path è una sequenza di nodi e relazioni che rappresenta un percorso nel grafo. I path sono utilizzati per esprimere come i nodi sono collegati tra loro attraverso le relazioni.  
 La sintassi di Cypher permette di specificare questi path in modo dichiarativo, utilizzando una notazione simile all'ASCII-art.
 
-![path example](../../images/path_example.png)
+![path example](../../../images/path_example.png)
 
 Le funzioni `nodes(p)` e `relationships(p)` sono utilizzate per estrarre i nodi e le relazioni da un path. 
 - `nodes(p)` $\rightarrow$ restituisce tutti i nodi che fanno partedel path `p` in una lista 
@@ -219,7 +219,7 @@ Possono esser calcolati:
     Le Grouping Keys sono espressioni usate per raggruppare i valori che vanno in pasto alle funzioni di aggregazione, per seguire un ordine flessibile
     - I sottografi che matchano diventano $\rightarrow$ `buckets`
     - La funzione di aggregazione poi viene eseguita su questi buckets, calcolando un valore aggregato _per_ bucket.  
-    ![esempio aggregate](../../images/esempio_aggregate.png)  
+    ![esempio aggregate](../../../images/esempio_aggregate.png)  
 
     - `count()`: può essere usata in due varianti  
         `count(*)`: restituisce il numero di matching rows  
@@ -231,7 +231,7 @@ Possono esser calcolati:
         ```  
         Qui la Grouping Key è `a.name, d.name` e count(*) restituisce il numero di match di questo bucket - ossia il numero di film dove un'attore e lo stesso direttore hanno lavorato.  
         Se avessimo voluto avere la lista di film invece del numero di film, dovevamo usare  `collect(m.title)` dove la clausola collect mi crea un array.   
-        ![attori-direttori numero film](../../images/count_esempio_adf.png)
+        ![attori-direttori numero film](../../../images/count_esempio_adf.png)
 
 
 Funzioni di ordinamento (sorting):
