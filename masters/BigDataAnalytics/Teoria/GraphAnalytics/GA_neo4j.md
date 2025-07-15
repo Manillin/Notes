@@ -16,8 +16,8 @@ Workflow per l'uso di algoritmi appropriati:
 4. Fare una memory estimation per configurare adeguatamente il sistema per gestire la quantità di dati che deve essere processata 
 
 Si può riassumere nei seguenti **step implementativi**:
-1. Creare il Named Graph e salvarlo nel Graph Catalog (con le proiezioni, creare nomi diversi per ogni proiezione per poter lanciare algorimti us ogni proiezione)
-2. Eseguire uno o più algoritmi dul Named Graph 
+1. Creare il Named Graph e salvarlo nel Graph Catalog (con le proiezioni, creare nomi diversi per ogni proiezione per poter lanciare algorimti su ogni proiezione)
+2. Eseguire uno o più algoritmi sul Named Graph 
 3. Consumare i risultati
 
 <center>
