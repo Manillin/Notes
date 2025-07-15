@@ -140,7 +140,7 @@ Identificare il nodo più centrale ad un grafo è un informazione importante che
 
 <br>
 
-1. **Degree Centrality - nood**  
+1. **Degree Centrality - nodo**  
 
     $$
     C_{Dg}(v)=\frac{\text{deg}(v)}{|V|-1}
@@ -178,7 +178,11 @@ Identificare il nodo più centrale ad un grafo è un informazione importante che
     - $g_{jk}(i)$ = numero di cammini minimi $\sigma (j,k)$ che passano attraverso $i$
     - $g_{jk}$ = numero totale di cammini minimi 
 
-    È spesso normalizzato da $\bar{C_B}(i)=\frac{C_B(i)}{\frac{[(n-1)(n-2)]}{2}}$  
+    È spesso normalizzato da 
+    
+    $$
+    \bar{C_B}(i)=\frac{C_B(i)}{\frac{[(n-1)(n-2)]}{2}}
+    $$  
 
     <img src="../../../images/betweenness_centrality.png" alt="local connectivity" width="450px">
 
@@ -207,7 +211,7 @@ Identificare il nodo più centrale ad un grafo è un informazione importante che
 
 ## Community Analysis:  
 
-In un grafo possiamo avere comunità/gruppi, dentro le quali i collegamenti tra i nodi sono densi e fuori dai quali i collegamenti sono sparsi
+In un grafo possiamo avere comunità/gruppi, dentro i quali i collegamenti tra i nodi sono densi e fuori dai quali i collegamenti sono sparsi
 - Archi _Intragruppo_ $\rightarrow$ alta densità interna a un gruppo
 - Archi _Intergruppo_ $\rightarrow$ bassa densità tra due gruppi
 L'obiettivo è trovare una buona divisione del grafo in modo che le connessioni dentro ogni gruppo siano molte e le conessioni tra gruppi diversi siano poche.  
@@ -231,7 +235,7 @@ Ci sono due modi per individuare gruppi all'interno di un grafo:
 
 ### Algoritmo di Girvan-Newman: (Metodo Gerarchico)
 
-L'idea chiave è che se nel grafo ci sono comunità debolmente collegate tra loro allora gli archi che connettono comunità diverse sono pochi ma molto importanti in quanto su di essi passano molti cammini minimi, procederemo a eliminaer gli archi con betweenness più alta e questo romperà il grafo nelle sue comunità naturali.  
+L'idea chiave è che se nel grafo ci sono comunità debolmente collegate tra loro allora gli archi che connettono comunità diverse sono pochi ma molto importanti in quanto su di essi passano molti cammini minimi, procederemo a eliminare gli archi con betweenness più alta e questo romperà il grafo nelle sue comunità naturali.  
 
 **Betweennes di un arco:** È il numero di cammini minimi tra coppie di nodi che passano per quell'arco
 
