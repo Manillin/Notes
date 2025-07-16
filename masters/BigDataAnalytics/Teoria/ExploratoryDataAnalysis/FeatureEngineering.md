@@ -318,7 +318,7 @@ Nell'immagine di esempio identifichiamo in rosso i core points, in giallo i bord
 ### Local Outlier Factor (LOF):
 
 LOF individua outlier basandosi sulla densità dei NN dei data points e funziona particolarmente bene quando lo spread (densità) del dataset non è uniforme.  
-Confronta la densità attorno a un punto con la densità dei duoi NN; l'idea chiave è che la densità attorno ad un outlier è _significativamente diversa_ dalla densità attorno ai suoi vicini. 
+Confronta la densità attorno a un punto con la densità dei suoi NN; l'idea chiave è che la densità attorno ad un outlier è _significativamente diversa_ dalla densità attorno ai suoi vicini. 
 Ha due iperparametri:
 1. $k$ è il numero di NN che prendiamo in considerazione per ogni punto
 2. $c$ è il fattore di contaminazione, ossia la percentuale di outliers che ci aspettiamo di avere dentro il dataset.   

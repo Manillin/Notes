@@ -375,7 +375,7 @@ $$
 
 <center>
 
-![Wasserstein 1D](../../images/wasserstein1D.png)
+![Wasserstein 1D](../../../images/wasserstein1D.png)
 
 
 </center>

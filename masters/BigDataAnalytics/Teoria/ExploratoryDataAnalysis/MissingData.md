@@ -10,7 +10,7 @@ I dati mancanti posso derivare da diverse situazioni:
 
 L'assenza di dati non è solo un buco da riempire, essa provoca problemi e conseguenze concrete:  
 - **Riduzione del campione utile:** Meno dati abbiamo e più debole sarà la potenza statistica, se il 40% dei dati è mancante l'analisi risulta inaffidabile!
-- **Rischi di interpretazione errata:** Se i dati mancano in modo _sistematico_ le conclusioni potrebbero essere distorte e affetti da Bias (es: In uno studio medico, se i pazienti più anziani evitano di riportare effetti collaterali, il farmaco sembrerà più sicuro di quanto non sia.) 
+- **Rischi di interpretazione errata:** Se i dati mancano in modo _sistematico_ le conclusioni potrebbero essere distorte e affette da Bias (es: In uno studio medico, se i pazienti più anziani evitano di riportare effetti collaterali, il farmaco sembrerà più sicuro di quanto non sia.) 
 - **Incompatibilità con algoritmi:** La maggior parte dei modelli di Machine Learning richiede input completi, dati mancanti bloccherebbero completamente il modello.  
 
 Il problema si affronta con tre tecniche: **Eliminazione, Imputazione, Analisi della causa**.  
@@ -96,7 +96,7 @@ Si sostituiscono le celle vuote con i dati delle celle adiacenti verso il basso 
 Si rimpiazza ogni missing value con un valore ottenuto da un metodo di interpolazione (lineare, quadratico o polinomiale), particolarmente efficiente per dati numerici continui di tipo panel/temporanei.  
 
 ### Metodi Multivariati di Inputazione:  
-Si inseriscono i valori mancanti con il valore più probabile, tale valore può essere derivato applicando tool di ML.  
+Si inseriscono i valori mancanti con il valore più probabile, tale valore può essere derivato applicando modelli di ML.  
 
 **1. Iterative Imputation:**  
 Tecnica per gestire dati mancanti quando esiste una correlazione tra loro, questa sfrutta le relazioni tra le colonne per stimare i valori mancanti in modo più accurato.  
@@ -110,7 +110,7 @@ il k-NearestNeighbors imputation è una tecnica di imputazione multivariata che 
 - È un algoritmo che trova i $k$ data points più simili a quello con il valore mancante e usa i loro valori per imputare il dato mancante.  
 - La similarità è misurata dal concetto di _distanza_ (calcolata sulle feature disponibili)  
 
-![kNN imputation](../../images/kNN_imputation.png)
+![kNN imputation](../../../images/kNN_imputation.png)
 
 Nell'esempio riportato si vuole calcolare il valore $V2$ per la entry $Y1$  
 - si prendono le altre entry della tabella che hanno $V2$ noto ($Y6$ è escluso)  
