@@ -105,7 +105,7 @@ $$
 |\text{mode}(X) - X_{50}| \leq 1.73\sigma  
 $$
 
-![](../../images/moda_media_mediana_skewed.png)
+![](../../../images/moda_media_mediana_skewed.png)
 
 Queste formule indicano che la media tende a essere più influenzata da valori estremi (outlier) rispetto alla mediana e alla moda.
 
@@ -158,7 +158,7 @@ $\text{min}(\{x\})\rightarrow \text{max}(\text{min}(\{x\}),Q_1-1.5 IQR)$
 $\text{max}(\{x\})\rightarrow \text{min}(\text{max}(\{x\}),Q_3-1.5 IQR)$ 
 
 
-![boxplot with outliers](../../images/boxplot_outlier.png)
+![boxplot with outliers](../../../images/boxplot_outlier.png)
 
 
 </center>
@@ -207,7 +207,7 @@ $$
 
 <center>
 
-![boxplot with outliers](../../images/person_correlation.png)
+![boxplot with outliers](../../../images/person_correlation.png)
 
 </center>
 
@@ -220,7 +220,7 @@ Pearson cattura **solo** relazioni lineari ed è importante distinguere _correla
 
 ### Correlazione di Rango di Spearman 
 
-Misura la relazione monotonica tra due varaibili, ovvero quanto bene una variabile aumenta (o diminuisce) al variare dell'altra, senza richiedere una **relazione lineare** tra le due.  
+Misura la relazione monotona tra due varaibili, ovvero quanto bene una variabile aumenta (o diminuisce) al variare dell'altra, senza richiedere una **relazione lineare** tra le due.  
 
 **Formula:**
 
@@ -330,7 +330,7 @@ Esistono due modi per controllare l'ipotesi $H_0$:
 Entrambi i modi di verificare l'ipotesi $H_0$ sono validi ma il metodo del pvalue è più informativo e non richiede l'uso del valore dei dof.  
 
 
-![pearson chi quadro](../../images/pearsonchiquadro.png)
+![pearson chi quadro](../../../images/pearsonchiquadro.png)
 
 
 La correlazione $\chi^2$ di Pearson **NON** misura la forza dell'associazione, ne verifica solo la sua esistenza o assenza.  
