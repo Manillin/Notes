@@ -198,7 +198,7 @@ _nota:_ Dopo la task i container che eseguono le task e quello che conteine l'AM
 HDFS è il file system distribuito progettato specificamente per Hadoop.  
 
 Caratteristiche chiave:
-- È un file system scalabile e deistribuito scritto in Java per Hadoop
+- È un file system scalabile e distribuito scritto in Java per Hadoop
 - Progettato per lavorare su migliaia di cluster economici 
 - scrittura e lettura avvengono via rete, bisonga tenere conto di tutte le complicazioni della programmazione su network, i file system distribuiti su rete sono più complessi dei file system su disco.  
 - Ha come obiettivo evitare la perdita dei dati: (che diventa più difficile in quanto avviene via rete)
