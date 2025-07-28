@@ -1,23 +1,32 @@
-from collections import defaultdict
-nums = [1, 1, 1, 2, 2, 3]
-nums2 = [1]
+
+def encode(strs):
+    compressed = ''
+    for string in strs:
+        length = len(string)
+        compressed += '#'+str(length)+string
+    return compressed
 
 
-def kfrequent(nums, k):
-    result = []
-    num_map = defaultdict(int)
-    buckets = [[] for i in range(len(nums))]
-    for number in nums:
-        num_map[number] += 1
+def decode(s: str):
+    strings = []
+    i = 0
+    while i < len(s):
+        if s[i] == '#':
+            j = i+1
+            start = j + 1
+            end = int(s[j]) + 1
+            substring = s[start:j+end]
+            print(substring)
+            strings.append(substring)
+            i = j + end
+        else:
+            return strings
+    return strings
 
-    for key, value in num_map.items():
-        buckets[value].append(key)
 
-    for bucket in buckets[::-1]:
-        for number in bucket:
-            result.append(number)
-            if len(result) == k:
-                return result
+strs = ["we", "say", ":", "yes", "!@#$%^&*()"]
 
+compressed = encode(strs)
+print(compressed)
 
-print(kfrequent(nums2, 2))
+strings = decode(compressed)
