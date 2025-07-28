@@ -76,7 +76,16 @@
 ### Protostar 
 - stack 01 
 - stack 03
-- stack 05
+- stack 05:  
+    Si consulta il codice sorgente per la challenge e si nota che viene allocato un buffer di 64 caratteri sullo stack e successivamente viene riempito tale buffer con dati letti da terminale, tale input non è controllato (recipe for disaster).  
+    La modalità per affrontare l'esercizio è in #riassunto.md nel heading `Buffer Overflow`.  
+- stack 06:  
+
+
+    ```bash
+
+    ```
+
 
 
 ### Web4PenTesters
@@ -103,7 +112,11 @@
     Questo ci permetterà di chiamare ID e vedere gli uid e gid 
 - XSS 1 
 - File include 1 
-- SQL Injections 1:  
+
+
+## SQL Injections:
+
+- SQL Injection 1:  
     Nel codice sorgente della sfida notiamo che viene costruita una stringa rappresentante uno statement SQL, tale input non viene controllato in alcun modo e viene mandato ad un DBMS MySQL per l'esecuzione.  
     Si adotta lo schema classico di iniezione al caso specifico.  
     È possibile usare l'operatore **`OR`** per iniettare un comando e l'espressione in questo modo diventa una _tautologia_
@@ -145,7 +158,8 @@
     - `root' UNION SELECT concat(id,':',name,':',passwd),2,3,4,5 from users %23`  
     In questo modo l'ouput interessante ora è compattato in un unica colonna.  
     
+- SQL injection 2:  
 
 
-
-
+    ```bash
+    ```
