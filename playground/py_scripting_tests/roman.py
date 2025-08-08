@@ -1,23 +1,40 @@
-def roman_to_int(s: str) -> int:
-    roman_numerals = {
-        'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000
-
-    }
-
-    total = 0
-    prev_value = 0
-
-    for char in reversed(s):
-        value = roman_numerals[char]
-        if value < prev_value:
-            total -= value
+def evalRPN(tokens) -> int:
+    operands = ('+', '-', '*', '/')
+    stack = []
+    for char in tokens:
+        if char in operands:
+            op1 = stack.pop()
+            op2 = stack.pop()
+            if char == '+':
+                stack.append((op1+op2))
+            elif char == '-':
+                stack.append((op2-op1))
+            elif char == '*':
+                stack.append((op1*op2))
+            else:
+                division = int(op2/op1)
+                stack.append(division)
         else:
-            total += value
-        prev_value = value
-
-    return total
+            stack.append(int(char))
+    return stack.pop()
 
 
-# Esempio di utilizzo:
-roman_number = "MCMXCIV"
-print(roman_to_int(roman_number))  # Output: 1994
+def generateParenthesis(self, n: int):
+    stack = []
+    res = []
+
+    def backtrack(openN, closedN):
+        if openN == closedN == n:
+            res.append("".join(stack))
+            return
+
+        if openN < n:
+            stack.append("(")
+            backtrack(openN+1, closedN)
+            stack.pop()
+        if closedN < openN:
+            stack.append(")")
+            backtrack(openN, closedN+1)
+            stack.pop()
+    backtrack(0, 0)
+    return res
