@@ -520,7 +520,4 @@ print('/bin//sh\x00' + 'a'*71 + '\xb0\xff\xec\xb7' +
 ```
 Il comando `(cat; cat)` invia prima il payload e poi mantiene aperto lo stream di input, permettendoti di interagire con la shell che si aprirà. Se tutto è stato fatto correttamente, vedrai comparire un prompt (`#` o `$`), segno che hai ottenuto il controllo del sistema.
 
-
-Ottimi dubbi, sono esattamente i dettagli che fanno la differenza e dimostrano che stai capendo a fondo il processo! Risolviamoli uno per uno.
-
 ---

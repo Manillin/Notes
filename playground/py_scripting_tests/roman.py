@@ -22,7 +22,6 @@ def evalRPN(tokens) -> int:
 def generateParenthesis(self, n: int):
     stack = []
     res = []
-
     def backtrack(openN, closedN):
         if openN == closedN == n:
             res.append("".join(stack))
