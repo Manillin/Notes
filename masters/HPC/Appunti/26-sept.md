@@ -66,3 +66,9 @@ caches:
 - Write through: when we update data it gets updated from l1cache to dram (not used a lot). 
 Write back: uses a lazy approach, we publish the data from cache to the dram only when another process need to use the data that is different from cache of proc1 to the dram.   
 
+
+
+---  
+
+
+
