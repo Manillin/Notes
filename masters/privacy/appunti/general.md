@@ -54,4 +54,42 @@ principy di privacy OCSE 1980:
 - principio di partecipazione individuale
 - principio di responsabilizzazione - il titolare che tratta i dati personali è responsabile della custodia dei dati e della modalità con cui li tratta  
 
+---
 
+
+#### 16 oct 
+
+aggancio tra direttiva e convenzione del 108.  
+l'adesione alla 108 deve essere considerata sulla adeguatezza del livello di protezione nei paesi terzi -> riconosce che i paesi che non fanno parte dei paesi della convenzione EU , questi paesi anche non facendo parte del club si innanzano allo stesso livello - e quindi ci possiamo 'fidare' a livello di fiducia del trattamento dei dati personali.  
+
+
+convenzione 108+ nel 2019, si modernizza e si migliora la convenzione 108 (gia riconosciuta dalla direttiva 95), lo scopo della 108+ è quella di facilitare il flusso trasfrontalieri dei dati.  
+Importante perche ci fa capire come la 108 sia ancora attuale, è successiva al regolamento europeo e lo stesso regolamento europeo cita questa convenzione nel contesto sul tema trasfrontaliero dei dati (i dati circolano e non solo in europa, quindi che fine fanno i dati che escono da europa ? crolla tutta la protezione sui dati? no sta in piedi grazie a questa convenzione).  
+
+ls convenzione permette di usare un service provider non europeo e che garantisca lo stesso livello di protezione offerto dall'europa.  
+  
+
+con l'america vengono sottoscritti accordi a parte (l'america non si adatta a scrivere una convenzione standard), vengono fatti altri accordi [ in america esiste il privacy framework ]  
+
+la 108+ introduce il principio di accountability, principio di base e fondamentale in base al quale il titolare del trattamento (azienda che tratta dati personali) si condiera responabilizzato alla normativa del gdpr -> gestione trasparente dei dati  
+
+
+principi di privacy by design e by default, e prevede ampliamento dei singoli come non essere soggetto trattamento automatizzato -> subire decisioni automatizzati (es: decisione automatizzata di scegliere candidato lavorativo, non può scegliere tutto la macchina, in caso di errore esclude a priori candidati, la decisione finale deve essere presa da un essere umano).   
+
+
+Direttiva 95/46/CE  
+direttiva che si inserisce tra la direttiva 108 e il regolamento europeo.  
+questa direttiva amplia un po le definizioni - serve per individuare gli attori della questione del trattamento dei dati 
+il titolare (titolare di doveri, dovere garantire trasparenza, accountability, ... )
+titolare del trattamento (colui che tratta i dati al posto del titolare, fornitori esterni, come provider cloud, che devono essere comunque soggetti a rispettare la tutela dei dati), [il titolare deve scegliere il provider non solo in base al prezzo ma anche in base a questi dati].    
+
+descrive anche meglio le finalità, che devono essere determinate (non 'raccolgo i dati e poi vediamo') e dichiarate, devo essere esplicite (dichiarate nelle informative).  
+
+i trattamenti vanno fatti nelle sede legali.  
+
+definisce il concetto di categoria particolare dei dati, si pone un divieto di trattare questa tipologia di dati 
+
+
+obblighi di trasparenza, ossia l'interessato è colui che da i dati (caso di fusione di aziende) - azienda A acquista azienda B ma io ho dato i dati all'azienda B, allora A deve informarmi che i miei dati ora li ha lui, e deve darmi la possibilità di decidere se tenere i dati/modificarli o cancellarli.  
+
+si introducono anche i codici di condotta, 
