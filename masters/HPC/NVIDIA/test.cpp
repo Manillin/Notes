@@ -1,18 +1,20 @@
 #include <iostream>
+#include <vector>
 
 int main()
 {
-    int x = 10;
-    auto lambda = [&x]()
-    {
-        x = 1;
-    };
+    float k = 0.5;
+    float ambient_temp = 20;
+    std::vector<float> temp = {42, 24, 50};
 
-    auto lambda2 = [x]()
+    auto op = [=](float t)
     {
-        std::cout << "Valore di x: " << x << std::endl;
+        float diff = ambient_temp - t;
+        return t + k * diff;
     };
-    lambda();
-    lambda2();
-    std::cout << x << std::endl;
+    for (int step = 0; step < 3; step++)
+    {
+        std::transform(temp.begin(), temp.end(),
+                       temp.begin(), op);
+    }
 }
