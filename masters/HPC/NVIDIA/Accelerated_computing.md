@@ -206,7 +206,7 @@ for(int i=0; i<N; i++)
 - Leggiamo 2$N$ elementi ed evitiamo di usare un array di appoggio (risparmiamo 1N scritture rispetto a prima). 
 - $\rightarrow$ 2$N$ letture e 1 scrittura!  
 
-Come possiamo ottenere questi vantaggi con gli algoritmi di thrust ? usando i **Puntatori**.    
+Come possiamo ottenere questi vantaggi con gli algoritmi di thrust ? generalizzando i **Puntatori**.    
 
 Ricordiamo che i puntatori sono elementi che contengono indirizzi della memoria fisica, e dereferenziandoli possiamo accedere a tali elementi.  
 
@@ -323,7 +323,8 @@ _nota:_
 ```c++
 auto zip_it = thrust::make_zip_iterator(a.begin(), b.begin());
 auto transform_it = 
-    thrust::make_transform_iterator(zip_it, 
+    thrust::make_transform_iterator(
+        zip_it, 
         [] __host__ __device__ (thrust::tuple<float,float> t)
         {
             return abs(thrust::get<0>(t) - thrust::get<1>(t));
@@ -336,3 +337,338 @@ Adesso la computazione avviene quando accediamo all'iteratore:
 - zip_it[i] restituisce la tupla 
 - transform_it[i] restituisce la differenza
 
+<br>
+
+### Simulazione di calore su griglia 2D
+
+Entriamo nel vivo della simulazione fisca, effettueremo una simulazione di calore su una griglia 2D ottimizzata per girare in parallelo su GPU.  
+
+Si usa il pattern _stencil_, per calcolare il nuovo valore della cella arancione, dobbiamo guardare le celle blu che la circondano.  
+
+![heat equation](../../images/heat_equation.png) 
+
+```c++
+if (row > 0 && column > 0 && row < height - 1 && column < width - 1)
+{
+    float d2tdx2 = in_ptr[row * width + column - 1]
+            - in_ptr[row * width + column] * 2
+            + in_ptr[row * width + column + 1];
+
+    float d2tdy2 = in_ptr[(row - 1) * width + column]
+            - in_ptr[row * width + column] * 2
+            + in_ptr[(row + 1) * width + column];
+
+return in_ptr[row * width + column] + 0.2f * (d2tdx2 + d2tdy2);
+}else{
+    return in_ptr[row*width + column];
+}
+```
+
+**Implementazione con thrust**:   
+
+```c++
+void simulate(int height, int width,
+            const thrust::universal_vector<float> &in,
+            const thrust::universal_vector<float> &out)
+{
+    // get raw pointer for perfomances
+    const float *in_ptr = thrust::raw_pointer_cast(in.data());
+    auto cell_indices = thrust::make_counting_iterator(0);
+
+    thrust::transform(
+        thrust::device, 
+        cell_indices,
+        cell_indices + in.size(),
+        out.begin(),
+        [in_ptr, height, width] __host__ __device__ (int id){
+            int column = id % width; // convert flattened cell index in 2D
+            int row = id / width;
+
+            if (row > 0 && column > 0 && row < height - 1 && column < width - 1)
+            {
+                float d2tdx2 = in_ptr[row * width + column - 1]
+                        - in_ptr[row * width + column] * 2
+                        + in_ptr[row * width + column + 1];
+                float d2tdy2 = in_ptr[(row - 1) * width + column]
+                        - in_ptr[row * width + column] * 2
+                        + in_ptr[(row + 1) * width + column];
+
+            return in_ptr[row * width + column] + 0.2f * (d2tdx2 + d2tdy2);
+            }else{
+                return in_ptr[row*width + column];
+            }
+
+        }
+    );
+}
+```
+
+_note_:
+- Nella lambda facciamo anche il boundary condition, le temperature sui bordi non cambiano.  
+- `auto cell_indices = counting_iterator(0)`: usiamo un counting iterator per iterare sugli indici della matrice
+- thrust::transform fa la computazione con la lambda, prendendo ogni elemento della matrice di input
+- dentro la lambda convertiamo l'indice 1D degli elementi nelle coordinate 2D in righe,colonne per accedere ai dati della matrice.  
+- **Importante:** gli iteratori `thrust` sono oggetti complessi, se facessimo .data() su di essi avremmo un `typed_iterator` in ritorno, e lavorare con questi su GPU cala le performance. Per questo motivo facciamo un casting con `thrust::raw_pointer_cast` per ottenere un puntatore C like che velocizza gli accessi in memoria ed è molto più efficiente.  
+
+
+
+### Prima Ottimizzazione della simulazione di calore: `tabulate`
+
+Abbiamo scritto il codice usando `transform` e un `counting_index`, questo è un pattern comune, così comune che è stata creata una funzione di thrust apposta $\rightarrow$ `tabulate`.  
+
+`thrust::tabulate` è un algoritmo che applica l'operazione (la lambda o funzione che viene passata) ad ogni elemento indice per indice, e salva il risultato in tale indice!  
+È l'equivalente di usare transform con counting_iterator.  
+**Regola d'oro**: Quando esiste un algoritmo specializzato, come in questo caso, è sempre da preferire in quanto è maggiormente ottimizzato e migliora le performance.   
+
+**Sintassi:** `thrust::tabulate(first, last, op)`     
+
+Il codice con tabulte diventa:
+
+```c++
+...
+thrust::tabulate(
+    thrust::device,
+    out.begin(),
+    out.end(),
+    [in_ptr, height, width] __host__ __device__ (int id) {
+        ...
+    }
+    ...
+);
+```
+
+- Non dobbiamo più creare il `counting_iterator`, tabulate a già che deve passare alla lambda i numeri da 0 a N-1 (definiti nel range della firma)
+- Il codice è più compatto, e il codice dentro la lambda rimane lo stesso, prende l'indice `id` lo trasforma in row,col e calcola il calore.  
+
+Possiamo fare un'altra ottimizzazione, notiamo che dentro la lambda abbiamo `id%width` e `id/width`, vorremmo fosse più leggibile e compatto, per migliorare la leggibilità e ridurre gli errori.  
+
+Creeremo una funzione `row_col` che fa il lavoro per noi.  
+
+
+```c++
+__host__ __device__ 
+cuda::std::pair<int, int> row_col(int id, int width)
+{
+    return cuda::std::make_pair(id/width, id%width);
+}
+thrust::tabulate(
+    thrust::device,
+    [in_ptr, heigth, width] __host__ __device__ (int id){
+        auto row, col = row_col(id,width);
+        ...
+    }
+)
+```
+
+<br>
+
+**Attenzione:** Stiamo usando `cuda::std::make_pair` e non `std::make_pair`!  
+- la soluzione naive sarebbe quella di usare solo std::pair in quanto ci serve quella struttura dati, ma se facessimo così avremmo un errore!
+    - `std::make_pair` fa parte della libreria standard del C++ che è scritta per girare su CPU! se lasciassimo così il compilatore si bloccherebbe dicendo che non sa come eseguire make_pair sui core della GPU.   
+    - Per risolvere il problema NVIDIA ha creato `libcu++`, che è una versione della libreria standard del C++ riscritta per poter funzionare perfettamente anche su GPU!
+
+
+
+### Seconda Ottimizzazione: `mdspan`     
+
+Fino ad ora nel codice si trasformavano le coordinate da 1D a 2D con furmule dirette:  
+
+```c++
+float d2tdx2 = in_ptr[row * width + column - 1]
+                - in_ptr[row * width + column] * 2
+                + in_ptr[row * width + column + 1];
+float d2tdy2 = in_ptr[(row - 1) * width + column]
+                - in_ptr[row * width + column] * 2
+                + in_ptr[(row + 1) * width + column];
+```
+
+Questo è considerata una bad practice in quanto error prone e poco leggibile, e se avessimo strutture con più dimensioni i lati negativi aumenterebbero solo.  
+
+Useremo `cuda::std::mdspan`   
+
+**Sintassi:** `cuda::std::mdspan(ptr, dimensione1, dimensione2)`   
+
+mdspan non è un contenitore ma una **vista**, non possiede dati ma guarda dati che esistono già altrove.  
+Permette di usare la sintassi con parentesi (riga,colonna) invece della formula matematica error prone.  
+Esegue un operazione di _coupling dimensions_: unisce i dati alle loro dimensioni!  
+
+
+Es: abbiamo un vettore 1D `sd = {0,1,2,3,4,5}`, fisicamente in memoria sono celle contigue ma noi vogliamo interpretarli come una matrice $2\times 3$  
+- eseguiamo `cuda::std::mdspan md(sd.data(), 2, 3)`
+- possiamo accedere ai dati in questo modo `md(row,col)`:
+    - `md(0,0)` $\rightarrow$ accede al primo elemento (0)
+    - `md(1,2)` $\rightarrow$ accede all'ultimo elemento (5)
+- possiamo ottenere le dimensioni della struttura dati a cui abbiamo applicato mdspan:
+    - `md.size()` $\rightarrow$ restituisce 6 
+- possiamo interrogare l'oggetto sulle sue dimensioni
+    - `md.extent(0)`: dimensioni del primo rango (2)
+    - `md.extent(1)`: dimensioni del secondo rango (3)   
+
+
+<details>
+<summary>Esercizio mdspan</summary>
+
+Codice Iniziale:
+  ```cpp
+__host__ __device__
+cuda::std::pair<int, int> row_col(int id, int width) 
+{
+    return cuda::std::make_pair(id / width, id % width);
+}
+
+void simulate(int height, int width,
+              const thrust::universal_vector<float> &in,
+                    thrust::universal_vector<float> &out)
+{
+  const float *in_ptr = thrust::raw_pointer_cast(in.data());
+
+thrust::tabulate(
+    thrust::device, out.begin(), out.end(), 
+    [in_ptr, height, width] __host__ __device__(int id) {
+        auto [row, column] = row_col(id, width);
+
+        if (row > 0 && column > 0 && row < height - 1 && column < width -  1) 
+        {
+            float d2tdx2 = in_ptr[(row) * width + column - 1] - 2 * in_ptr[row * width + column] + in_ptr[(row) * width + column + 1];
+            float d2tdy2 = in_ptr[(row - 1) * width + column] - 2 * in_ptr[row * width + column] + in_ptr[(row + 1) * width + column];
+
+        return in_ptr[row * width + column] + 0.2f * (d2tdx2 + d2tdy2);
+        } 
+        else{
+            return in_ptr[row * width + column];
+        }
+    });
+}
+```
+
+---
+
+<br>
+
+Soluzione:
+
+
+```c++
+void simulate(int height, int width,
+              const thrust::universal_vector<float> &in,
+                    thrust::universal_vector<float> &out)
+{
+    // non serve più!
+    const float *in_ptr = thrust::raw_pointer_cast(in.data());
+
+    // mdspan view 
+    cuda::std::mdspan grid(thrust::raw_pointer_cast(in.data()), height, width);
+
+    thrust::tabulate(
+    thrust::device, out.begin(), out.end(), 
+
+    [grid] __host__ __device__(int id) {
+        auto [row, column] = row_col(id, width);
+
+        if (row > 0 && column > 0 && row < grid.extent(0) - 1 && column < grid.extent(1) - 1) {
+        float d2tdx2 = grid(row,column-1)  - 2 * grid(row,column) + grid(row, column+1);
+        float d2tdy2 = grid(row-1, column) - 2 * grid(row, column) + grid(row+1, column);
+
+        return grid(row, column) + 0.2f * (d2tdx2 + d2tdy2);
+        } else {
+        return grid(row, column)
+        }
+    });
+}
+```
+</details>
+
+
+---
+
+<br>
+
+### Best Practices da tenere a mente
+
+Quando abbiamo davanti a noi parti di codice lunghe boilerplate ed error prone conviene usare il **Type Aliasing**   
+
+```c++
+using temperature_grid_f = 
+    cuda::std::mdspan<float, cuda::std::dextends<int,2>>;
+
+using temperature_grid_d = 
+    cuda::std::mdspan<double, cuda::std::dextends<int,2>>;
+
+void simulate(...)
+{
+    temperature_grid_f temp(thrust::raw_pointer_cast(in.data()), height, width);
+    thrust::tabulate(
+        ...
+    );
+}
+```
+
+- Ha il vantaggio di rendere il codice più leggibile e portabile, se un domani decidiamo di passare da float a double basterà cambiare la riga dello using e il resto del codice continuerà a funzionare correttamente.  
+- usare nomi chiari, nel codice temperature_grid_f fa capire subito che si tratta una griglia di temperatura a float.  
+- _nota:_ `dextents<int,n>` è il dynamic extend
+    - il 2 indica la dimensione (nell'es: griglia a 2 dimensioni)
+    - è dinamico, il che significa che la larghezza e l'altezza (numero di righe e colonne) non è fissato a tempo di compilazione, ma possono cambiare ogni volta che lanciamo il programma! flessibilità!  
+
+
+Un altra best practice è quella DRY, nel codice avevamo la lambda dentro la tabulate che eseguiva la logica dello stencil. Possiamo estrarla in una funzione esterna chiamata compute.  
+- la chiamata a `thrust::tabulate` diventa pulitissima e leggibile
+
+```c++
+__host__ __device__
+float compute(int cell_id, temperature_grid_f grid)
+{
+    int height = grid.extent(0):
+    int width = grid.extent(1);
+    int column = cell_id % width;
+    int row = cell_id / width;
+
+    ...
+    if(...){
+        return grid(row,column) + 0.2f * (d2tdx2 + d2tdy2)
+    }else{
+        return grid(row, column);
+    }
+}
+
+temperature_grid_f temp(thrust::raw_pointer_cast(in.data(), height, width));
+
+thrust::tabulate(
+        thrust::device,
+        out.begin(),
+        out.end(),
+        [=] __host__ __device__ (int d){
+            return compute(id, in)
+        });
+```
+
+<br>
+
+---
+
+<br>
+
+### Serial vs Parallel 
+
+Cambiamo problema e prendiamo un nuovo caso: vogliamo sommare le temperature di ogni riga.  
+
+![sum rows](../../images/sum_rows_CUDA.png)     
+
+Abbiamo in input una matrice 2D e vogliamo in output un vettore dove ogni elemento è la somma di una riga.   
+
+
+Soluzione naive:  
+
+```c++
+thrust::tabulate(
+    thrust::device, 
+    sums.begin(), sums.end(),
+    [=] __host__ __device__ (int row_id){
+        float sum = 0;
+        for (int col = 0; col < width; col++)
+        {
+            sum += grid(row,col);
+        }
+    }
+    return sum;
+)
+```
