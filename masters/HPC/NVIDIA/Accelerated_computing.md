@@ -508,6 +508,8 @@ Es: abbiamo un vettore 1D `sd = {0,1,2,3,4,5}`, fisicamente in memoria sono cell
 <details>
 <summary>Esercizio mdspan</summary>
 
+Riscrivere il codice senza usare `*in_ptr` e sfruttando i vantanggi di mdspan
+
 Codice Iniziale:
   ```cpp
 __host__ __device__
@@ -585,7 +587,7 @@ void simulate(int height, int width,
 
 ### Best Practices da tenere a mente
 
-Quando abbiamo davanti a noi parti di codice lunghe boilerplate ed error prone conviene usare il **Type Aliasing**   
+Quando abbiamo davanti a noi parti di codice lunghe, boilerplate ed error prone conviene usare il **Type Aliasing**   
 
 ```c++
 using temperature_grid_f = 
@@ -636,8 +638,8 @@ thrust::tabulate(
         thrust::device,
         out.begin(),
         out.end(),
-        [=] __host__ __device__ (int d){
-            return compute(id, in)
+        [=] __host__ __device__ (int id){
+            return compute(id, temp)
         });
 ```
 
@@ -662,7 +664,7 @@ Soluzione naive:
 thrust::tabulate(
     thrust::device, 
     sums.begin(), sums.end(),
-    [=] __host__ __device__ (int row_id){
+    [=] __host__ __device__ (int row){
         float sum = 0;
         for (int col = 0; col < width; col++)
         {
@@ -672,3 +674,122 @@ thrust::tabulate(
     return sum;
 )
 ```
+
+Questo codice ha due grossi problemi:   
+1. usa thrust per generare il vettore dei risultati, ma per ogni riga identificata (row) lancia un thread, se abbiamo meno righe del numero di thread disponibili stiamo sprecando risorse 
+
+2. dentro la lambda il thread usa un ciclo for classico per calcolare la somma.   
+
+Scrivere un ciclo for ed eseguirlo su GPU è un uso improprio delle risorse, equivale ad eseguire tale ciclo in modo seriale da un singolo core della GPU (che è molto più lento della CPU).  
+Inoltre qui abbiamo 100 righe, se abbiamo 10.000 core ne stiamo sprecando 9.900 $\rightarrow$ avremo pochi core che lavorano e che sono lenti perchè devono scorrere il ciclo for serialmente.   
+
+
+### reduce_by_key    
+
+Per risolvere il problema usiamo un algoritmo **specializzato** di thrust, ossia:
+
+```cpp
+thrust::reduce_by_key(
+    keys_first,
+    keys_last,
+    values_first,
+    keys_output,
+    values_output
+)
+```
+
+reduce_by_key dice alla GPU di fare una riduzione in base a una chiave usando **tutti** i core della GPU; evitiamo sprechi di risorse.  
+La riduzione consiste in una somma.   
+
+Per usare reduce_by_key ci serve un vettore con le chiavi
+- useremo tabulate per riempire un vettore row_ids
+
+```cpp
+thrust::universal_vector<float> row_ids( height * width );
+thrust::tabulate(
+    row_ids.begin();
+    row_ids.end();
+    [=] __host__ __device__ (int i){
+        return (i/width);
+    }
+)
+
+thrust::universal_vector<float> sums(height); //len -> numero di righe 
+thrust::reduce_by_key(
+    thrust::device,
+    row_ids.begin(), row_ids.end(),   // input keys 
+    temp.begin(),                     // input values  
+    thrust::make_discard_iterator(),  // keys output 
+    sums.begin()                      // values output
+);
+
+
+```
+
+Notiamo che reduce genera:
+1. chiavi uniche trovate (`keys_output`)
+    - non ci servono, invece di sprecare memoria per salvarle usiamo un `discard_iterator` ossia un iteratore cestino che non salva nulla.  
+2. risultati delle somme (`values_output`)
+
+
+### transform_output_operator
+
+Estende il concetto di iteratori per produrre output, semplifica il concetto di iteratori wrapper in C++     
+
+```cpp
+struct wrapper{
+    int *ptr;
+    void operator=(int value){
+        *ptr = value / 2;
+    }
+};
+
+struct transform_output_iterator{
+    int *a;
+    wrapper operator[](int i){
+        return {a + i};
+    }
+};
+
+std::array<int,3> a{0,1,2};
+transform_output_iterator it{a.data()};
+
+it[0] = 10;
+it[1] = 20;
+
+std::printf("a[0]: %d\n", a[0]); // prints 5
+std::printf("a[1]: %d\n", a[1]); // prints 10
+```
+
+_note:_       
+
+`it[0] = 10` **NON** è un'operazione singola, avviene in 2 tempi.  
+
+1. Overloading di `[]`, quando il compilatore vede it[0] chiama:  
+    - `wrapper operator[](int i){return {a+i};}`  
+    - `i` vale 0 in questo caso   
+    - `a` è l'indirizzo dell'array  
+    - `a+i` è l'indirizzo della prima cella!  
+    - la funzione crea e restituisce un oggetto usa e getta di tipo wrapper che ha al suo interno un puntatore ptr che punta all'indirizzo della prima cella dell'array
+
+Il codice nella pratica è diventato `(oggetto_wrapper) = 10`    
+
+2. Operatore `=` che esegue il comando e attiva overloading:
+    - `void operator=(int value){*ptr=value/2;}`
+    - `value` è 10 
+    -  `ptr` punta alla cella di memoria che abbiamo salvato al tempo1
+    - il risultato è che wrapper scrive 10/2 dentro la cella di memoria dell'array.  
+
+
+in thrust possiamo fare:
+
+```cpp
+thrust:make_transform_output_iterator(
+    a.begin(),
+    [] __host__ __device__ (int a){
+        return a/2;
+    }
+);
+```
+
+--- 
