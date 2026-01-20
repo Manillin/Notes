@@ -189,4 +189,101 @@ void simulate(dli::temperature_grid_f in,
 - supponiamo di avere 1000 elementi e 256 thread totali (e 1 solo blocco)
     - th0: entra nel loop con `id=0`, fa il calcolo e poi fa `id+256`. 
         al prossimo giro lavorerà su `256`, poi su `512` e poi `768`.
-    - th1: entra con `id=1`, poi farà `257`, `513`, `769`.  
+    - th1: entra con `id=1`, poi farà `257`, `513`, `769`.
+
+
+<br>
+
+## Gerarchia dei thread
+
+I thread sono divisi in blocchi per una buona ragione, la risposta è che i thread nello stesso blocco possono scambiarsi dati velocemente tramite la **shared memory**.  
+
+
+**Gestire i dati nei kernel in modo sicuro**:   
+
+NVIDIA consiglia l'uso di uno strumento del C++ per gestire i dati in modo sicuro all'interno dei kernel: `span`. 
+
+```cpp
+cuda::std::span<int> span(a.data(), 3);
+span.size(); // restituisce 3 
+```
+
+È la variante monodimensionale di mdspan che abbiamo visto in precedenza.  
+- vantaggi: È una view ma include informazioni sulla dimensione, è molto più _sicuro_ dei puntatori nudi perchè riduce gli errori ed è leggero.  
+
+Per inizializzare un oggetto span gli si passa un puntatore ai dati e la dimensione.  
+
+Ci possiamo interfacciare ai dati come ad un array standard con l'operatore `[]` che ci permette l'accesso (span[0] legge il primo elemento).   
+
+
+### Esempio dell'Istrogramma 
+
+Torniamo alla nostra simulzione del calore, ora vogliamo creare un istrogramma dalle temperature ottenute.   
+Un istrogramma raggruppa dati in bin contando quanti valori cadono nell'intervallo definito nel bin.  
+
+Nel nostro caso questo mostra la distribuzione della temperatura 
+(l'ortogramma è usato per valori discreti, non utile in questo caso).  
+
+![histogram](../../images/histogram_cu.png)
+
+
+Ogni bin copre un range di temperature, e l'altezza della barra mostra quante celle cadono in tale range.  
+
+
+Lo eseguiamo con un kernel:  
+
+```cpp
+__global__ void histogram_kernel(
+    cuda::std::span<float> temperatures, 
+    cuda::std::span<int> histogram
+    )
+{
+    int cell = blockIdx.x * blockDim.x + threadIdx.x;
+    int bin = static_cast<int>(temperatures[cell] / bin_width);
+
+    int old_count = histogram[bin];
+    int new_count = old_count +1;
+    histogram[bin];
+}
+```
+
+**!!! Attenzione: il codice presenta una data race !!!**     
+
+
+Il nostro kernel ha una **datarace**.  
+Nel nostro esempio abbiamo circa 4 milioni di celle; milioni di thread leggono e scrivono dalla e nella stessa locazione di memoria!  
+
+![histogram datarace](../../images/hist_datarace.png)
+
+
+### Operazioni di memoria Atomiche    
+
+Le operazioni di memoria atomiche sono la soluzione alle data race.  
+Ci permettono di render un operazione di `Read-Modify-Write` indivisibile.  
+
+```cpp
+cuda::std::atomic_ref<int> ref(count[0]);
+ref.fetch_add(n);
+ref.fetch_sub(n);
+ref.fetch_and(n);
+```
+
+- `cuda::std::atomic_ref<T>` è un wrapper che applicato a una variabile permette di applicare operazioni atomiche su di essa.    
+- le funzioni comuni iniziano con .fetch_op();
+- **vantaggio:** È estremamente leggero e permette di usare le operazioni atomiche solo dove servono senza dichiarare tutta la memoria come atomica.  
+
+![atomic timeline](../../images/atomic_timeline.png)     
+
+
+L'istogramma in questo modo segna il valore corretto, non avremo ghost updates! L'hardware ha garantito che i thread non si calpestassero i piedi.  
+
+- esempio di blocco hardware:  
+    - th1 lancia fetch_add(1) sul bin0, quindi legge il valore 0 e calcola 1 come nuovo valore 
+    - mentre sta calcolando (o dopo aver calcolato) il th2 cerca di fare anche lui la sua fetch_add(1) sullo stesso bin0.  
+        il th2 viene messo in attesa! non può leggere ne scrivere fino a quando l'intero ciclo read-modify-write del th1 non ha finito!  
+    - il th1 finisce la sua operazione atomica
+    - a questo punto il th2 può può finalmente iniziare e fare la sua operazione.  
+
+Prezzo da pagare: le operazioni atomiche sono più lente di una scrittura normale perchè costringono i thread che colpiscono lo stesso bin a mettersi in coda (**serializzazione**), ma è l'unico modo per avere risultati corretti ed eliminare le data race in algoritmi come quello sopra dell'istrogramma.   
+
+
