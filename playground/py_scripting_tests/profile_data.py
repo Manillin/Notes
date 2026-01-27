@@ -70,7 +70,7 @@ def get_followers(user_id, sessionid, csrftoken, username, delay_following, dela
             time.sleep(delay_following)
 
         except Exception as e:
-            print(f"❌ Errore durante la richiesta: {str(e)}")
+            print(f"Errore durante la richiesta: {str(e)}")
             break
 
     # reset max id

@@ -21,7 +21,7 @@ def get_followers_and_following(user_id, sessionid, csrftoken):
     # === Recupera FOLLOWING ===
     next_max_id = None
     page_count = 0
-    print("🚀 Inizio recupero FOLLOWING...")
+    print("Inizio recupero FOLLOWING...")
     while True:
         params = {"count": 12, "search_surface": "follow_list_page"}
         if next_max_id:
@@ -43,24 +43,24 @@ def get_followers_and_following(user_id, sessionid, csrftoken):
 
             page_count += 1
             print(
-                f"✅ Following - Pagina {page_count}: Trovati {len(following)}")
+                f"Following - Pagina {page_count}: Trovati {len(following)}")
 
             next_max_id = data.get("next_max_id")
             if not next_max_id:
-                print("🏁 Following completati!")
+                print("Following completati!")
                 break
 
             time.sleep(delay_seconds)
 
         except Exception as e:
-            print(f"❌ Errore: {str(e)}")
+            print(f"Errore: {str(e)}")
             break
 
     # === Recupera FOLLOWERS ===
     next_max_id = None  # Resetta next_max_id!
     page_count = 0
     delay_seconds = 5
-    print("\n🚀 Inizio recupero FOLLOWERS...")
+    print("\nInizio recupero FOLLOWERS...")
     while True:
         params = {"count": 12, "search_surface": "follow_list_page"}
         if next_max_id:
@@ -82,7 +82,7 @@ def get_followers_and_following(user_id, sessionid, csrftoken):
 
             page_count += 1
             print(
-                f"✅ Followers - Pagina {page_count}: Trovati {len(followers)}")
+                f"Followers - Pagina {page_count}: Trovati {len(followers)}")
 
             next_max_id = data.get("next_max_id")
             if not next_max_id:
@@ -92,7 +92,7 @@ def get_followers_and_following(user_id, sessionid, csrftoken):
             time.sleep(delay_seconds)
 
         except Exception as e:
-            print(f"❌ Errore: {str(e)}")
+            print(f"Errore: {str(e)}")
             break
 
     return followers, following
@@ -101,7 +101,7 @@ def get_followers_and_following(user_id, sessionid, csrftoken):
 def save_to_txt(data, filename):
     with open(filename, "w", encoding="utf-8") as f:
         f.write("\n".join(data))
-    print(f"💾 Salvati {len(data)} username in {filename}")
+    print(f"Salvati {len(data)} username in {filename}")
 
 
 if __name__ == "__main__":
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         USER_ID, SESSIONID, CSRFToken)
 
     print(
-        f"\n📊 Totale Followers: {len(followers)} | Following: {len(following)}")
+        f"\nTotale Followers: {len(followers)} | Following: {len(following)}")
 
     save_to_txt(followers, "followers_sorella.txt")
     save_to_txt(following, "following_sorella.txt")
