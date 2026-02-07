@@ -92,4 +92,4 @@ definisce il concetto di categoria particolare dei dati, si pone un divieto di t
 
 obblighi di trasparenza, ossia l'interessato è colui che da i dati (caso di fusione di aziende) - azienda A acquista azienda B ma io ho dato i dati all'azienda B, allora A deve informarmi che i miei dati ora li ha lui, e deve darmi la possibilità di decidere se tenere i dati/modificarli o cancellarli.  
 
-si introducono anche i codici di condotta, 
+si introducono anche i codici di condotta,
