@@ -102,7 +102,7 @@ Ordinamento giuridico -> l'insieme delle regole di condotta che organizzano una 
 
 Caratteristiche di una _norma giuridica_: 
 - generale ed astratta: vale per tutti e per situazioni ipotetiche (non per una singola persona specifica)
-- prodotta da istituzioni: non le decide il singolo cittadino ma organic competenti (parlamento)
+- prodotta da istituzioni: non le decide il singolo cittadino ma organi competenti (parlamento)
 - principio di effettività: una regola è _giuridica_ se esiste un organo che la fa rispettare, se non la si rispetta scatta la sanzione.  
 
 Struttura della norma: composta da un testo e un precetto (l'ordine di fare o non fare qualcosa).  
@@ -117,7 +117,7 @@ Ha origini antiche, già nel IV secolo si parlava di 'segrto medico', nasce come
 **Le fonti internazionali: nascita dei diritti umani**
 
 dopo la seconda guerra mondiale si sente il bisogno di mettere nero su bianco i diritti intoccabili
-- dichiarazione universale dei diritti umani (1948) art 12:
+- *dichiarazione universale dei diritti umani* (1948) art 12:
     - è la madre di tutte le norme di privacy moderne 
     - sancisce che nessun individuo può subire interferenze arbitrarie nella sua vita privata, famigliare, di corrispondenza
 
@@ -400,7 +400,7 @@ Esistono 4 criteri fondamentali per risolvere i conflitti tra leggi
     - casi particolari: l'ordinamento tutela anche il concepito/nascituro non concepito e il defunto  
 
 - **Persona Giuridica**:  
-    - NON è una persona fiisca ma un organismo creato dal diritto (azienda)
+    - NON è una persona fisica ma un organismo creato dal diritto (azienda)
     - composto da pluralità di persone + patrimonio + scopo lecito e ha capacità di agire per raggiungere i suoi scopi  
 
 
@@ -534,7 +534,7 @@ L'articolo 5 è composto da 4 pilastri che sono interconnessi tra di loro.
 
 1. Liceità, Correttezza, Trasparenza: il 'come' trattare i dati verso l'utente
 2. Limitazione della finalità: il 'perchè li raccogli' 
-3. inimizzazione dei dati (adeguatezza): il 'quanto' raccolgi 
+3. minimizzazione dei dati (adeguatezza): il 'quanto' raccolgi 
 4. Limitazione della conservazione (data retention): il 'per quanto tempo' conservi i dati
 
 
@@ -800,4 +800,420 @@ fine settima lezione
 <br>  
 
 
+**Diritti dell'Interessato**     
 
+I principali diritti (che sono un sistema di protezione) sono:  
+
+- Diritto all'informativa (sapere chi e come tratta i miei dati)
+- Diritto all'accesso (poter vedere i dati)
+- Diritto di rettifica (correggere i dati)
+- Diritto all'oblio (poter cancellare i dati)
+- Diritto di portabilità (poter spostare i dati)
+- Diritto di opposizione (poter annullare e dire di no)
+- Diritto di consenso (dire si o no)
+
+Studieremo i principali e fondamentali diritti:  
+
+**DIRITTO ALL'INFORMATIVA**:    
+L'informativa non è un semplice pezzo di carta burocratico, è la base della trasparenza e deve essere: *Chiara*, *Semplice*, *Completa*.  
+
+Il diritto all'informativa serve a dare **Consapevolezza**, infatti se non so chi ha i miei dati e cosa ci fa non posso esercitare il controllo su di essi e fare valere i miei diritti e le mie libertà.  
+
+Deve contere:
+- il titolare 
+- come contattare il DPO
+- il diritto di fare reclamo al garante 
+
+Eccezione: Il diritto all'informativa non è necessario quando i dati sono coperti dal segreto professionale (es. medico, avvocato).  
+
+L'informativa deve essere *gratuita*  
+L'informativa deve essere in forma *scritta* (anche elettronica)  
+L'informativa va data in base ai tempi:
+
+- raccolta diretta: se i dati sono chiesti direttamente all'interessato, l'informativa va fornita subito (es. mentre si compila un modulo)  
+- raccolta indiretta: se i dati sono stati presi da terze parti, l'interessato va informato entro 30 giorni  
+
+
+Esistono 3 tipologie di informative:
+
+1. *Diretta*: quando si raccolgono i dati direttamente dall'interessato     
+    Il contenuto di questa informativa prevede:
+    - identità del titolare 
+    - finalità del raccoglimento 
+    - base giuridica del trattamento (consenso, legge, contratto)  
+    - obbligatorietà: spiegare perchè sono necessari i dati per fornire un certo servizio
+    - durata: per quanto tempo vengono trattenuti 
+    - processi automatici: avvertire l'interessato se c'è profilazione 
+    - elenco dei diritti: accesso, rettifica, cancellazione, ... 
+
+
+2. *Successiva*: quando i dati sono stati raccolti da terzi  
+    Oltre allo stesso contenuto di quella diretta, va aggiunto:
+    - la fonte: da dove sono stati presi i dati 
+    - la categoria: il tipo di dato che possiede il titolare 
+
+
+3. *Ulteriore*: quando il titolare dispone dei dati dell'interessato per un motivo e vuole usarli per un nuovo motivo.     
+    non si può nascondere l'utilizzo dei dati per un nuovo motivo, in questo caso va fornita un'informativa *prima* di iniziare il nuovo trattamento e indicando:
+    - le nuove finalità 
+    - nuovi tempi di conservazione 
+    - eventuali nuovi diritti
+
+L'onere della prova è sul titolare, se c'è una causa è il titolare che deve dimostrare di aver dato l'informativa corretta.   
+
+
+L'obbligo all'informativa non scatta in due casi limite:
+
+1. *Attività esclusivamente personale o domestico*: es. scrivere il numero di telefono di un amico sul cellulare; non serve dare l'informativa all'amico in quanto si tratta di vita privata 
+
+2. *Archivi non strutturati*: es. fogli di carta disordinati e archivi manuali disordinati.  
+
+
+
+**DIRITTO AL CONSENSO**     
+
+Il consenso rappresenta una manifestazione della volontà dell'interessato, per essere valido un 'consenso' deve avere 4 caratteristiche:  
+
+1. Informato: devi sapere a cosa stai dando il consenso (ecco perchè l'informativa viene prima)
+
+2. libero: non devono esserci pressioni
+
+3. specifico: un consenso per ogni scopo, tanti consensi quanti sono le finalità  
+
+4. inequivocabile: deve essere un'azione positiva concreta (un click, una firma), il silenzio non vale.  
+
+5. *Esplicito*: in 3 casi specifici il consenso normale non basta e serve un consenso più esplicito e rafforzato:
+    - trattamento di dati sensibili (salute, politica)
+    - decisioni automatizzate (profilazione)
+    - trasferimento di dati extra-UE verso paesi non sicuri 
+
+*Granularità del conseso*:  
+Il consenso deve essere granulare ossia spezzato, è vietato il concetto di bundling (mettere insieme più consensi in uno solo; es. accettare termini del servizio, accettare la newsletter, accettare cedere i dati a terzi)     
+Inoltre la conservazione dei dati dveve essere coerente con lo scopo    
+
+*Revoca al consenso*   
+Il consenso non è un patto indefinto, deve essere facilmente revocabile (tanto facle quanto è stato facile darlo).  
+L'effetto della revoca ferma il trattamento dei dati futuri MA non annulla la legalità di quello che è stato fatto prima della revoca.      
+
+
+
+*Consenso dei minori*  
+
+L'età del consenso digitale in europa è 16 anni (per iscriversi a social o servizi online), ma gli stati membri possono abbassare la soglia fino ai 13 anni (in italia è 14), sotto tale soglia l'autorizzazione dei genitori è necessaria.   
+
+
+
+**DIRITTO DI ACCESSO**   
+Consiste nel diritto di chiedere al titolare di visualizzare i propri dati, e riguarda tutti i dati, inclusi quelli valutativi (es. note che la banca ha messo su un profilo)   
+
+Nel vecchio codice privacy si poteva chiedere l'accesso solamente ogni 90 giorni, il GDPR cambia questo diritto: l'interessato può chiedere i propri dati senza limiti (purchè non diventi molestia o spam)  
+
+
+**Trattamento dei dati a fini promozionali**:   
+Quando un azienda vuole mandare pubblicità, si applicano due regole principali:
+
+
+1. *Opt-In*: se un azienda vuole usare strumenti automatizzati (email, sms, chiamate) per fare marketing, deve prima avere il consenso preventivo dell'interessato 
+
+2. *Opt-out*: è un eccezione che serve a favorire il business, ed è valida se 
+    - è stato comprato un prodotto o servizio; il venditore usa la mail associata alla vendita e propone prodotti analoghi.  
+    In questo caso specifico il venditore non deve chiedere il consenso 
+    - l'interessato ha però il diritto di *opposizione* o opt-out, per rifiutare in qualsiasi momento e in maniera facile (cliccando in fondo alla mail)  
+
+
+*Linee guida antispam del garante*  
+Il garante italiano nel 2013 ha emanato delle linee guida contro il marketing aggressivo che sono ancora valide oggi
+1. chiarire sempre le regole sulle offerte 
+2. dare semplificazioni alle aziende oneste   
+    In particolare:
+    - soft spam: mandare mail ai propri clienti su prodotti simili senza chiedere il permesso 
+    - 'fan': se divento fan o follower di un azienda si presume che io abbia interesse e di conseguenza l'azienda può inviare offerte nel contesto dei social.  
+    - consenso unico: basta un unico consenso per il marketing per coprire tutti i mezzi (sia automatizzati che tradizionali)  
+3. punire lo spam 
+
+
+
+*Tutele e Sanzioni contro lo spam*: 
+
+- utente: può fare reclamo o segnalazione al garante, chiedendo anche sanzioni contro lo spammer 
+- società: anche le aziende possono essere vittime di spam, possono segnalarlo al garante o fare causa civile/penale.  
+
+
+
+
+**PROFILAZIONE**     
+
+È un trattamento automatizzato dei dati ch serve a valutare gli aspetti personali di un individuo per creare un profilo (gusti, sulute, spostamenti, lavoro)   
+L'obiettivo del marketing è quello di essere mirato, costruire l'identità del consumatore perfetto per vendergli le cose.  
+
+Il processo si profilazione consiste nel:
+1. raccolta dati 
+2. analisi dei dati (trovare correlazioni) 
+3. applicazione di algoritmi predittivi    
+
+Il garante nel 2015 con un provvedimento ha fissasto dei vincoli:  
+
+1. informativa: deve essere chiarissimo che i dati raccolti hanno come fina la profilazione 
+2. consenso/opposizione: la profilazione rientra in uno dei casi limite dove è richiesto nell'informativa un consenso specifico extra (separato dal resto), l'utente può poter dire di no.  
+3. finalità e conservazione: non si possono trattenere i dati per sempre, la conservazione deve essere proporzionale allo scopo 
+
+
+Il GDPR impone una cautela extra: prima di iniziare a profilare il titolare deve fare una **DPIA** (Data protection impact assessment), ossia una valutazione d'impatto per capire quali sono i rischi per i diritti delle persone e come mitigarli.  
+
+
+**Processi Decisionali Automatizzati**:   
+Questi processi vanno oltre la semplice pubblicità, si tratta di algoritmi che prendono decisioni che possono cambiare la vita dell'interessato.  
+
+Il GDPR (Art. 22) sancisce che l'interessato ha il diritto di NON essere sottoposto a una decisione basata unicamente sul trattamento autmatizzato se tale decisione ha:
+
+- effetti giuridici (es. negare un contratto)
+- effetti significativi (es. alzare il prezzo dell'assicurazione )
+
+È però possibile essere sottoposti a decisioni autmatizzate se:
+
+- è necessario per un contratto (es. algoritmo antifrode bancaria)
+- se c'è una legge che lo permette
+- se c'è il consenso esplicito dell'interessato  
+
+
+Anche se l'algoritmo decide, il titolare deve garantire un "Human in the loop", ossia deve garantire:
+- intervento umano (qualcuno a cui reclamere)
+- diritto di esprimere la propria opinione
+- diritto di contestare la decisione  
+
+
+
+**Cookie**   
+
+I cookie sono lo strumento principale della profilazione online.  
+Sono piccoli file che i siti salvano sul dispostivo per tracciare un utente  
+Il garante obbliga la presenza del '*banner dei cookie*', serve a impedire di usare cookie di profilazione senza che l'interessato non abbia prima accettato (opt-in).    
+
+
+
+**DIRITTO ALLA PORTABILITÀ**      
+
+Ne parla l'articolo 20 del GDPR, consiste in un diritto nuovo pensato per l'economia digitale, serve a evitare il *Vendor Lock-in* (essere prigionieri di un fornitore)    
+
+Consiste nel diritto di ricevere i propri dati in un formato strutturato e leggibile da dispositivo automatico, per portarli da un titolare all'altro senza impedimenti. (es. voglio cambiare app di musica o social network e portarmi dietro le mie playlist e i miei post)    
+
+
+Questo diritto è applicabile se:
+- i dati sono trattati con mezzi automatici digitali 
+- se i dati sono basati su un contratto o un consenso 
+- se i dati erano stati forniti consapevolmente dall'interessato
+- sono ESCLUSI i dati cartacei e i dati inferiti dall'azienda 
+
+
+<br>
+
+
+--- 
+
+fine ottava lezione 
+
+--- 
+
+<br>
+
+**ACCOUNTABILITY**:     
+
+L'accountability è uno dei concetti più importanti del GDPR ed è una novità rispetto al vecchio codice privacy.   
+
+L'accountability corrisponde a un approccio *proattivo*, non basta rispettare le regole, bisogna anche dimostrare di averle rispettate!   
+
+Il vecchio codice privacy era un approccio formale, consisteva in una lista di passi da seguire, e se si seguivano allora si era in regola.  
+
+Il GDPR invece applica un approccio *sostanziale*: non esiste più una lista pre-confezionata, il titolare deve decidere autonomamente quali misure usare in base al rischio specifico della sua azienda!  
+
+L'accounutability ha quindi 2 aspetti:  
+1. Adozione: mettere in pratica misure tecniche e organizzative adeguate 
+2. Dimostrazione: avere le carte in regola per provare e dimostrare che quelle misure sono efficaci.   
+
+
+L'accountability forza il titolare a diventare un progettista, infatti deve:
+- Riconoscere i rischi; prenderli in esame; affrontare i rischi! (il titolare agisce più per evitare la multa, ma per proteggere i dati dei cittadini, parte tutto da una pianificazione dei processi).   
+
+
+**RISCHIO**:       
+
+Siccome il titolare deve decidere da solo le misure(non più pre-confezionate), per sapere se sono giuste ed efficienti deve calcolare il **Rischio**.    
+
+Rischio -> def. tecnica: **l'effetto dell'incertezza sugli obiettivi**    
+- c'è un obiettivo (proteggere dati), c'è un incertezza (hacker) -> l'effetto (positivo o negativo) è il rischio! (il rischio nasce spesso da una carenza di informazioni, ossia non sapere cosa succederà).    
+
+
+**Ciclo del rischio**:     
+Il rischio NON è statico, bisogna avere un ciclo continuo che mi permetta di valutarlo dinamicamente:
+
+- titolare analizza il trattamento ->fa una valutazione -> identifica il rischio -> adotta misure -> rivaluta (ciclo continuo).   
+
+
+**Analisi e calcolo del rischio**:   
+Ci sono 3 tipi di rischio che il titolare deve analizzare e valutare.  
+
+
+1. *Rischio del trattamento*: va calcolato sempre, in particolare prima di iniziare.  
+    Si guardano i rischi intrinsechi (es. uso di sw nuovo, uso di dati sensibili).  
+    Si fa una valutazione Ipotetica/Previsionale.    
+
+
+2. *Rischio di impatto*: Si fa questa analisi del rischio solamente se il rischio del trattamento (punto1) risulta elevato.    
+    Richiede che venga creata una DPIA
+
+3. *Rischio di data breach*: si calcola entro 72 ore da quando succede un incidente, consiste nel guardare l'impatto reale di un danno già fatto.
+
+
+Per dare una valutazione quantitativa la rischio si usa la seguente formula:
+
+$$
+R = P \times G
+$$
+
+- R -> Rischio e valore finale
+- P -> Probabilità (quanto è probabile che avvenga l'evento dannoso)
+- G -> Gravità/Impatto (se accade qualcosa, quanto fa male)  
+
+
+Una volta fatto il trattamento il titolare deve identificare:
+- minacce: cosa può andare storto (hacker, incendio, dipendente infedele) 
+- vulnerabilità: quali sono i punti deboli del sistema (sw non aggiornato)  
+
+Si scompongono i rischi in *4 categorie*:  
+
+1. Fattori tecnici: sw affidabile, sw complesso
+2. Fattori esterni: fornitorni, calamità naturali 
+3. Fattori organizzativi: ho abbastanza risorse (capitale/personale)? competenze?
+4. Gestione 
+
+**Misure di sicurezza**:   
+È la ripsosta al rischio, l'Art. 32 dice che il titolare deve mettere in atto misure tecniche e organizzative adeguate per garantire un livello di sicurezza adeguato al rischio.   
+
+Il vecchio codice privacy diceva esattamente cosa fare e quali misure adottare (es. cambiare password ogni 6 mesi), ma questo è stato *Abrogato*   
+Il GDPR con l'Art 32 non dà una lista chiusa, ma vuole che venga creata una *lista aperta* e suggerisce delle misure, è il titolare che deve deciderle.  
+
+Misure suggerite: 
+- pseudonimizzazione e cifratura: rendere i dati illeggibili se vengono rubati 
+- garantire che i sistemi siano sicuri sempre e capaci di resistere ad attacchi (resilienza)
+- disaster ricovery: capacità di ripristinare l'accesso ai dati temperstivamente dopo un incidente (es. avere un backup funzionante) 
+- testing: avere procedure per testare e verificare regolarmente che le misure funzionino (non basta installare un antivirus bisogna anche controllare che funzioni)   
+
+
+**DPIA (Data protection impact assesssment)**:    
+La DPIA è un calcolo del rischio formalmente documentato.  
+
+È un documento che bisogana fare quando un trattamento comporta *Rischi Elevati* per i diritti e le libertà delle persone.   
+
+Consiste in un documento che serve a: 
+- descrivere il trattamento 
+- valutare se il trattamento è necessario e proporzionato
+- gestire i rischi per i diritti delle persone  
+
+*L'obiettivo* è dimostrare di aver analizzato i pericoli prima di iniziare a trattare i dati.  
+
+
+Composto da 4 pilastri:
+
+1. Descrizione: spiega cosa fa il titolare con i dati
+2. Necessità e proporzionalità: spiegano perchè servono i dati che sta chiedendo il titolare 
+3. Valutazione dei rischi: cosa rischia l'utente 
+4. misure di sicurezza: quali misure adatto per abbassare i rischi 
+
+
+*Criteri di obbligatorietà* -> quando esiste un Rischio Elevato ? 
+
+1. Profilazione: valutazione sistematica e automatizzata della persona 
+2. decisioni automatizzate con effetti legali 
+3. Monitoraggio sistematico: vigilanza su larga scala 
+4. Trattamento di dati sensibili 
+5. Dati di soggetti vulnerabili: minori, malati mentali, ecc... 
+6. Uso di nuove tecnologie: riconoscimento facciale, IoT, Intelligenza Artificiale 
+
+
+La regole generale è che se il trattamento soddisfa almeno *2* di questi criteri, la DPIA è obbligatoria.   
+
+La DPIA non è obbligatoria nei seguenti casi:
+- rischio non elevato 
+- se esiste una DPIA simile fatta per un altro trattamento uguale 
+- se il trattamento è presente in liste di esonero del garante (whitelist)  
+
+La DPIA deve essere fatta *prima* del trattamento! È un applicazione pratica della **Privacy by design**!  
+
+La DPIA deve valutare il danno per l'interessato, e distingue *3* tipi di impatto:
+1. *Materiale*: perdita finanziaria, truffa 
+2. *Fisico*: danno alla salute (es. cartella clinica sbagliata porta a cure sbagliate) 
+3. *Immateriale* (morale): come discriminazione (raziale, politica); furto di identità; danno alla reputazione (foro imbarazzanti); impedimento di controllo (se non so chi ha i miei dati non posso esercitare i miei diritti).  
+
+
+Per calcolare il rischio la DPIA usa la formula matematica (R = P x G), ma introduce anche 3 concetti di rischio:  
+
+1. *Rischio Inerente (Ri - Lordo)*: È il rischio che si corre se si trattano i dati senza fare nulla per proteggerli    
+2. *Rischio Residuo (Rr - Netto)*: È il rischio che rimane dopo aver applicato le misure di sicurezza e mitigazione  
+3. *Rischio Accettabile (Ra)*: È la soglia di tolleranza! L'obiettivo è che il rischio residuo sia minore del rischio accettabile (Rr < Ra)  
+
+
+Per abbassare il rischio da inerente a residuo sono necessari dei controlli:
+- controlli organizzativi: policy aziendali, formazione del personale
+- controlli specifici sui dati: crittografia, anonimizzazione 
+- controlli generali di sistema: sicurezza fisica, backup 
+
+Il GDPR dice anche che il titolare deve chiedere l'opinione degli utenti i cui dati vengono trattati, e se non lo fa deve specificare in un documento il perchè (proporzionalità, segreti aziendali)  
+
+
+
+Alla fine del DPIA ci sarà un timbro che dice se è *approvato* o *respinto*: 
+- se Rr < Ra -> approvato 
+- se Rr > Ra -> respinto, servono misure migliori.   
+
+
+Le aziende non sono obbligate a pubblicare il DPIA per intero, è possibile pubblicarne una sintesi.  
+Il DPIA non è un documento statico una tantum, bensì un processo continuo e dinamico, bisogna sempre aggiornarlo nel caso cambi tecnologia, contesto o i rischi.  
+
+L'autorità garante francese ha creato un software gratuito per aiutare nella costruzione del DPIA, ad oggi è considerato lo standard de facto in europa per reare DPIA.  
+
+**DATA BREACH**:     
+
+Il data breach è una violazione di sicurezza che comporta (accidentalmente o in modo illecito):  
+
+- Distruzione dei dati 
+- Perdita dei dati
+- Modifica dei dati 
+- Divulgazione non autorizzata 
+- Acesso illecito nel sistema 
+
+
+Es. Attacco Ransomware (cifratura dati); Furto PC aziendale; Invio di una mail con dati sensibili al destinatario sbagliato (errore umano); Incendio nel server room.  
+
+
+L'articolo 33 del GDPR obbliga il titolare a notificare un data breach all'autorità garante entro 72 ore dal momento in cui ne è venuto a conoscenza -> per permettere al garante di intervenire e limitare i danni.    
+
+
+La notifica al garante deve essere un report preciso che deve specificare:
+- natura della violazione: cosa è successo
+- categorie e numero: quanti dati? quante persone coinvolte?
+- contatti: chi è il DPO 
+- conseguenze: cosa rischiano le persone 
+- misure prese: cosa ha fatto il titolare per limitare i danni  
+
+
+L'articolo 34 del GDPR dice che i clienti vanno notificati solo se la situazione è grave, ossia se si verifica la condizione in cui la violazione comporti un *Rischio Elevato* per i loro diritti e libertà.   
+
+- es: rubano le password bancarie -> rischio elevato 
+- es: rubano una lista di indirizzi email criptata e il ladro non ha la chiave -> rischio basso  
+
+
+Le violazioni vanno obbligatoriamente aggiunte a un "registro delle violazioni" per accountability.    
+
+
+<br>
+
+---
+
+fine nona lezione 
+
+---
+
+<br>
+
+
+Il regolamento UE 2024/1689 **(AI ACT)** è la prima legge al mondo che disciplina l'intelligenza artificiale in modo organico.  
