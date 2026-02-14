@@ -199,7 +199,7 @@ Comandi utili per enumerare il DBMS:
   
 
 
-![sql injection 1](../../images/sql_inj1.png)
+![sql injection 1](../images/sql_inj1.png)
 
 
 
@@ -221,7 +221,7 @@ Quando un programma viene eseguito (./file1), il sistema operativo:
     - stack LIFO (per le funzioni)
     - un area riservata al Kernel  
 
-![program memory layour](../../images/memory_layout_program.png)
+![program memory layour](../images/memory_layout_program.png)
 
 
 La variabile `buffer[]` è piazzata sullo stack (l'allocatore di memoria GNU/Linux piazza allocazioni dinamiche piccole <128KB sul heap e piazza quella grandi >= 128KB in aree anonime mappate in memoria).  
@@ -239,7 +239,7 @@ Il registro EBP viene usato come puntatore fisso per accedere alle variabili:
 - parametri: indirizzi positivi (EBP + offset)
 - variabili locali: indirizzi negativi (EBP - offset) 
 
-![stack of main function](../../images/memory_mainWbuffer_layout.png)  
+![stack of main function](../images/memory_mainWbuffer_layout.png)  
 
 
 Il nostro `buffer[]` si trova prima del return address del main() in quanto buffer è una variabile locale alla funzione main e si trovano nello stesso frame dello stack, se lo riempiamo oltre la sua capacità i dati scendono nella memoria contigua sovrascrivendo: altre variabili locali, saved EBP e _l'indirizzo di ritorno_. 
