@@ -14,3 +14,7 @@ media.py
 .csv
 exams.md 
 Hidden/
+.gz
+-ubyte 
+ubyte
+*.ubyte
