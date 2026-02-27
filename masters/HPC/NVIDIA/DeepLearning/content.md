@@ -279,3 +279,231 @@ Durante la fase di training (con la backpropagation), la rete modificherà i pes
 
 
 - **DropOut**: Spegnimento di neuroni a caso per evitare che la rete impari a memoria (overfitting)
+
+
+---
+
+
+<br><br>
+
+
+## Pre Trained Models 
+
+
+Fino ad ora per ogni problema abbiamo:
+- Definito l'architettura (conv, pool, linear, ...) 
+- Inizializzato i pesi a caso
+- Scelto learning rate, dropout ed epoche 
+- Addestrato il modello  
+
+Rifare questo processo ogni volta è uno spreco di energia!   
+
+La soluzione è usare **Pre-Trained Models**, si possono trovare ottimi modelli già addestrati in repository ufficiali (PyTorch Hub, Nvidia NGC).  
+
+La nuova sfida è creare un modello che riconosca cani e gatti per creare una porta automatica che si apra solo per cani, non faccia uscire i gatti e che rimanga chiusa per tutti gli altri animali.   
+
+Il problema: cane e lupo sono simili e soprattutto abbiamo pochissimi dati! non avremo mai a disposizione 1milione di foto del nostro cane.  
+In questo caso il nostro modello andrebbe in overfitting immediato.   
+
+
+
+### Transfer Learning  
+
+Il transfer learning consiste nel prendere un modello (es. VGG16) che è stato addestrato su un compito generico gigante (dataset ImageNet) e riutilizzare la sua conoscenza per risolvere un compito specifico più piccolo.  
+
+Le reti neurali sono gerarchiche (bordi -> forme -> oggetti), quindi noi terremo buoni i layer iniziali e cambieremo solo la parte finale (cervello decisionale) per adattarlo al nostro problema.  
+
+La sfida si complica in questo caso e diventa: distinguere un cane specifico ("Bo") da tutti gli altri cani, anche quelli simili.   
+
+È un problema più difficile perchè cani diversi condividono caratteristiche come zampe, pelo, coda, orecchie, ...  
+Serve che la rete sia molto brava negli stati profondi (quelli più specializzati) per notare le differenze che permettano di fare la distinzione!    
+
+Il **Transfer Learning** è perfetto per questo tipo di problemi, perchè parte già da una conoscenza visiva molto avanzata.   
+
+
+**Modificare la Rete**:  
+
+Possiamo vedere la rete neurale come divisa in due parti principali:  
+
+1. **Backbone/Feature-Extractor**: Comprende la parte di convolizione e pooling, è la parte che guarda e capisce.  
+
+2. **Head/Classifier**: Sono gli ultimi layer lineari (densi), ossia la parte che prende la decisione finale.   
+
+
+Il modello che useremo (VGG16) finisce con un layer che ha 1000 output, a noi servono solamente 2 output $\rightarrow$ è Bo o non è Bo (classificazione binaria)    
+
+
+In questi casi l'operazione che faremo sarà la seguente:    
+
+1. Prendiamo la rete (es.VGG16)
+2. Tagliamo l'ultimo pezzo (layer lineari e l'output)
+3. Teniamo intatto tutto il blocco di Convoluzioni  
+4. Incolliamo i nostri nuovi layer lineari con solo due output finali   
+
+
+![transfer learning](../../../images/transfer_learning1.png)  
+
+<br>
+
+
+
+Ad alto livello possiamo riassumere una rete in questo modo:
+
+![transfer learning2](../../../images/transfer_learning2.png)   
+
+- **A sinistra**: Abbiamo gli input/primi layer che sono più **Generalizzati**, sono in grado di riconoscere linee diagonali, colori, texture, ...  
+    Queste informazioni servono sempre! indipendentemente dall'output finale (sono la 'base' della conoscenza della rete )  
+
+- **A destra**: Abbiamo gli ultimi layer che sono più **Specializzati**, sono quelli che cambiamo a seconda del nostro problema.  
+
+Nel VGG16 originale questi layer finali si attivano per feature come "orecchie da cocker spaniel" o "ruote da camion", e poichè noi stiamo cambiando compito, questa specializzazione non ci serve più! La possiamo sostituire con la nostra.   
+
+<br>
+
+### Congelamento del modello 
+
+È un concetto tecnico fondamentale per il training, propedeutico per il funzionamento del transfer learning.   
+
+Arrivati al punto di aver inserito i nostri layer per il nostro caso d'uso dobbiamo iniziare la fase di training, ma c'è un grosso rischio:   
+
+- I layer che abbiamo inserito (testa della rete) sono inizializzati a caso
+- Il corpo della rete è pre-addestrato  
+
+Se facciamo partire la backpropagation la testa della rete farà errori giganti (in quanto ha pesi casuali), la loss quindi sarà altissima così come il gradiente!  
+Questi gradienti enormi attraversano poi tutta la rete all'indietro e andranno a modificare in modo sostanziale i pesi del corpo (VGG).   
+
+In questo modo si va a distruggere la conosenza prezione che la rete pre-addestrata ha imparato in mesi di training, in quanto andiamo a sovrascrivere la conoscenza con rumore causato dalla testa non ancora pronta!     
+
+
+La soluzione è **Congelare (Freeze)** i pesi del backbone del modello, quindi non calcolare i loro gradienti.    
+In questo modo durante la fase di training aggiorniamo **SOLO** i pesi della nuova testa, il Backbone funge solo da 'estrattore di feature statico'     
+
+Nel notebook [05_presidential_doggy_door](/../../chris/Desktop/deep%20learning/allcontent/05b_presidential_doggy_door.ipynb) viene mostrato il trasfer learning e il fine tuning.  
+
+
+
+### Fine Tuning
+
+Una volta addestrato il modello con transfer learning tenendo i pesi del backbone congelati possiamo migliorare le performance con il fine tuning.  
+
+Consiste nel tornare ad allenare il modello per poche epoche e con un learning rate bassissimo  
+
+```python
+vgg_model.requires_grad_(True)
+optimizer = Adam(my_model.parameters(), lr=.000001)
+```
+
+
+
+
+
+
+
+
+<br><br><br>
+
+---
+
+
+
+### Key notes  
+
+PyTorch lavora sempre a Batch.   
+Se passiamo a PyTorch un immagine sola, l'output non sarà una lista semplice, ma sarà una lista dentro una lista.   
+
+
+
+La parola "Dimensione" viene usata per indicare due concetti matematici ben distinti: il **Rango** (Rank) e l'**Asse** (Axis).
+
+Ma bisogna saper distinguerli bene   
+
+---
+
+### 1. Il Concetto di "Rango" (O "N-Dimensioni")
+In algebra lineare e in PyTorch, il **Rango** (Rank) indica quanti indici sono necessari per accedere a un singolo numero (uno scalare) all'interno della struttura dati. È il numero di "assi" totali che l'oggetto possiede.
+
+*   **Rango 0 (Scalare):**
+    *   È un punto adimensionale.
+    *   Shape: `()` (vuota).
+    *   Accesso: Non servono indici. Il dato è il numero stesso.
+    *   Assi esistenti: **Nessuno**.
+
+*   **Rango 1 (Vettore):**
+    *   È una linea.
+    *   Shape: `(N,)`.
+    *   Accesso: Serve **1 indice** ($i$) per trovare un valore: $v[i]$.
+    *   Assi esistenti: Esiste solo l'**Asse 0**.
+
+*   **Rango 2 (Matrice):**
+    *   È una griglia.
+    *   Shape: `(N, M)`.
+    *   Accesso: Servono **2 indici** ($i, j$) per trovare un valore: $m[i, j]$.
+    *   Assi esistenti: Esiste l'**Asse 0** (righe) e l'**Asse 1** (colonne).
+
+*   **Rango 3 (Tensore 3D):**
+    *   È un cubo (o una pila di matrici).
+    *   Shape: `(K, N, M)`.
+    *   Accesso: Servono **3 indici**.
+    *   Assi esistenti: **Asse 0**, **Asse 1**, **Asse 2**.
+
+**Il tuo dubbio formale:**
+Quando tu dici *"dim1 è un vettore"*, stai confondendo l'oggetto di **Rango 1** con l'**Asse 1**.
+Un oggetto di Rango 1 (vettore) **NON HA** un Asse 1. Ha solo l'Asse 0. Per avere un Asse 1, l'oggetto deve essere almeno di Rango 2.
+
+---
+
+### 2. Il Concetto di "Asse" (Axis Indexing)
+Quando in PyTorch scrivi `dim=k` (che sarebbe più corretto chiamare `axis=k` come in NumPy), stai indicando la **direzione di scorrimento** lungo la struttura dati.
+
+L'indice dell'asse corrisponde alla posizione del numero nella tupla `.shape`:
+
+Dato un Tensore $T$ di shape $(D_0, D_1, D_2, ...)$:
+
+*   **`dim=0`:** Operi lungo la dimensione $D_0$. In una visualizzazione a liste annidate, scorri gli elementi della lista più esterna.
+*   **`dim=1`:** Operi lungo la dimensione $D_1$. Entri dentro il primo contenitore e scorri gli elementi del contenitore interno.
+
+### 3. Formalizzazione dell'Operazione `argmax(dim=k)`
+
+Matematicamente, l'operazione di `argmax` lungo l'asse $k$ riduce il rango del tensore di 1.
+
+Dato un tensore $T$ di dimensioni $(d_0, d_1)$, dove $x_{i,j}$ è l'elemento agli indici $i,j$:
+
+#### Caso A: `argmax(dim=0)` (Lungo l'Asse 0)
+Stiamo cercando l'indice $i$ che massimizza il valore, tenendo fisso $j$.
+Per ogni colonna $j$ fissa, calcoliamo:
+$$ \text{Out}_j = {\text{argmax}} (x_{i, j}) $$
+L'asse 0 "collassa". Il risultato ha shape $(d_1,)$.
+
+#### Caso B: `argmax(dim=1)` (Lungo l'Asse 1)
+Stiamo cercando l'indice $j$ che massimizza il valore, tenendo fisso $i$.
+Per ogni riga $i$ fissa, calcoliamo:
+$$ \text{Out}_i = {\text{argmax}} (x_{i, j}) $$
+L'asse 1 "collassa". Il risultato ha shape $(d_0,)$.
+
+---
+
+### 4. Applicazione al Caso Specifico
+
+Hai un tensore Output $O$ con shape $(1, 1000)$.
+Quindi:
+*   $D_0 = 1$ (Dimensione dell'Asse 0).
+*   $D_1 = 1000$ (Dimensione dell'Asse 1).
+
+Essendo un oggetto con **2 valori nella shape**, è un oggetto di **Rango 2** (Matrice).
+Poiché è di Rango 2, **l'Asse 1 esiste ed è valido**.
+
+**Analisi dell'operazione `argmax(dim=1)` su questo oggetto:**
+1.  Fissiamo l'indice dell'Asse 0 (che può essere solo $0$, dato che $D_0=1$).
+2.  Scorriamo lungo l'Asse 1 (da $0$ a $999$).
+3.  Cerchiamo quale indice $j$ tra $0$ e $999$ ha il valore più alto.
+4.  Restituiamo quell'indice.
+
+**Perché `dim=1` fallisce su un Vettore $(1000,)$?**
+Se avessi fatto l'unbatch *prima*, avresti avuto shape $(1000,)$.
+*   $D_0 = 1000$.
+*   $D_1$ non esiste.
+L'oggetto è di **Rango 1**.
+Se chiami `argmax(dim=1)`, PyTorch cerca il secondo asse, non lo trova, e lancia `IndexError: Dimension out of range`.
+
+**Conclusione Formale:**
+Utilizzi `dim=1` perché il tuo tensore è una matrice riga $(1, N)$. Nonostante sembri "piatta", topologicamente ha due assi, e i dati che ti interessano sono distribuiti lungo il secondo asse (quello delle colonne).
