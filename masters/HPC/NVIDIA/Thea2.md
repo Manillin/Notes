@@ -106,3 +106,4 @@ Mentre eseguiamo un benchmark che usa la GPU possiamo usare il comando `nvidia-s
 - su una shell lanciamo mpirun.... 
 - sull'altra lanciamo `watch -n 1 nvidia-smi`
 
+ 
