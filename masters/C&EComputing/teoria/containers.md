@@ -21,7 +21,7 @@ Container images include all the software $\rightarrow$ settings, libraries and 
 
 A container encapsulates an application as a single **executable** package with code and all its dependencies  
 
-![container](../images/container.png)
+![container](../../images/container.png)
 
 The Container Runtime is also called Container Engine
 
@@ -65,7 +65,7 @@ Whenever a user creates a container, a new layer is formed on top of the image l
 
 Each separate container has a separate `container layer` and any changes on the container are reflected upon the container layer alone.  
 
-![container layer](../images/container_layer.png)
+![container layer](../../images/container_layer.png)
 
 
 **Docker Container:**
@@ -97,4 +97,7 @@ Docker Client (CLI) $\rightarrow$ Request via REST API $\rightarrow$ Docker Daem
 - Lower maintenance costs: The maintenance operations may be performed on a single system and not on multiple OSes as in the case of VMs.
 - Isolated Environment: A container creates an isolated environment which also provides fault isolation. 
 - Easy Troubleshooting: We can easily identify the faulty container and deduce the problem must be on a service running on that container.
+
+
+
 
