@@ -1,0 +1,23 @@
+FROM public.ecr.aws/docker/library/debian:trixie
+
+#set env vars - doesn't create a new layer
+ENV DEBIAN_FRONTEND=noninteractive
+
+#install build dependencies (e.g. gcc, make)
+RUN apt-get update && \
+    apt-get install  -y --no-install-recommends \
+        gcc \
+        libc-dev \
+        make \
+        bash \ 
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+
+COPY hello.c /opt/hello.c 
+COPY build.sh /opt/build.sh
+
+
+RUN bash /opt/build.sh
+
+ENTRYPOINT ["/opt/hello"]
