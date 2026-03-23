@@ -1,0 +1,344 @@
+# Kubernetes  
+
+
+Kubernetes è un framework di orchestrazione modulare e pluggable, che delega l'implementazione fisica dell'infrastruttura (rete, storage, esecuzione dei container) a moduli software di terze parti, interfacciandosi con essi tramite standard rigorosi (CRI,CNI,CSI)     
+
+Le interfacce sono:
+- CRI (container runtime interface): il contratto per eseguire i container ; es. containerd
+- CNI (container network interface): il contratto per creare la rete SDN e assegnare gli IP ai Pod
+- CSI (container storage interface): il contratto per montare dischi rigidi ai Pod.  
+
+L'unità di scheduling fondamentale per Kubernetes è il Pod.    
+
+Offre servizi come:   
+- service discovery 
+- astrazione della rete 
+- astrazione dello storage 
+
+
+Kubernetes NON È una piattaforma gia pronta e preconfigurata (non ha storage, non ha rete preconfigurati), per affrontare il problema della frammentazione dell'infrastruttura sottostante.   
+
+Il paradigma utilizzato è quello dell'**Architettura Pluggable** basata su intefacce. Invece di scrivere il codice per gestire il disco o la rete, i cretori di Kubernetes hanno scritto codice solo per prendere decisioni!    
+Per tutte le altre operazioni hanno definito delle interfacce.   
+
+Es: Kubernetes non sa come creare una rete, ma DEVE sapere chi contattare per ordinare la creazione di una rete.  
+
+
+Kubernetes è uno schedulatore di Pod, tutto quello che non è capire dove far girare questi pod lo si crea come plug in -> e si permette ai clienti di creare questi plug in (che possono dipendere da k8s o da altri plug in).     
+
+
+È una piattaforma per costruire altre piattaforme! una componente di un ecosistema più ampio, una sorta di Kernel Linux del cloud.    
+
+Ogni diversa configurazione di K8s prende il nome di distribuzione -> esistono quelle offerte dai provider cloud, quelle offerte dai vendor e quelle personalizzate.    
+
+--- 
+
+Limiti di K8s: prevede ed è stato testato per cluster composti da massimo 5000 nodi, dove ogni nodo può avere al massimo 130 Pod -> **650000 Pod (applicazioni)**  
+Il limite inferiore non ufficiale è 3 nodi.    
+
+I Pod non sono entità durevoli! in caso di guasti i pod non vengono mai rischedulati o spostati su un altro nodo, vengono **sostituiti** da altri Pod.    
+
+--- 
+
+Un cluster K8s può avere nodi di due tipi:
+
+1. **Control Plane**: Il cervello che prende le decisioni (devono essere in numero dispari)
+2. **Worker Nodes**: Macchine che eseguono i carichi di lavoro  
+
+---
+
+
+
+### Plugin  
+
+La maggior parte dei servizi in k8s sono forniti da plugin ed esistono due tipi di plugin:  
+
+1. **Plugin "Flex"**: Sono dei binari che vengono invocati dai servizi core di k8s, con del JSON sul loro standard input e ritornano del JSON in output (deprecato)
+
+2. **Plugin GRPC (google remote procedure call)**: sono endpoint di rete che aderiscono ad una certa interfaccia definita, accessibile tramite chiamate della libreria gRPC. quindi indirizzi IP serviti tramite la libreria.   
+
+
+Il problema enorme iniziale era: Come fa un programma enorme e complesso come K8s a invocare funzioni scritte da terzi (plugin) in modo sicuro, istantaneo e senza doverle compilare? -> inizialmente si usavano le librerie condivise (file .so o .dll) che caricava il codice direttamente nella RAM, ma questo è pericoloso: se il plugin ha un bug e crasha, fa crashare l'intero nodo (in quanto plugin e kubelet condividevano la ram, se crasha il kernel distrugge tutta quella RAM).      
+
+Il paradigma Cloud-Native risolve questo con la **Remote Procedure Call** disaccoppiata.    
+Il plugin viene eseguito da un processo separato e isolato dal processo K8s, se il plugin crasha, K8s sopravvive (non condividono più la stessa zona di RAM, fisicamente è la stessa ma è come se fossero separate).    
+Poichè i processi non condividono la RAM devono parlare scambiandosi messaggi, per farlo in modo veloce e in modo rigoroso si usa un protocollo binario di comunicazione client-server.      
+
+- gRPC (google Remote Procedure Calling): È un framework opensource ad altissime prestazioni. Permette a un programma (client) di invocare direttamente una funzione su un altro programma (Server) come se fosse un oggetto locale. 
+
+- Unix Domain Socker (UDS): È ciò che fa funzionare tutto (è un meccanismo di IPC), è un canale di comunicazione dati tra i processi in esecuzione sullo stesso server. Si presenta come un finto file sul disco (`/run/plugin.sock`) ma in realtà è un tunnel diretto nella RAM gestito dal Kernel Linux, è molto più veloce di una chiamata rete (TCP/IP) in quanto non passa dalla scheda di rete.      
+
+Sintesi ed esempio:  
+
+Il Kubelet è il capocantiere, un demone che gira sul server fisico e si disinteressa e sasassocia dai pod e dalla loro natura eterogenea.  
+Lui interroga l'API-Server per sapere se ha lavoro da svolgere, e lui essendo il manager del nodo (il server fisico) non sa fare le operazioni concrete (come creare un pod, creare la rete, ...).  
+Questo lavoro lo fanno i PlugIn! sono programmi che sfruttano la UDS e creano finti file `.sock` sui quali rimangono in ascolto e in attesa di ricevere comandi da eseguire.  
+
+Se al kubelet arriva il comando di creare una rete, allora (grazie alla configurazione che deve aver creato un ingengere) lui saprà che deve andare a interrogare lo specifico file `.sock` del PlugIn di rete.  
+A questo punto il Kubelet diventa il Client e invoca la funzione a quel file per creare la rete; il PlugIn è il Server ed è lui che fisicamente sa come fare la task -> parlare con il Kernel Linux per creare la rete.  
+Alla fine restituisce un codice per comunicare se la task è andata a buon fine o se è fallita.    
+
+--- 
+
+
+### Node Components  
+
+Sono demoni software fondamentali e obbligatori che devono essere in esecuzione su una macchina (fisica o virtuale) affinchè questa possa essere aggregata al cluster ed eseguire i worload di Kubernetes.  
+
+Kubernetes non parla direttamente con l'hardware, si installa su ogni server (che andrà a fare parte del cluster k8s, diventando un nodo) uno strato software intermedio: Kubelet + Container Runtime.  
+Questo strato fa da traduttore universale, prende i comandi astratti di K8s e crea (e isola) i processi sul Kernel di quella specifica macchina fisica.    
+
+Il Container Runtime è **comune e unico** per l'intero server, dentro al server c'è esattamente 1 solo demone containerd (o CRI-O) installato.  
+Il Container Runtime è solo un "operaio" che isola i processi, a lui non interesa cosa ci sia dentro il processo -> questo permette di avere pod eterogenei all'interno dello stesso server.  
+
+
+
+**Container Runtime**:     
+Ricordiamo che Kubernetes è un manager, non sa quindi come fare chiamate al Kernel Linux per creare un container, usa solo il paradigma delle interfacce per spartire ordini.  
+Il Container Runtime (containerd o CRI-O) è il programma software che vive sul server ed aspetta ordini!   
+È un servizio gRPC che espone la CRI -> containerd è il demone acceso in background, apre un file sul disco (`/run/containerd/containerd.sock`) e tale file sarà la sua interfaccia gRPC; si mette in ascolto e aspetta che qualcuno gli mandi comandi per gestire i container (creazione, eliminazione, ...).    
+   
+
+**Kubelet:**     
+È l'unico pezzo di codice che appartiene a K8s e che gira fisicamente sul server come processo di sistema (demone systemd).  
+
+Il Kubelet è un agente di Kubernetes che interroga l'API server centrale.  
+
+Es:  
+1. Il kubeelet interroga l'API server 
+2. L'API server gli dice che deve accendere un Pod con Nginx
+3. Il kubelet non sa come accendere Nginx, quindi si gira verso il disco fisso locale e comunica tramite il gRPC di containerd per inviarli il comando "accendi pod nginx".  
+4. containerd (il runtime) parla con il Kernel Linux, crea i namespace, i cgroups e avvia il processo Nginx reale.   
+
+È una sorta di agente orchestratore all'interno del singolo server!  
+ 
+
+Per lanciare un cluster k8s bastano due binari (quello CRI e kubelet).   
+
+**Kube-Proxy:**      
+
+Servizio che gestisce l'astrazione di rete, quindi il networking e il load balancing per i Pod.     
+È un programma che guarda di continuo l'API-Server e crea le regole di iptables / nftables / ipvs per il routing.  
+
+Kube-Proxy gira come un container all'interno del server ma per scrivere le regole nel firewall del server vero K8s lo avvia bypassando l'isolamento d rete permettendogli di toccare i cavi di rete reali del server.  
+
+Kube-Proxy parla solo con l'API server centralre per farsi dare la lista dei Service da tradurre in regole firewall per il bilanciamento del carico.  
+
+*Nota*: Non confondere il lavoro che deve fare kube-proxy con quello del plugin CNI.  
+Il CNI è il contratto che il kubelet usa per dire a un plugin di assegnare un indirizzo a un container
+
+
+--- 
+
+### Control Plane:  
+
+Il Control Plane è un concetto lofico (insieme di 5 servizi direttivi) che viene eseguito su Nodi Server dedicati chiamati **Control Plane Nodes** (ex. Master Nodes).     
+
+
+
+**Servizi di control plane**     
+
+Il control plane designa i servizi chiave di k8s, costituenti il cervello pensante del cluster, questi servizi sono eseguiti solo sui nodi *server*, che sono in numero disari.  
+
+in base al numero:  
+- 1 -> nessuna resistenza ai guasti
+- 3 -> tolleranza a un guasto 
+- 5 -> tolleranza a 2 guasti (consigliato)
+
+
+---
+
+Servizi del Control Plane:    
+
+
+**etcd**     
+
+È un database distribuito progettato per k8s, deve memorizzare lo stato del cluster e servirlo in modo altamente consistenete.   
+Ha schema a chiave:valore e gestisce in automatico guasti e la consistenza tra più nodi.  
+
+È distribuito e gira esclusivamente sui nodi del control plane.  
+
+**È il principale fattore nella prestazione del control plane di un cluster kubernetes**.   
+
+ogni 100ms etcd fa uno snapshot dello stato del cluster, per questo si consiglia di creare nodi di control plane su dischi almeno SSD, in quanto etcd è fortemente dipendente dalle latenze di scrittura e lettura del disco (preferibilmente metterli su NVMe) perchè se il database va lento, tutto il cluster sarà lento.   
+
+etcd usa un algoritmo di consenso per garantire che i nodi master abbiano gli stessi identici dati. Per farlo eleggono un **leader**.  
+Il leader deve mandare heartbeat agli altri nodi ogni 100ms per comunicare di essere vivo.  
+
+Se il disco rigido del server non è un NVMe/SSD allora l'operazione di lettura sarà lenta. Se è lenta il nodo leader impiega troppo tempo a scrivere e potrebbe saltare l'invio del heartbeat ogni 100ms -> gli altri nodi penseranno che il leader sia morto, bloccheranno l'intero cluster e indicono nuove elezioni -> un disco lento disintegra l'affidabilità di Kubernetes.       
+
+Ogni versione di k8s ha la sua versione di etcd.     
+
+**API SERVER**  
+
+È la componente centrale e il punto di ingresso per tutte le comunicazioni con il cluster.  
+Espone l'API di k8s tramite HTTP/REST fungendo da hub per tutte le interazioni, sia da parte degli utenti sia da parte degli altri componenti del cluster.   
+È l'unica componente del Control Plane esposta su rete.  
+
+l'API server valida ed elabora le richieste, aggiornando lo stato del cluster in etcd.  
+
+Non ha archiviazione e non richiede volumi (è stateless) ma è quello che fa tutto all'interno di un cluster, lui parla con etcd. quando interagiamo con un cluster -> stiamo parlando con l'API server. (un cluster k8s è gestito interamente da chiamate HTTP)    
+
+le chiamate fatte all'api server possono essere fatte da noi (come utenti) -> sapere in che stato è un il cluster, aggiungere un pod, toglierne uno, ...   
+possono essere fatte da altre componenti -> es. kubelet per sapere quali pod lanciare , chiama l'api server che gli restituisce la lista e la configurazione dei pod.  
+
+
+**Controller-manager:**    
+
+È un binario solo.      
+Esegue una serie di processi chiamati "controller".  
+
+Il controller manager spende tutta la sua vita a guardare (tramite HTTP watch) l'API-Server.  
+
+All'interno del cluster ci sono una serie di controller che fanno cicli di riconciliazione (guarda lo stato, guarda quante risorse devo aggiungere / togliere e faccio la modifica).  
+
+I servizi che fanno parte del cuore di k8s (es. gestione del DNS) sono gestiti dal controller manager.  
+
+Il controller manager "fa" cambiamenti quando lo stato attuale non combacia con lo stato desiderato e se ne accorge durante il ciclo di riconciliazione.  
+Se si accorge che mancano Pod, invia una chiamata HTTP al API-Server dicendogli di creare tot Pod nuovi.  
+ 
+
+
+**Scheduler**   
+Lo scheduler NON è all'interno del controller manager.    
+Monitora costantemente la presenza di nuovi pod che non sono ancora stati assegnati a un nodo, il suo compito è selezionare il nodo pià idoneo su cui eseguire un pod, basandosi su una serie di fattori come i requisiti di risorse (CPU, memoria), le regole di affinità e anti-affinità, i taints e le toleration e altre policy.    
+
+operazione molto importante e sensibile e per questo lo scheduler gira separatamente.   
+
+funziona tramite regole di affinità e anti affinità (es. pod ha bisogno di scheda video x, quindi lo schedulatore eviterà di mettere il pod in un nodo che non ha gpu).   
+
+Es: il controller manager crea 3 oggetti Pod, questi avranno un campo interno chiamato nodeName che attualmente sarà null -> non sanno su quale server fisico atterrare.  
+Il calcolo per decidere il server giusto è *pesantissimo* per la CPU (NP-Hard): lo scheduler guarda l'API-Server, vede i 3 podi e inizia a filtrare i Nodi (es. "Il Pod vuole 4 GB di RAM, il Nodo 1 ne ha solo 2, lo scarto").    
+Trovato il nodo2 come vincitore per il primo Pod, lo scheduler invia una chiamata HTTP all'API server -> "scrivi nel database che il pod A deve andare sul nodo2 " e a questo punto il kubelet installato sul nodo2 legge il cambiamento dall'API server e accende il container fisico interfacciandosi con il Container Runtime che fà il lavoro sporco.    
+
+
+**CoreDNS**:   
+
+Fornisce il servizio di risoluzione dei nomi di K8s, implementa il service discovery DNS-SD e DNS-RR per i pod.     
+
+È un server DNS minimale e performante.   
+
+un nodo di control plane -> kubelet su cui girano come container etcd, un api server, un cotroller manager (insieme di programmi che fanno le operazioni di convergenza dello stato), lo schedulatore e il servizio di service discovery.  
+
+il cluster minimale -> 1 container runtime (kubelet) e 5 container  
+
+Il kubelet può fare una schedulazione statica, dove invece di parlare con l'API-Server carica file dal disco -> per creare i servizi di control plane.  
+
+
+
+
+Tutti questi core service hanno bisogno di un leader, tranne l'API-Server.  
+
+
+---  
+
+
+## Servizi di Piattaforma  
+
+Tutto quello che K8s ci offre per integrare i nostri servizi, senza plugin (per far parlare i servizi tra di loro, coordiarli, ...)    
+
+
+**Service ClusterIP (DNS-RR)**    
+Un servizio che fefinisce un insieme logico di Pod e una policy per attivarli.   
+
+-> chiediamo all'orchestratore di allocare un indirizzo IP e associarlo a un Load Balancer che punterà a un insieme di Pod. (costruire un sistema di DNS-RR)    
+
+Un Service utilizza un selector per identificare dinamicamente i Pod che ne faano parte. il selettore si basa sulle etichette (**Labels**) assegnate ai pod.     
+Qualsiasi Pod con etichette che corrispondono al selettore del service diventa automaticamente un endpoint per quel Service, e il service bilanciera il carico delle richieste tra tutti i pod corrispondenti.  
+
+Le etichette stanno dentro metadata.labels    
+
+
+**Servizio Headless (DNS-SD)**    
+
+Un tipo speciale di Service in cui non viene allocato un clusterIP (impostando clusterIP: None)  
+Invece di un singolo IP virtuale, il nome DNS del Service risolve direttamente in una ista di indirizzi IO di tuti i Pod selezionati.   
+
+
+**Config Map**:   
+
+Un ConfigMap è un oggetto API di kubernetes utulizzato per mmorizzare dati di configurazione non sensibili in formato key:value     
+Questi dati possono essere stringhe, variabili di ambiente o interi file di configurazione  
+
+Un Config Map può essere consumato da un Pod in due modi:
+
+1. Le chiavi del configmap possono essere iniettate come variabili d'ambiente nei container di un pod 
+
+2. Come file montat in un volume: il configmap può essere montato come un volume all'interno del filesystem del container. ogni chiave nel configmap diventa un file in quella directory, e il valore della chiave è il contenuto del file.  
+
+
+**Secret**  
+
+Un Secret è un oggetto API che è un estensione di una configMap, ma è specificamente progettato oer contenere una piccola quantità di dati sensibili come psw, token OAuth o chiavi SSH.  
+
+I secret vengono consumati dai Pod negli stessi modi dei congimap, ovver ocome variabili di ambiente o come file montati in un volume -> la differenza principale risiede nel modo in cui i dati vengono getiti, nel manifesto di un secreti valori nel campo data devono essere codificati in base64.  
+
+ 
+
+--- 
+
+
+**Astrazione dello Storage**   
+
+Il filesystem di un container è effimero! quanto un container viene terminato e riavviato, tutte le modifiche al suo FS vengono perse.   
+
+il vantaggio del paradigma a pod è quello di definire dei volumi che sono in comune tra pi+ container all'interno del Pod.   
+
+Questa cosa si implementa -> emptyDir   
+
+EmptyDir è il tipo di volume che viene associato al ciclo di vita di un pod, viene creato quando il pod nasce e viene distrutto quando il pod muore.     
+
+emptyDir non è persistente, ma serve per scambiare file tra container che appartengono allo stesso pod.  
+
+I volumi si definiscono a livello di Pod, e rimane consistente per il ciclo di vita dei container che appartengono al pod.  
+
+
+Per i dati che devono sopravvivere al ciclo di vita di un Pod, K8s introduce un modello di storage persistente basato su tre astrazioni chiave.   
+
+1. **PersistentVolume (PV):** Un PV è ujna porzione di storage nel cluster che è stata provisionata da un amministratore o dinamicamente, è ina risorsa del cluster, proprio come un Pod (o nodo??)  
+    Nel manifest sarà un type: persistentVolume   
+    Il persistent volume è fornito da un plugin   
+    È un qualcosa che posso montare dentro un pod.   
+
+2. **PersistentVolumeClaim(PVC)**: Un PVC è una richiesta di storage da parte di un utente o di un applicazione    
+    Un applicazione richiede lo storage includendo un PVC come uno dei suoi volumi nella specifica del Pod.  
+    È analogo a come un pod consuma le risorse di un nodo: un PVC consuma le risorse di un PV.   
+
+
+3. **Storage Class**: un plugin installato a bordo del cluster che implementa un interfaccia (CSI- container storage interface).  
+    È la chiave per il provisioning dinamico dello storage.  
+    Invece di chiedere a un amministratore di di crare manualmente i PV (provisioning statico), il provisioning dinamico permette di creare lo storage on demand.  
+    Una StorageClass descrive una classe di storage (es. ssd-veloce o hdd-economico) e specifica quale provisione utilizzare per creare un PV quando un PVC richiede quella classe.   
+    Il provisioner è un controller che implementa la CSI (container storage interface)    
+
+
+Flusso di lavoro del provisioning dinamico:   
+
+- l'amministratore del cluster definisce una o più StorageClass 
+- l'utente crea una PVC cbe specifica la quantità di storage richiesta e opzionalmente il nome della storageclass desiderata
+- il provisioner associato alla storage class rileva il nuovo PVC e crea dinamicamente lo storage sottostante e un oggetto PV corrispondente  
+- il control plane di K8s lega il nuovo PV al PVC
+- il pod dell'utente che fa riferimento al PVC può ora utilizzare il volume   
+
+
+--- 
+
+
+NAMESPACE   
+
+Creano isolamenti logici, identificati da un nome in cui categorizzare altre risorse  
+Non costituiscono isolamento!! servono solo per organizzare meglio altre risorse   
+
+le risorse di dividono in:
+- namespaced: se sono assegnabili ad un namespace
+- cluster-wide: se appartengono a tutto il cluster, non si possono mettere in un namespace  
+
+Non tutte le risorse sono divisibili in namespace (es. storage class deve essere visibile da tutto il cluster)    
+
+
+--- 
+
+CONTROLLORI INTEGRATI:   
+
+**ReplicaSet**:  
+Il suo compito è mantenere un insieme stabile di pod replica in esecuzione in un dato momento. Se un Pod gestito da un repliaSet si arresta o viene eliminato, il ReplicaSet ne crea immediatamente uno nuovo per sostituirlo, garantendo l'alta disponibilità e il self-healing.   
