@@ -213,3 +213,17 @@ Viene usata ESCLUSIVAMENTE nella fase di handshake asimmetrico iniziale -> perme
 Una volta che client e server hanno concordato la session key parlano usando la crittografia simmetrica. il certificato x.509 non viene più usato da quel punto in poi.  
 
 
+### Router != ReverseProxy  
+
+Il router ha un IP pubblico ma NON è un reverse proxy. Lavorano a due livelli separati dello stack OSI.  
+
+
+- Router: lavora a livello 3 - rete, è velocissimo ma stupido, guarda soloIP e porta dei pacchetti che riceve, non ha idea di cosa ci sia dentro il pacchetto
+
+- Reverse Proxy: lavora a livello 7 - applicativo, è software che gira su una macchina (virtuale), riceve il pacchetto DAL router e guarda il contenuto (del messaggio HTTP), guarda l'URL richiesto e in basa a quello decide a quale VM della subnet inoltrarlo 
+
+
+Ruter e ReverseProxy hanno bisogno entrambi di indirizzi pubblici raggiungibili da internet.  
+ENTRAMBI gli indirizzi verrano messi sul router! si crea perà una regola speciale per il floatingIP usato per il reverse proxy = appena arriva traffico che ha come destinazione il floatingIP, il ruouter lo inoltra immediatamente verso la VM a cui è mapato quel IP, e tale VM fa il lavoro del reverse proxy
+
+

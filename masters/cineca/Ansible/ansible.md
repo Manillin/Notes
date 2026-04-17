@@ -2,7 +2,7 @@
 
 Ansible è agentless, non esiste nessun programma costantemente in esecuzione sulle macchine worker o master di openstack.  
 
-**File di inventario** -> file generato da terraform che contiene gli IP dei server, dice ad ansible dove sono i nodi su cui voglio fare l'automazione.  
+**File di inventario** -> file generato (idealmente) da terraform che contiene gli IP dei server, dice ad ansible dove sono i nodi su cui voglio fare l'automazione.  
 
 **Playbook** -> possiamo dare il nome che vogliamo. è il regista da cui parte l'esecuzione.  
 
