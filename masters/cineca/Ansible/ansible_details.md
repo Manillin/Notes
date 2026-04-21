@@ -68,3 +68,20 @@ Esempio:
     dest: /etc/nginx/sites-available/default 
 ```
 
+---
+
+
+### Percorsi nei Ruoli (Roles):  
+Quando si usa la struttura a ruoli (roles/nome_ruolo/), Ansible applica delle convenzioni rigide per facilitare la vita. Se in un `tasks/main.yml` si usa un modulo come `template` o `copy`, non serve specificare il percorso relativo (es. ../templates/miofile.j2). Basta scrivere `src: miofile.j2` e Ansible cercherà automaticamente nella cartella `templates/` o `files/` di quello specifico ruolo. Questo rende i ruoli portabili al 100%.   
+
+
+### Il modulo template (Jinja2):
+A differenza di copy (che copia un file statico), `template` usa il motore `Jinja2` (.j2). Prende il file sorgente locale, sostituisce dinamicamente tutte le variabili (es. {{ groups['proxy'][0] }}) leggendole dall'inventario o dai facts in fase di esecuzione, e carica il file compilato sul server remoto. È lo strumento fondamentale per rendere le configurazioni dinamiche.
+
+### Stato Desiderato (Modulo service):
+Ansible non "lancia comandi", ma garantisce uno stato.
+
+`enabled: true` (o yes) -> Dice ad Ansible di configurare il servizio per l'avvio automatico al boot della macchina (equivalente a systemctl enable).
+
+`state: started` -> Dice ad Ansible di verificare se il servizio sta girando in questo esatto momento. Se è spento lo accende. Se è già acceso, non fa nulla e restituisce ok (*Idempotenza*).
+

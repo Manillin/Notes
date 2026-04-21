@@ -141,7 +141,7 @@ Caratteristiche:
 ---
 
 
-## Appunti di Rete: Proxy, Reverse Proxy e Ingress Controller
+## Networking  
 
 ### 1. Forward Proxy (Proxy Tradizionale)
 Un Forward Proxy è un server intermediario che risiede sul lato **Client** della comunicazione. Agisce per conto degli utenti di una rete privata che tentano di accedere a risorse su una rete pubblica (Internet).
@@ -227,3 +227,18 @@ Ruter e ReverseProxy hanno bisogno entrambi di indirizzi pubblici raggiungibili 
 ENTRAMBI gli indirizzi verrano messi sul router! si crea perà una regola speciale per il floatingIP usato per il reverse proxy = appena arriva traffico che ha come destinazione il floatingIP, il ruouter lo inoltra immediatamente verso la VM a cui è mapato quel IP, e tale VM fa il lavoro del reverse proxy
 
 
+### Load Balancer L4 vs Reverse Proxy L7  
+
+- *Livello 4 (TCP Proxy)*: Legge solo IP e Porta (es. 6443). Prende i byte e li inoltra al backend senza ispezionarli. Consuma poca CPU ed è vitale quando il traffico è cifrato end-to-end (come l'API di K8s) perché non altera i certificati SSL. 
+- *Livello 7 (HTTP Reverse Proxy)*: Apre il pacchetto, ispeziona l'header HTTP, legge l'URL, i cookie e i certificati. Può fare routing intelligente (es. "Se `/api` vai al server A, se `/web` vai al server B"). Consuma più risorse. 
+
+### NAT:  
+
+Il NAT serve a mascherare gli IP privati (es. 192.168.x.x), che non sono instradabili su Internet, sostituendoli con IP pubblici/instradabili. Il destinatario di un pacchetto non vede mai l'IP privato originale del mittente, altrimenti non saprebbe come fargli recapitare la risposta.   
+
+### Interfacce Virtuali vs Fisiche:  
+
+Un'interfaccia come tun0 (VPN) è virtuale: è un software che crittografa i pacchetti. Tuttavia, fisicamente, il pacchetto crittografato deve uscire dal computer attraverso la scheda di rete hardware (es. enp0s31f6 per il cavo Ethernet, o enx... per i dongle USB/Docking Station).  
+
+
+  
